@@ -14,16 +14,374 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+        }
+        Relationships: []
+      }
+      banners: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          link_url: string | null
+          position: string
+          sort_order: number
+          starts_at: string | null
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          position?: string
+          sort_order?: number
+          starts_at?: string | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          position?: string
+          sort_order?: number
+          starts_at?: string | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          status: Database["public"]["Enums"]["profile_status"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["profile_status"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["profile_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      roles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_staff: boolean
+          key: Database["public"]["Enums"]["app_role"]
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_staff?: boolean
+          key: Database["public"]["Enums"]["app_role"]
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_staff?: boolean
+          key?: Database["public"]["Enums"]["app_role"]
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scratch_card_prizes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          probability: number
+          quantity_remaining: number
+          quantity_total: number
+          scratch_card_id: string
+          title: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          probability?: number
+          quantity_remaining?: number
+          quantity_total?: number
+          scratch_card_id: string
+          title: string
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          probability?: number
+          quantity_remaining?: number
+          quantity_total?: number
+          scratch_card_id?: string
+          title?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scratch_card_prizes_scratch_card_id_fkey"
+            columns: ["scratch_card_id"]
+            isOneToOne: false
+            referencedRelation: "scratch_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scratch_cards: {
+        Row: {
+          background_url: string | null
+          badge: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          is_free: boolean
+          name: string
+          price: number
+          slug: string
+          starts_at: string | null
+          status: Database["public"]["Enums"]["scratch_card_status"]
+          updated_at: string
+        }
+        Insert: {
+          background_url?: string | null
+          badge?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_free?: boolean
+          name: string
+          price?: number
+          slug: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["scratch_card_status"]
+          updated_at?: string
+        }
+        Update: {
+          background_url?: string | null
+          badge?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_free?: boolean
+          name?: string
+          price?: number
+          slug?: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["scratch_card_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      system_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "SUPER_ADMIN"
+        | "ADMIN"
+        | "OPERADOR"
+        | "FINANCEIRO"
+        | "SUPORTE"
+        | "USER"
+      profile_status: "ACTIVE" | "INACTIVE" | "BLOCKED" | "PENDING"
+      scratch_card_status:
+        | "DRAFT"
+        | "ACTIVE"
+        | "PAUSED"
+        | "FINISHED"
+        | "ARCHIVED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +508,23 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "SUPER_ADMIN",
+        "ADMIN",
+        "OPERADOR",
+        "FINANCEIRO",
+        "SUPORTE",
+        "USER",
+      ],
+      profile_status: ["ACTIVE", "INACTIVE", "BLOCKED", "PENDING"],
+      scratch_card_status: [
+        "DRAFT",
+        "ACTIVE",
+        "PAUSED",
+        "FINISHED",
+        "ARCHIVED",
+      ],
+    },
   },
 } as const
