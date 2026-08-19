@@ -12,7 +12,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     }
     console.error(error);
     const message = error instanceof Error ? error.message : String(error);
-    const stack = error instanceof Error ? error.stack : "";
+    const stack = (error instanceof Error ? error.stack : "") || "";
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { 
