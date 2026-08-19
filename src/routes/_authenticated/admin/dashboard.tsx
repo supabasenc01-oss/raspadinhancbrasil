@@ -86,10 +86,13 @@ function AdminDashboard() {
 
   const quickActions = [
     { label: 'Nova Raspadinha', icon: PlusCircle, href: '/admin/raspadinhas/novo' },
+    { label: 'Gerenciar Usuários', icon: Users, href: '/admin/usuarios' },
+    { label: 'Transações/Financeiro', icon: CreditCard, href: '/admin/financeiro' },
+    { label: 'Relatórios', icon: TrendingUp, href: '/admin/relatorios' },
     { label: 'Configurações', icon: Settings, href: '/admin/configuracoes' },
     { label: 'Logs do Sistema', icon: FileText, href: '/admin/logs' },
-    { label: 'Financeiro', icon: CreditCard, href: '/admin/financeiro' }
   ];
+
 
   return (
     <AdminShell 
