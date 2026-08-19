@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { throttle } from 'lodash-es';
 import { useFileUrl } from '@/hooks/useFileUrl';
+import { useSettings } from '@/hooks/useSettings';
 
 interface ScratchAreaProps {
   coverImage?: string | null;
@@ -26,40 +27,103 @@ export function ScratchArea({
   
   const coverUrl = useFileUrl(coverImage);
   const resultUrl = useFileUrl(resultImage);
+  const { logoUrl: rawLogoUrl } = useSettings();
+  const logoUrl = useFileUrl(rawLogoUrl);
 
-  const SCRATCH_THRESHOLD = 45; // Slightly lower threshold for better UX
-  const BRUSH_SIZE = 80; // Larger brush size as requested by user
+  const SCRATCH_THRESHOLD = 45; 
+  const BRUSH_SIZE = 80; 
+
 
   // Initialize Canvas with cover image and premium effects
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !coverUrl) return;
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = coverUrl;
-    img.onload = () => {
-      // Clear and draw cover
+    const drawCover = (img?: HTMLImageElement) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.globalCompositeOperation = 'source-over';
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       
-      // Add Premium Shine Overlay
-      ctx.globalCompositeOperation = 'source-atop';
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
-      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = gradient;
+      // Background base (Gradient matching the brand)
+      const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      bgGradient.addColorStop(0, '#0F172A');
+      bgGradient.addColorStop(1, '#020617');
+      ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Set for scratching
-      ctx.globalCompositeOperation = 'destination-out';
+      if (img) {
+        // Draw the cover image if provided
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      } else {
+        // Fallback pattern if no image
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += 20) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, canvas.height);
+          ctx.stroke();
+        }
+      }
+
+      // DRAW LOGO AS SCRATCH EFFECT
+      if (logoUrl) {
+        const logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = logoUrl;
+        logoImg.onload = () => {
+          ctx.globalCompositeOperation = 'source-over';
+          // Calculate centered logo
+          const maxWidth = canvas.width * 0.6;
+          const ratio = logoImg.width / logoImg.height;
+          const drawWidth = Math.min(maxWidth, logoImg.width);
+          const drawHeight = drawWidth / ratio;
+          
+          const x = (canvas.width - drawWidth) / 2;
+          const y = (canvas.height - drawHeight) / 2;
+          
+          // Draw a soft glow behind the logo
+          const logoGlow = ctx.createRadialGradient(
+            canvas.width/2, canvas.height/2, 0,
+            canvas.width/2, canvas.height/2, drawWidth
+          );
+          logoGlow.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+          logoGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          ctx.fillStyle = logoGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.drawImage(logoImg, x, y, drawWidth, drawHeight);
+          
+          // Reset to scratching mode
+          ctx.globalCompositeOperation = 'destination-out';
+        };
+      } else {
+        ctx.globalCompositeOperation = 'destination-out';
+      }
+      
+      // Add Premium Shine Overlay
+      ctx.globalAlpha = 0.5;
+      const shineGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      shineGradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      shineGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
+      shineGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = shineGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1.0;
     };
-  }, [coverUrl]);
+
+    if (coverUrl) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = coverUrl;
+      img.onload = () => drawCover(img);
+      img.onerror = () => drawCover(); // Draw fallback on error
+    } else {
+      drawCover();
+    }
+  }, [coverUrl, logoUrl]);
 
   // Handle Auto-Reveal
   useEffect(() => {
@@ -81,16 +145,20 @@ export function ScratchArea({
 
       // Sample every 4th pixel for performance
       for (let i = 0; i < pixels.length; i += 16) {
-        if (pixels[i + 3] === 0) transparentCount++;
-      }
+          if (pixels[i + 3] === 0) transparentCount++;
+        }
 
-      const totalSamples = pixels.length / 16;
-      const percentage = (transparentCount / totalSamples) * 100;
-      setScratchedPercentage(percentage);
+        const totalSamples = pixels.length / 16;
+        const percentage = (transparentCount / totalSamples) * 100;
+        
+        // Only trigger check if we have actually started scratching
+        if (percentage > 2) {
+          setScratchedPercentage(percentage);
+        }
 
-      if (percentage > SCRATCH_THRESHOLD && !isFinished) {
-        revealAll();
-      }
+        if (percentage > SCRATCH_THRESHOLD && !isFinished) {
+          revealAll();
+        }
     }, 200),
     [isFinished]
   );
