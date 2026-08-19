@@ -11,10 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as GanhadoresRouteImport } from './routes/ganhadores'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as RaspadinhasRouteImport } from './routes/raspadinhas'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as RaspadinhaSlugRouteImport } from './routes/raspadinha.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,9 +33,24 @@ const CadastroRoute = CadastroRouteImport.update({
   path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
+  id: '/como-funciona',
+  path: '/como-funciona',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
   id: '/esqueci-senha',
   path: '/esqueci-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GanhadoresRoute = GanhadoresRouteImport.update({
+  id: '/ganhadores',
+  path: '/ganhadores',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -41,71 +63,140 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RaspadinhasRoute = RaspadinhasRouteImport.update({
+  id: '/raspadinhas',
+  path: '/raspadinhas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RaspadinhaSlugRoute = RaspadinhaSlugRouteImport.update({
+  id: '/raspadinha/$slug',
+  path: '/raspadinha/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/faq': typeof FaqRoute
+  '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
+  '/raspadinha/$slug': typeof RaspadinhaSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/faq': typeof FaqRoute
+  '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
+  '/raspadinha/$slug': typeof RaspadinhaSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/faq': typeof FaqRoute
+  '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
+  '/raspadinha/$slug': typeof RaspadinhaSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/cadastro'
+    | '/como-funciona'
     | '/esqueci-senha'
+    | '/faq'
+    | '/ganhadores'
     | '/home'
     | '/login'
+    | '/privacidade'
+    | '/raspadinhas'
     | '/reset-password'
+    | '/termos'
+    | '/raspadinha/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cadastro'
+    | '/como-funciona'
     | '/esqueci-senha'
+    | '/faq'
+    | '/ganhadores'
     | '/home'
     | '/login'
+    | '/privacidade'
+    | '/raspadinhas'
     | '/reset-password'
+    | '/termos'
+    | '/raspadinha/$slug'
   id:
     | '__root__'
     | '/'
     | '/cadastro'
+    | '/como-funciona'
     | '/esqueci-senha'
+    | '/faq'
+    | '/ganhadores'
     | '/home'
     | '/login'
+    | '/privacidade'
+    | '/raspadinhas'
     | '/reset-password'
+    | '/termos'
+    | '/raspadinha/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CadastroRoute: typeof CadastroRoute
+  ComoFuncionaRoute: typeof ComoFuncionaRoute
   EsqueciSenhaRoute: typeof EsqueciSenhaRoute
+  FaqRoute: typeof FaqRoute
+  GanhadoresRoute: typeof GanhadoresRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  RaspadinhasRoute: typeof RaspadinhasRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TermosRoute: typeof TermosRoute
+  RaspadinhaSlugRoute: typeof RaspadinhaSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -124,11 +215,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/como-funciona': {
+      id: '/como-funciona'
+      path: '/como-funciona'
+      fullPath: '/como-funciona'
+      preLoaderRoute: typeof ComoFuncionaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/esqueci-senha': {
       id: '/esqueci-senha'
       path: '/esqueci-senha'
       fullPath: '/esqueci-senha'
       preLoaderRoute: typeof EsqueciSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ganhadores': {
+      id: '/ganhadores'
+      path: '/ganhadores'
+      fullPath: '/ganhadores'
+      preLoaderRoute: typeof GanhadoresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -145,11 +257,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/raspadinhas': {
+      id: '/raspadinhas'
+      path: '/raspadinhas'
+      fullPath: '/raspadinhas'
+      preLoaderRoute: typeof RaspadinhasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/raspadinha/$slug': {
+      id: '/raspadinha/$slug'
+      path: '/raspadinha/$slug'
+      fullPath: '/raspadinha/$slug'
+      preLoaderRoute: typeof RaspadinhaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -158,10 +298,17 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CadastroRoute: CadastroRoute,
+  ComoFuncionaRoute: ComoFuncionaRoute,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
+  FaqRoute: FaqRoute,
+  GanhadoresRoute: GanhadoresRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  RaspadinhasRoute: RaspadinhasRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TermosRoute: TermosRoute,
+  RaspadinhaSlugRoute: RaspadinhaSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
