@@ -11,11 +11,10 @@ import {
   History
 } from 'lucide-react';
 
-import { PublicPage } from '@/components/layout/PublicPage';
+import { PublicPage, PageHero } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';
 import { activeScratchCardsQuery } from '@/lib/queries';
 import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
-import { PageHero } from '@/components/layout/PageHero';
 
 export const Route = createFileRoute('/')({
   component: HomePage,

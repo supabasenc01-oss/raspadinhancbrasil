@@ -10,8 +10,7 @@ import {
   Wallet
 } from 'lucide-react';
 
-import { PublicPage } from '@/components/layout/PublicPage';
-import { PageHero } from '@/components/layout/PageHero';
+import { PublicPage, PageHero } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/como-funciona')({
