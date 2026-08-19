@@ -162,7 +162,7 @@ export function ScratchArea({
   return (
     <div 
       ref={containerRef}
-      className="relative aspect-[4/3] w-full max-w-[min(450px,92vw)] mx-auto overflow-hidden rounded-3xl border-4 border-primary/20 bg-surface shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] group/scratch"
+      className="relative aspect-[4/3] w-full max-w-[min(450px,92vw)] mx-auto overflow-hidden rounded-3xl border-4 border-primary/20 bg-surface shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] group/scratch select-none"
       style={{
         perspective: '1000px'
       }}
