@@ -103,7 +103,7 @@ function AdminSettingsPage() {
           const result = reader.result;
           if (typeof result === 'string') {
             const base64 = result.split(',')[1];
-            resolve(base64);
+            resolve(base64 || "");
           } else {
             reject(new Error("Falha ao ler o arquivo"));
           }
