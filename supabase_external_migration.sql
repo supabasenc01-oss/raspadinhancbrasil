@@ -114,6 +114,7 @@ CREATE TABLE public.scratch_cards (
 );
 CREATE INDEX idx_scratch_cards_status ON public.scratch_cards (status);
 CREATE INDEX idx_scratch_cards_featured ON public.scratch_cards (is_featured);
+
 GRANT SELECT ON public.scratch_cards TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_cards TO authenticated;
 GRANT ALL ON public.scratch_cards TO service_role;
