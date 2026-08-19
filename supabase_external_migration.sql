@@ -381,7 +381,10 @@ BEGIN
     NEW.email,
     NULLIF(NEW.raw_user_meta_data ->> 'phone', '')
   )
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE SET
+    email = EXCLUDED.email,
+    full_name = COALESCE(EXCLUDED.full_name, profiles.full_name),
+    phone = COALESCE(EXCLUDED.phone, profiles.phone);
   INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'USER')
   ON CONFLICT (user_id, role) DO NOTHING;
   RETURN NEW;
