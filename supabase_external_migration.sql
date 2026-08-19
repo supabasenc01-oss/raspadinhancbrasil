@@ -189,7 +189,7 @@ CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authen
 CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
 
-CREATE TABLE public.notifications (
+CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
