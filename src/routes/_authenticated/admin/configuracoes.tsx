@@ -129,7 +129,6 @@ function AdminSettingsPage() {
       if (result.error) throw new Error(result.error);
       
       if (result.path) {
-        console.log("Setting setting to path:", result.path);
         handleChange(key, result.path);
         toast.success("Upload realizado com sucesso!");
       }

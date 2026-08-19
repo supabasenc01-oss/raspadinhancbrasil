@@ -26,9 +26,7 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
   if (!bucket || !path) return value;
 
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  const publicUrl = data?.publicUrl ?? null;
-  console.log(`Resolving ${value}: bucket=${bucket}, path=${path} -> ${publicUrl}`);
-  return publicUrl;
+  return data?.publicUrl ?? null;
 }
 
 export async function uploadPlatformFile(
