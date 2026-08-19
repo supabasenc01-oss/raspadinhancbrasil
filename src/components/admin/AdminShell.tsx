@@ -87,6 +87,12 @@ export function AdminShell({
     );
   }
 
+  // Double check session
+  if (!user) {
+    navigate({ to: "/login", search: { redirect: window.location.pathname } });
+    return null;
+  }
+
   const isOwner = user?.email === 'ncbrasil02@gmail.com';
   const hasAccess = isStaff || isOwner;
 
