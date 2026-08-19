@@ -65,11 +65,12 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
             src={logoUrl} 
             alt={siteName} 
             className="h-9 w-auto object-contain"
+            key={logoUrl} // Force re-render on URL change
             onError={(e) => {
               console.error("[BrandLogo] Failed to load image:", logoUrl);
               e.currentTarget.style.display = 'none';
-              // If image fails, force the fallback span to show by targeting it
-              const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback');
+              // Find the next sibling which is the fallback text
+              const fallback = e.currentTarget.nextElementSibling;
               if (fallback) fallback.classList.remove('hidden');
             }} 
           />
@@ -79,9 +80,9 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
           </span>
         )}
         
-        {/* Fallback site name - Only visible if logo is not available */}
-        {(!compact && !logoUrl) && (
-          <span className="logo-fallback font-display text-lg font-black tracking-tighter uppercase italic">
+        {/* Site name - Visible as fallback if logo fails OR if there's no logoUrl */}
+        {(!compact) && (
+          <span className={`font-display text-lg font-black tracking-tighter uppercase italic ${logoUrl ? 'hidden' : ''}`}>
             {siteName.includes("Premium") ? (
               <>
                 {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
