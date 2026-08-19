@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
 import { BrandLogo } from "./SiteHeader";
+import { useSettings } from "@/hooks/useSettings";
 
 export function SiteFooter() {
+  const { siteName } = useSettings();
+
   return (
     <footer className="mt-24 border-t border-border/70 bg-surface/40">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
