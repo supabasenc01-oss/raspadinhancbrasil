@@ -49,6 +49,7 @@ const bannerSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   subtitle: z.string().optional(),
   image_url: z.string().min(1, "Imagem é obrigatória"),
+  thumbnail_url: z.string().optional().nullable(),
   link_url: z.string().optional(),
   position: z.string(),
   sort_order: z.number(),
@@ -128,6 +129,7 @@ function AdminBannersPage() {
       title: banner.title,
       subtitle: banner.subtitle || "",
       image_url: banner.image_url,
+      thumbnail_url: banner.thumbnail_url || "",
       link_url: banner.link_url || "",
       position: banner.position,
       sort_order: banner.sort_order,
@@ -186,10 +188,30 @@ function AdminBannersPage() {
 
     setIsUploading(true);
     try {
-      const { path, error } = await uploadPlatformFile("banners", file);
-      if (error) throw new Error(error);
-      if (path) {
-        form.setValue("image_url", path);
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.readAsDataURL(file);
+      });
+      const base64Data = await base64Promise;
+
+      const { uploadPlatformFileFn } = await import("@/lib/storage.functions");
+      const result = await uploadPlatformFileFn({
+        data: {
+          bucket: "banners",
+          fileName: file.name,
+          fileType: file.type,
+          base64Data,
+          prefix: ""
+        }
+      });
+
+      if (result.error) throw new Error(result.error);
+      if (result.path) {
+        form.setValue("image_url", result.path);
+        if (result.thumbnailPath) {
+          form.setValue("thumbnail_url", result.thumbnailPath);
+        }
         toast.success("Upload realizado!");
       }
     } catch (error: any) {
