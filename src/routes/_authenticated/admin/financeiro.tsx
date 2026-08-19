@@ -86,9 +86,9 @@ function AdminFinancePage() {
     mutation.mutate(data);
   };
 
-  const updateWithdrawal = async (id: string, status: 'PENDING' | 'COMPLETED' | 'CANCELLED') => {
+  const handleWithdrawalUpdate = async (id: string, status: 'PENDING' | 'COMPLETED' | 'CANCELLED') => {
     try {
-      await updateWithdrawalStatusFn({ id, status });
+      await updateWithdrawalStatusFn({ data: { id, status } });
       toast.success("Status atualizado!");
       setWithdrawals(prev => prev.map(w => w.id === id ? { ...w, status } : w));
     } catch (error: any) {
