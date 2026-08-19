@@ -1154,19 +1154,19 @@ BEGIN
         -- RLS
         ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
 
-        CREATE POLICY "Users can view their own withdrawals"
+        CREATE POLICY "withdrawals_select_own"
         ON public.withdrawals FOR SELECT
         TO authenticated
         USING (auth.uid() = user_id);
 
-        CREATE POLICY "Users can create withdrawal requests"
+        CREATE POLICY "withdrawals_insert_own"
         ON public.withdrawals FOR INSERT
         TO authenticated
         WITH CHECK (auth.uid() = user_id);
 
-        CREATE POLICY "Staff can manage all withdrawals"
+        CREATE POLICY "withdrawals_staff_manage"
         ON public.withdrawals FOR ALL
         TO authenticated
-        USING (public.has_role(auth.uid(), 'SUPER_ADMIN') OR public.has_role(auth.uid(), 'ADMIN') OR public.has_role(auth.uid(), 'FINANCEIRO'));
+        USING (public.is_staff(auth.uid()) OR public.has_role(auth.uid(), 'FINANCEIRO'));
     END IF;
 END $$;
