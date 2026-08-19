@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, ShieldCheck, Ticket, Trophy, User } from "lucide-react";
+import { Bell, ShieldCheck, Ticket, Trophy, User, Wallet } from "lucide-react";
 
 import { PublicPage } from "@/components/layout/PublicPage";
 import { EmptyState } from "@/components/EmptyState";
@@ -130,10 +130,18 @@ function DashboardPage() {
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-12">
-        <EmptyState
-          title="Carteira e pagamentos em breve"
-          description="Esta etapa entrega apenas a fundação da plataforma. Nenhum dado financeiro é exibido."
-        />
+        <div className="surface-card p-6 flex flex-col items-center text-center space-y-4">
+          <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <Wallet className="size-6" />
+          </div>
+          <h2 className="text-xl font-bold">Minha Carteira</h2>
+          <p className="text-sm text-muted-foreground max-w-md">
+            Gerencie seu saldo, adicione créditos via PIX ou Cartão e acompanhe seu extrato.
+          </p>
+          <Button asChild size="lg" className="bg-gradient-brand text-primary-foreground">
+            <Link to="/carteira">ACESSAR CARTEIRA</Link>
+          </Button>
+        </div>
       </section>
     </PublicPage>
   );
