@@ -1,12 +1,23 @@
-CREATE TYPE public.app_role AS ENUM ('SUPER_ADMIN','ADMIN','OPERADOR','FINANCEIRO','SUPORTE','USER');
-CREATE TYPE public.profile_status AS ENUM ('ACTIVE','INACTIVE','BLOCKED','PENDING');
-CREATE TYPE public.scratch_card_status AS ENUM ('DRAFT','ACTIVE','PAUSED','FINISHED','ARCHIVED');
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'app_role') THEN
+        CREATE TYPE public.app_role AS ENUM ('SUPER_ADMIN','ADMIN','OPERADOR','FINANCEIRO','SUPORTE','USER');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'profile_status') THEN
+        CREATE TYPE public.profile_status AS ENUM ('ACTIVE','INACTIVE','BLOCKED','PENDING');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'scratch_card_status') THEN
+        CREATE TYPE public.scratch_card_status AS ENUM ('DRAFT','ACTIVE','PAUSED','FINISHED','ARCHIVED');
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS TRIGGER LANGUAGE plpgsql SET search_path = public AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END; $$;
 
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
   email TEXT,
@@ -24,7 +35,7 @@ GRANT ALL ON public.profiles TO service_role;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE TABLE public.roles (
+CREATE TABLE IF NOT EXISTS public.roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key public.app_role NOT NULL UNIQUE,
   name TEXT NOT NULL,
@@ -43,9 +54,10 @@ INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('OPERADOR','Operador','Operação de raspadinhas e prêmios', true),
   ('FINANCEIRO','Financeiro','Acesso a dados financeiros', true),
   ('SUPORTE','Suporte','Atendimento ao usuário', true),
-  ('USER','Usuário','Usuário final da plataforma', false);
+  ('USER','Usuário','Usuário final da plataforma', false)
+ON CONFLICT (key) DO NOTHING;
 
-CREATE TABLE public.user_roles (
+CREATE TABLE IF NOT EXISTS public.user_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role public.app_role NOT NULL,
@@ -91,7 +103,7 @@ CREATE POLICY "user_roles_select_own" ON public.user_roles FOR SELECT TO authent
 CREATE POLICY "user_roles_select_staff" ON public.user_roles FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "user_roles_admin_write" ON public.user_roles FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
 
-CREATE TABLE public.scratch_cards (
+CREATE TABLE IF NOT EXISTS public.scratch_cards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -124,7 +136,7 @@ CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO 
 CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
 
-CREATE TABLE public.scratch_card_prizes (
+CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   scratch_card_id UUID NOT NULL REFERENCES public.scratch_cards(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -152,7 +164,7 @@ CREATE POLICY "prizes_public_read" ON public.scratch_card_prizes FOR SELECT TO a
 CREATE POLICY "prizes_staff_read" ON public.scratch_card_prizes FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "prizes_staff_write" ON public.scratch_card_prizes FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
 
-CREATE TABLE public.banners (
+CREATE TABLE IF NOT EXISTS public.banners (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   subtitle TEXT,
@@ -177,7 +189,7 @@ CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authen
 CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
 
-CREATE TABLE public.notifications (
+CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -196,7 +208,7 @@ CREATE POLICY "notifications_select_own" ON public.notifications FOR SELECT TO a
 CREATE POLICY "notifications_update_own" ON public.notifications FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "notifications_delete_own" ON public.notifications FOR DELETE TO authenticated USING (user_id = auth.uid());
 
-CREATE TABLE public.admin_logs (
+CREATE TABLE IF NOT EXISTS public.admin_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   action TEXT NOT NULL,
@@ -215,7 +227,7 @@ ALTER TABLE public.admin_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_logs_admin_read" ON public.admin_logs FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
 CREATE POLICY "admin_logs_staff_insert" ON public.admin_logs FOR INSERT TO authenticated WITH CHECK (public.is_staff(auth.uid()) AND actor_id = auth.uid());
 
-CREATE TABLE public.system_settings (
+CREATE TABLE IF NOT EXISTS public.system_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key TEXT NOT NULL UNIQUE,
   value JSONB NOT NULL DEFAULT '{}'::jsonb,
@@ -291,7 +303,7 @@ GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;-- ETAPA 2: Mot
 -- 1. Tabelas Adicionais e Ajustes
 
 -- Tabela de resultados de raspadinhas (Idempotência e Histórico)
-CREATE TABLE public.scratch_card_results (
+CREATE TABLE IF NOT EXISTS public.scratch_card_results (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     scratch_card_id UUID NOT NULL REFERENCES public.scratch_cards(id) ON DELETE CASCADE,
@@ -313,7 +325,7 @@ CREATE POLICY "results_select_own" ON public.scratch_card_results FOR SELECT TO 
 CREATE POLICY "results_staff_read" ON public.scratch_card_results FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 
 -- Tabela de sessões de raspadinhas (Idempotência / Pre-lock)
-CREATE TABLE public.scratch_card_sessions (
+CREATE TABLE IF NOT EXISTS public.scratch_card_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     scratch_card_id UUID NOT NULL REFERENCES public.scratch_cards(id) ON DELETE CASCADE,
@@ -356,7 +368,12 @@ ALTER TABLE public.winners ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "winners_public_read" ON public.winners FOR SELECT TO anon, authenticated USING (true);
 
 -- 2. Adição de coluna de versão na scratch_cards para rastrear mudanças de probabilidade
-ALTER TABLE public.scratch_cards ADD COLUMN config_version TEXT NOT NULL DEFAULT '1.0.0';
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'scratch_cards' AND column_name = 'config_version') THEN
+        ALTER TABLE public.scratch_cards ADD COLUMN config_version TEXT NOT NULL DEFAULT '1.0.0';
+    END IF;
+END $$;
 
 -- 3. Função de sorteio (Security Definer para rodar no servidor)
 CREATE OR REPLACE FUNCTION public.draw_scratch_card(_user_id UUID, _card_id UUID)
@@ -511,7 +528,7 @@ END $$;
 
 -- 1. Tabelas Base Financeiras
 
-CREATE TABLE public.wallets (
+CREATE TABLE IF NOT EXISTS public.wallets (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     balance decimal(12,2) NOT NULL DEFAULT 0.00,
@@ -521,7 +538,7 @@ CREATE TABLE public.wallets (
     CONSTRAINT positive_balance CHECK (balance >= 0)
 );
 
-CREATE TABLE public.deposits (
+CREATE TABLE IF NOT EXISTS public.deposits (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     amount decimal(12,2) NOT NULL,
@@ -532,7 +549,7 @@ CREATE TABLE public.deposits (
     updated_at timestamptz DEFAULT now() NOT NULL
 );
 
-CREATE TABLE public.payment_transactions (
+CREATE TABLE IF NOT EXISTS public.payment_transactions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     deposit_id uuid REFERENCES public.deposits(id) ON DELETE SET NULL,
@@ -548,7 +565,7 @@ CREATE TABLE public.payment_transactions (
     updated_at timestamptz DEFAULT now() NOT NULL
 );
 
-CREATE TABLE public.wallet_transactions (
+CREATE TABLE IF NOT EXISTS public.wallet_transactions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     type text NOT NULL CHECK (type IN ('DEPOSIT', 'PURCHASE', 'PRIZE', 'REFUND', 'ADJUSTMENT')),
@@ -561,7 +578,7 @@ CREATE TABLE public.wallet_transactions (
     created_at timestamptz DEFAULT now() NOT NULL
 );
 
-CREATE TABLE public.webhook_events (
+CREATE TABLE IF NOT EXISTS public.webhook_events (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     provider text NOT NULL,
     event_id text,
@@ -839,8 +856,8 @@ DECLARE
     v_card_tech UUID;
 BEGIN
     -- 1. MEGA PIX
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Mega PIX Instantâneo', 'mega-pix', 'Prêmios em dinheiro direto na sua conta!', 5.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Mega PIX Instantâneo', 'mega-pix', 'Prêmios em dinheiro direto na sua conta!', 5.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_pix;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -857,8 +874,8 @@ BEGIN
     (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true);
 
     -- 2. COZINHA DOS SONHOS
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Cozinha dos Sonhos', 'cozinha-sonhos', 'Equipe sua cozinha com os melhores eletrodomésticos.', 15.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Cozinha dos Sonhos', 'cozinha-sonhos', 'Equipe sua cozinha com os melhores eletrodomésticos.', 15.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_cozinha;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -875,8 +892,8 @@ BEGIN
     (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true);
 
     -- 3. LAR PREMIUM
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Lar Premium', 'lar-premium', 'Transforme sua casa com prêmios incríveis!', 25.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Lar Premium', 'lar-premium', 'Transforme sua casa com prêmios incríveis!', 25.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_lar;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -893,8 +910,8 @@ BEGIN
     (v_card_lar, 'Crédito R$ 50', 50.00, 0.05, 200, 200, true);
 
     -- 4. SORTE TECH
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Sorte Tech', 'sorte-tech', 'O melhor da tecnologia na sua mão.', 10.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Sorte Tech', 'sorte-tech', 'O melhor da tecnologia na sua mão.', 10.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_tech;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -1137,19 +1154,19 @@ BEGIN
         -- RLS
         ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
 
-        CREATE POLICY "Users can view their own withdrawals"
+        CREATE POLICY "withdrawals_select_own"
         ON public.withdrawals FOR SELECT
         TO authenticated
         USING (auth.uid() = user_id);
 
-        CREATE POLICY "Users can create withdrawal requests"
+        CREATE POLICY "withdrawals_insert_own"
         ON public.withdrawals FOR INSERT
         TO authenticated
         WITH CHECK (auth.uid() = user_id);
 
-        CREATE POLICY "Staff can manage all withdrawals"
+        CREATE POLICY "withdrawals_staff_manage"
         ON public.withdrawals FOR ALL
         TO authenticated
-        USING (public.has_role(auth.uid(), 'SUPER_ADMIN') OR public.has_role(auth.uid(), 'ADMIN') OR public.has_role(auth.uid(), 'FINANCEIRO'));
+        USING (public.is_staff(auth.uid()) OR public.has_role(auth.uid(), 'FINANCEIRO'));
     END IF;
 END $$;
