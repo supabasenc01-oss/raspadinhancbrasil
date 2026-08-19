@@ -17,6 +17,7 @@ import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GanhadoresRouteImport } from './routes/ganhadores'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as JogoResponsavelRouteImport } from './routes/jogo-responsavel'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RaspadinhasRouteImport } from './routes/raspadinhas'
@@ -77,6 +78,11 @@ const GanhadoresRoute = GanhadoresRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JogoResponsavelRoute = JogoResponsavelRouteImport.update({
+  id: '/jogo-responsavel',
+  path: '/jogo-responsavel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
+  '/jogo-responsavel': typeof JogoResponsavelRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
+  '/jogo-responsavel': typeof JogoResponsavelRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
+  '/jogo-responsavel': typeof JogoResponsavelRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/ganhadores'
     | '/home'
+    | '/jogo-responsavel'
     | '/login'
     | '/privacidade'
     | '/raspadinhas'
@@ -338,6 +348,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/ganhadores'
     | '/home'
+    | '/jogo-responsavel'
     | '/login'
     | '/privacidade'
     | '/raspadinhas'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/ganhadores'
     | '/home'
+    | '/jogo-responsavel'
     | '/login'
     | '/privacidade'
     | '/raspadinhas'
@@ -403,6 +415,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   GanhadoresRoute: typeof GanhadoresRoute
   HomeRoute: typeof HomeRoute
+  JogoResponsavelRoute: typeof JogoResponsavelRoute
   LoginRoute: typeof LoginRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   RaspadinhasRoute: typeof RaspadinhasRoute
@@ -468,6 +481,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jogo-responsavel': {
+      id: '/jogo-responsavel'
+      path: '/jogo-responsavel'
+      fullPath: '/jogo-responsavel'
+      preLoaderRoute: typeof JogoResponsavelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -688,6 +708,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   GanhadoresRoute: GanhadoresRoute,
   HomeRoute: HomeRoute,
+  JogoResponsavelRoute: JogoResponsavelRoute,
   LoginRoute: LoginRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   RaspadinhasRoute: RaspadinhasRoute,
