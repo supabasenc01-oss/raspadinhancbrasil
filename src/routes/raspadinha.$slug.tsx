@@ -31,6 +31,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getWalletBalance } from "@/lib/payments.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { useHydrated } from "@/hooks/useHydrated";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
   component: ScratchCardDetailPage,
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/raspadinha/$slug")({
 
 function ScratchCardDetailPage() {
   const { slug } = Route.useParams();
+  const hydrated = useHydrated();
   const { user, isAuthenticated } = useAuth();
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
   const fetchBalance = useServerFn(getWalletBalance);
@@ -221,13 +223,21 @@ function ScratchCardDetailPage() {
                 </div>
               ) : (
                 <div className="w-full space-y-6">
-                  <ScratchArea 
-                    coverImage={card.image_url ?? null} 
-                    resultImage={gameResult?.prize?.image_url ?? null}
-                    onComplete={handleScratchComplete}
-                    isAutoRevealing={isAutoRevealing}
-                    isWinner={gameResult?.result_type === "WIN"}
-                  />
+                  <div className="w-full max-w-[min(450px,92vw)] mx-auto">
+                    {hydrated ? (
+                      <ScratchArea 
+                        coverImage={card.image_url ?? null} 
+                        resultImage={gameResult?.prize?.image_url ?? null}
+                        onComplete={handleScratchComplete}
+                        isAutoRevealing={isAutoRevealing}
+                        isWinner={gameResult?.result_type === "WIN"}
+                      />
+                    ) : (
+                      <div className="aspect-[4/3] w-full bg-surface rounded-3xl animate-pulse flex items-center justify-center">
+                         <Loader2 className="size-8 animate-spin text-primary/30" />
+                      </div>
+                    )}
+                  </div>
 
                   {gameState === "SCRATCHING" && (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
