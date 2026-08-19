@@ -614,21 +614,33 @@ ALTER TABLE public.payment_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.wallet_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view their own wallet" ON public.wallets
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'wallets' AND policyname = 'Users can view their own wallet') THEN
+        CREATE POLICY "Users can view their own wallet" ON public.wallets
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'deposits' AND policyname = 'Users can view their own deposits') THEN
+        CREATE POLICY "Users can view their own deposits" ON public.deposits
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
 
-CREATE POLICY "Users can view their own deposits" ON public.deposits
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'payment_transactions' AND policyname = 'Users can view their own payment transactions') THEN
+        CREATE POLICY "Users can view their own payment transactions" ON public.payment_transactions
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
 
-CREATE POLICY "Users can view their own payment transactions" ON public.payment_transactions
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'wallet_transactions' AND policyname = 'Users can view their own wallet transactions') THEN
+        CREATE POLICY "Users can view their own wallet transactions" ON public.wallet_transactions
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
 
-CREATE POLICY "Users can view their own wallet transactions" ON public.wallet_transactions
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
-
--- Webhook events são inseridos por sistemas externos ou handlers, leitura restrita a admin
-CREATE POLICY "Admins can view webhook events" ON public.webhook_events
-    FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ADMIN'));
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'webhook_events' AND policyname = 'Admins can view webhook events') THEN
+        CREATE POLICY "Admins can view webhook events" ON public.webhook_events
+            FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
+    END IF;
+END $$;
 
 -- 4. Funções e Triggers
 
