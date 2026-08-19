@@ -40,6 +40,14 @@ export function useSettings() {
     ogImageUrl,
     googleAnalyticsId,
     facebookPixelId,
-    footerExternalLink
+    footerExternalLink,
+    showHeroBanners: getSetting("show_hero_banners", "true") === "true",
+    showWinnersTicker: getSetting("show_winners_ticker", "true") === "true",
+    showScratchDemo: getSetting("show_scratch_demo", "true") === "true",
+    showScratchCards: getSetting("show_scratch_cards", "true") === "true",
+    showHowToPlay: getSetting("show_how_to_play", "true") === "true",
+    showLatestWinners: getSetting("show_latest_winners", "true") === "true",
+    showTestimonials: getSetting("show_testimonials", "true") === "true",
+    showAppDownload: getSetting("show_app_download", "true") === "true",
   };
 }

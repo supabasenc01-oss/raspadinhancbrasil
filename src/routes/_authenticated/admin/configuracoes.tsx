@@ -104,6 +104,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="seo" className="gap-2"><Search className="size-4" /> SEO & Meta</TabsTrigger>
           <TabsTrigger value="integrations" className="gap-2"><Code className="size-4" /> Integrações</TabsTrigger>
           <TabsTrigger value="links" className="gap-2"><LinkIcon className="size-4" /> Links Rodapé</TabsTrigger>
+          <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -238,6 +239,42 @@ function AdminSettingsPage() {
                   placeholder="https://www.ncbrasil.com.br"
                 />
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="layout">
+          <Card className="bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Layout da Página Inicial</CardTitle>
+              <CardDescription>Habilite ou desabilite seções da Home.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {[
+                { key: "show_hero_banners", label: "Banners Rotativos (Hero)" },
+                { key: "show_winners_ticker", label: "Barra de Ganhadores Ao Vivo" },
+                { key: "show_scratch_demo", label: "Área de Demonstração Interativa" },
+                { key: "show_scratch_cards", label: "Grade de Raspadinhas" },
+                { key: "show_how_to_play", label: "Seção 'Como Jogar'" },
+                { key: "show_latest_winners", label: "Bloco de Últimos Ganhadores" },
+                { key: "show_testimonials", label: "Seção de Depoimentos" },
+                { key: "show_app_download", label: "Banner de Download do App" },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                  <div className="space-y-0.5">
+                    <Label htmlFor={item.key} className="text-base">{item.label}</Label>
+                  </div>
+                  <div className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id={item.key} 
+                      checked={values[item.key] === "true"} 
+                      onChange={(e) => handleChange(item.key, e.target.checked.toString())}
+                      className="size-5 accent-primary cursor-pointer"
+                    />
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>
