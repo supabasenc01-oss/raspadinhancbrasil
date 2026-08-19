@@ -194,7 +194,7 @@ function AdminBannersPage() {
         reader.onload = () => {
           const result = reader.result;
           if (typeof result === 'string') {
-            resolve(result.split(',')[1]);
+            resolve(result.split(',')[1] || "");
           } else {
             resolve("");
           }

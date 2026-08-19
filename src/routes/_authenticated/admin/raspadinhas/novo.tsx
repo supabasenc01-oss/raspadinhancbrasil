@@ -120,9 +120,9 @@ function NewScratchCardWizard() {
       const reader = new FileReader();
       const base64Promise = new Promise<string>((resolve) => {
         reader.onload = () => {
-          const result = reader.result;
-          if (typeof result === 'string') {
-            resolve(result.split(',')[1]);
+          const res = reader.result;
+          if (typeof res === 'string') {
+            resolve(res.split(',')[1] || "");
           } else {
             resolve("");
           }
