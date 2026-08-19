@@ -5,35 +5,38 @@ export function useSettings() {
   const { data: settings, isLoading } = useQuery(systemSettingsQuery);
 
   const getSetting = (key: string, defaultValue: string = ""): string => {
-    if (!settings) return defaultValue;
+    if (!settings || !Array.isArray(settings)) return defaultValue;
     const setting = settings.find((s: any) => s.key === key);
     if (!setting) return defaultValue;
     
     let val = setting.value;
     if (val === null || val === undefined) return defaultValue;
     
-    // If it's already a string, we still check if it's a JSON-stringified string (common with JSONB)
+    // JSONB might return the value as an object or a stringified JSON
     if (typeof val === 'string') {
       let cleanVal = val.trim();
       
-      // Handle escaped quotes from database/JSONB
-      if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) {
+      // If it looks like a JSON string, try to parse it
+      if ((cleanVal.startsWith('"') && cleanVal.endsWith('"')) || 
+          (cleanVal.startsWith('{') && cleanVal.endsWith('}')) || 
+          (cleanVal.startsWith('[') && cleanVal.endsWith(']'))) {
         try {
           const parsed = JSON.parse(cleanVal);
-          if (typeof parsed === 'string') cleanVal = parsed;
+          // If the result is a string, use it. If it's an object/array, we might need different handling,
+          // but for settings they are usually simple strings or flags.
+          if (typeof parsed === 'string') return parsed;
+          if (typeof parsed === 'number' || typeof parsed === 'boolean') return String(parsed);
+          // If it's still an object, stringify it back or return as is depending on use case
+          return typeof parsed === 'object' ? JSON.stringify(parsed) : String(parsed);
         } catch (e) {
-          cleanVal = cleanVal.replace(/^"|"$/g, '');
-        }
+          // If parsing fails, fall back to simple quote removal if applicable
+          return cleanVal.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+        Part: }
       }
-      
-      // Double check for cases where JSON.parse might not have caught internal escapes
-      cleanVal = cleanVal.replace(/\\"/g, '"');
-      
-      if (cleanVal === "null" || cleanVal === "") return defaultValue;
       return cleanVal;
     }
     
-    // For other types (number, boolean, object), convert to string
+    // For already parsed JSONB objects/numbers/booleans
     return String(val);
   };
 

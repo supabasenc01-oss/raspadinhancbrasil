@@ -50,17 +50,26 @@ function AdminSettingsPage() {
   const [isUploading, setIsUploading] = useState<string | null>(null);
 
   useEffect(() => {
-    if (settings) {
+    if (settings && Array.isArray(settings)) {
       const initialValues: Record<string, string> = {};
       settings.forEach((s: any) => {
-        // Handle JSONB value from database
+        if (!s || !s.key) return;
+        
         let val = s.value;
-        if (typeof val !== 'string') {
+        if (val === null || val === undefined) {
+          val = "";
+        } else if (typeof val !== 'string') {
           val = JSON.stringify(val);
         }
+        
         // Remove quotes if it's a simple string stored in JSONB
         if (val.startsWith('"') && val.endsWith('"')) {
-          val = val.slice(1, -1);
+          try {
+            const parsed = JSON.parse(val);
+            if (typeof parsed === 'string') val = parsed;
+          } catch (e) {
+            val = val.slice(1, -1);
+          }
         }
         initialValues[s.key] = val;
       });
