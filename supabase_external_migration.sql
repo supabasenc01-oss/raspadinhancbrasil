@@ -1121,7 +1121,9 @@ BEGIN
         GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO anon;
     END IF;
 END $$;
-CREATE TABLE IF NOT EXISTS public.withdrawals (
+-- Removendo criação duplicada de withdrawals para evitar conflitos de RLS
+-- CREATE TABLE IF NOT EXISTS public.withdrawals (
+
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
