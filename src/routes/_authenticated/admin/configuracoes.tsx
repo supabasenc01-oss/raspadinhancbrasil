@@ -113,7 +113,7 @@ function AdminSettingsPage() {
               <CardTitle className="text-lg">Informações Básicas</CardTitle>
               <CardDescription>Nome e identidade visual da plataforma.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="grid gap-2">
                 <Label htmlFor="site_name">Título do Site</Label>
                 <Input 
@@ -123,32 +123,73 @@ function AdminSettingsPage() {
                   placeholder="Ex: RaspaPremium"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="logo_url">URL do Logotipo</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    id="logo_url" 
-                    value={values["logo_url"] || ""} 
-                    onChange={(e) => handleChange("logo_url", e.target.value)}
-                    placeholder="https://exemplo.com/logo.png"
-                  />
-                  {values["logo_url"] && (
-                    <div className="size-10 rounded border border-border bg-white p-1 shrink-0">
-                      <img src={values["logo_url"]} className="w-full h-full object-contain" alt="Preview" />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-4">
+                  <Label>Logotipo do Site</Label>
+                  <div className="flex flex-col gap-4">
+                    <div className="aspect-video w-full rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-4 relative overflow-hidden group">
+                      {values["logo_url"] ? (
+                        <>
+                          <img src={values["logo_url"]} className="max-h-full max-w-full object-contain z-10" alt="Logo preview" />
+                          <button 
+                            onClick={() => handleChange("logo_url", "")}
+                            className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
+                          >
+                            Remover Logotipo
+                          </button>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <ImageIcon className="size-8" />
+                          <span className="text-xs">Nenhum logo carregado</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <div className="space-y-2">
+                      <Label htmlFor="logo_url" className="text-xs">URL Direta do Logo</Label>
+                      <Input 
+                        id="logo_url" 
+                        value={values["logo_url"] || ""} 
+                        onChange={(e) => handleChange("logo_url", e.target.value)}
+                        placeholder="https://exemplo.com/logo.png"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <Label>Favicon do Site</Label>
+                  <div className="flex flex-col gap-4">
+                    <div className="size-20 rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-2 relative overflow-hidden group mx-auto sm:mx-0">
+                      {values["favicon_url"] ? (
+                        <>
+                          <img src={values["favicon_url"]} className="size-10 object-contain z-10" alt="Favicon preview" />
+                          <button 
+                            onClick={() => handleChange("favicon_url", "")}
+                            className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white text-[10px] font-bold"
+                          >
+                            Remover
+                          </button>
+                        </>
+                      ) : (
+                        <ImageIcon className="size-6 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="favicon_url" className="text-xs">URL do Favicon</Label>
+                      <Input 
+                        id="favicon_url" 
+                        value={values["favicon_url"] || ""} 
+                        onChange={(e) => handleChange("favicon_url", e.target.value)}
+                        placeholder="https://exemplo.com/favicon.ico"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="favicon_url">URL do Favicon</Label>
-                <Input 
-                  id="favicon_url" 
-                  value={values["favicon_url"] || ""} 
-                  onChange={(e) => handleChange("favicon_url", e.target.value)}
-                  placeholder="https://exemplo.com/favicon.ico"
-                />
-              </div>
             </CardContent>
+
           </Card>
         </TabsContent>
 
