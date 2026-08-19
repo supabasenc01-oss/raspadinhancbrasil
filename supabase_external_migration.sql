@@ -9,6 +9,8 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'scratch_card_status') THEN
         CREATE TYPE public.scratch_card_status AS ENUM ('DRAFT','ACTIVE','PAUSED','FINISHED','ARCHIVED');
     END IF;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
 END $$;
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()
