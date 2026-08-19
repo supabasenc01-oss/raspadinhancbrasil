@@ -303,7 +303,7 @@ GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;-- ETAPA 2: Mot
 -- 1. Tabelas Adicionais e Ajustes
 
 -- Tabela de resultados de raspadinhas (Idempotência e Histórico)
-CREATE TABLE public.scratch_card_results (
+CREATE TABLE IF NOT EXISTS public.scratch_card_results (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     scratch_card_id UUID NOT NULL REFERENCES public.scratch_cards(id) ON DELETE CASCADE,
