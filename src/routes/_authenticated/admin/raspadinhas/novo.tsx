@@ -34,6 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/format";
+import { uploadPlatformFile } from "@/lib/storage";
 
 const prizeSchema = z.object({
   title: z.string().min(2, "Título é obrigatório"),
