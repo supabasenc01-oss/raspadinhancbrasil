@@ -151,6 +151,7 @@ function AdminSettingsPage() {
         }
       });
 
+      if (!result) throw new Error("O servidor não retornou resposta");
       if (result.error) throw new Error(result.error);
       
       if (result.path) {
