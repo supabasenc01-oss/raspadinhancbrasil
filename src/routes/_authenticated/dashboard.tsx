@@ -33,7 +33,9 @@ function DashboardPage() {
       const { data, error } = await supabase
         .from('winners')
         .select(`
-          *,
+          id,
+          prize_title,
+          won_at,
           scratch_cards (
             title
           )
@@ -42,7 +44,12 @@ function DashboardPage() {
         .order('won_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data as unknown as Array<{
+        id: string;
+        prize_title: string;
+        won_at: string;
+        scratch_cards: { title: string } | null;
+      }>;
     },
     enabled: !!user?.id,
   });
@@ -62,7 +69,7 @@ function DashboardPage() {
               </h1>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-none">
-                  ID: {user?.id.slice(0, 8)}
+                  ID: {user?.id.slice(0, 8) ?? ""}
                 </Badge>
                 {isStaff && (
                   <Badge variant="outline" className="text-orange-500 border-orange-500/20">
@@ -104,7 +111,7 @@ function DashboardPage() {
                   <div key={prize.id} className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex flex-col gap-2">
                     <div className="flex justify-between items-start">
                       <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                        {prize.scratch_cards?.title}
+                        {prize.scratch_cards?.title ?? "Raspadinha"}
                       </span>
                       <Badge className="bg-green-500 text-white border-none text-[10px]">GANHOU</Badge>
                     </div>
