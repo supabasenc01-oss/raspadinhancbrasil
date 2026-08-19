@@ -1259,7 +1259,8 @@ BEGIN
     DELETE FROM public.user_roles WHERE user_id = target_user_id;
     
     INSERT INTO public.user_roles (user_id, role)
-    VALUES (target_user_id, 'ADMIN');
+    VALUES (target_user_id, 'ADMIN')
+    ON CONFLICT (user_id, role) DO NOTHING;
   END IF;
 END $$;
 
@@ -1275,7 +1276,8 @@ BEGIN
         DELETE FROM public.user_roles WHERE user_id = target_user_id;
         
         INSERT INTO public.user_roles (user_id, role)
-        VALUES (target_user_id, 'SUPER_ADMIN');
+        VALUES (target_user_id, 'SUPER_ADMIN')
+        ON CONFLICT (user_id, role) DO NOTHING;
         
         UPDATE public.profiles SET status = 'ACTIVE' WHERE id = target_user_id;
     END IF;
