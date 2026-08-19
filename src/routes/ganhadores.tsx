@@ -12,8 +12,16 @@ export const Route = createFileRoute('/ganhadores')({
 
 async function fetchWinners() {
   const { data, error } = await supabase
-    .from('admin_logs')
-    .select('*')
+    .from('winners')
+    .select(`
+      id,
+      amount,
+      created_at,
+      prize_id,
+      profiles (
+        display_name
+      )
+    `)
     .order('created_at', { ascending: false })
     .limit(50);
   
@@ -48,30 +56,44 @@ function WinnersPage() {
             ))}
           </div>
         ) : winners && winners.length > 0 ? (
-          <div className="grid gap-4">
-            {winners.map((winner) => (
-              <div 
-                key={winner.id} 
-                className="surface-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-accent"
-              >
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <div className="size-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent">
-                    <Medal className="size-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {winners.map((winner: any) => {
+              const profile = winner.profiles;
+              const name = profile?.display_name || 'Ganhador';
+              const abbreviatedName = name.split(' ').map((n: string, i: number) => i === 0 ? n : n[0] + '.').join(' ');
+
+              return (
+                <div 
+                  key={winner.id} 
+                  className="surface-card p-6 flex flex-col gap-6 hover-lift relative overflow-hidden group"
+                >
+                  <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Trophy className="size-12" />
                   </div>
-                  <div>
-                    <div className="text-lg font-bold">{(winner as any).display_name || 'Usuário'}</div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="size-3" /> {formatDate(winner.created_at)}
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="size-14 rounded-2xl bg-gradient-brand flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
+                      <Medal className="size-8" />
+                    </div>
+                    <div>
+                      <div className="text-xl font-black">{abbreviatedName}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="size-3" /> {formatDate(winner.created_at)}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-3xl font-display font-black text-primary drop-shadow-sm">
+                      {formatCurrency(winner.amount || 0)}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
+                      PRÊMIO REAL • INSTANTÂNEO
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex flex-col items-center sm:items-end w-full sm:w-auto bg-accent/5 sm:bg-transparent p-3 sm:p-0 rounded-xl">
-                  <div className="text-2xl font-black text-primary">{formatCurrency((winner as any).amount || 0)}</div>
-                  <div className="text-xs uppercase tracking-tighter text-muted-foreground font-bold">GANHOU COM PRÊMIO REAL</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 border-2 border-dashed border-border rounded-3xl">

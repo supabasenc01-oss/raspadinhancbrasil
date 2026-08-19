@@ -10,6 +10,7 @@ import {
   Clock,
   History
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 import { PublicPage, PageHero } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';
@@ -27,8 +28,8 @@ function HomePage() {
     <PublicPage>
       {/* Hero Section */}
       <PageHero 
-        title="ETAPA 4 — PAINEL ADMINISTRATIVO PROFISSIONAL"
-        description="Painel administrativo completo com dashboard, gestão de usuários, raspadinhas, prêmios, banners, logs e financeiro."
+        title="ETAPA 5 — EXPERIÊNCIA VISUAL PREMIUM 2026"
+        description="Aperfeiçoando a experiência visual com animações de ponta, motor de raspagem interativo e design ultra-moderno."
         centered
       >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
@@ -70,15 +71,20 @@ function HomePage() {
         </div>
       </div>
 
-      {/* Active Scratch Cards */}
+      {/* Featured & Categories */}
       <section className="py-20 px-4">
         <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-display font-black tracking-tight">
-                RASPADINHAS <span className="text-primary">POPULARES</span>
+              <h2 className="text-3xl font-display font-black tracking-tight uppercase">
+                EM <span className="text-primary">DESTAQUE</span>
               </h2>
-              <p className="text-muted-foreground">Escolha a sua favorita e tente a sorte agora mesmo.</p>
+              <div className="flex flex-wrap gap-2 pt-2">
+                <Badge className="cursor-pointer bg-primary text-primary-foreground">TUDO</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-primary/10">POPULARES</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-primary/10">NOVIDADES</Badge>
+                <Badge variant="outline" className="cursor-pointer hover:bg-primary/10 text-accent border-accent/30">GRÁTIS</Badge>
+              </div>
             </div>
             <Button variant="ghost" className="group" asChild>
               <Link to="/raspadinhas">
@@ -158,9 +164,9 @@ function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { name: "João M.***", prize: "Raspadinha Gold", amount: 500, time: "2 min atrás" },
-              { name: "Maria S.***", prize: "Sorte Instantânea", amount: 50, time: "5 min atrás" },
-              { name: "Pedro R.***", prize: "Mega Raspa", amount: 1000, time: "12 min atrás" },
+              { name: "Carlos A.", prize: "Raspadinha Gold", amount: 500, time: "2 min atrás" },
+              { name: "Ana P.", prize: "Sorte Instantânea", amount: 50, time: "5 min atrás" },
+              { name: "Beto F.", prize: "Mega Raspa", amount: 1000, time: "12 min atrás" },
             ].map((winner, i) => (
               <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-surface border border-border/50 hover:border-accent/30 transition-colors group">
                 <div className="flex items-center gap-4">

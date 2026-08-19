@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { PublicPage } from "@/components/layout/PublicPage";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ function ScratchCardDetailPage() {
   const [gameResult, setGameResult] = useState<{
     result_type: "WIN" | "LOSE";
     prize?: { title: string; value: number; image_url: string | null };
+    isBigWin?: boolean;
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -64,9 +66,11 @@ function ScratchCardDetailPage() {
     try {
       const result = await playScratchCard({ data: { cardId: card.id } });
       if (result.success) {
-        setGameResult(result);
+        // Define Big Win (e.g., value > 1000)
+        const isBigWin = result.result_type === "WIN" && (result.prize?.value ?? 0) >= 1000;
+        setGameResult({ ...result, isBigWin });
         setGameState("SCRATCHING");
-        refetchBalance(); // Update balance after purchase/win
+        refetchBalance(); 
       } else {
         toast.error("Não foi possível iniciar a jogada.");
       }
@@ -80,14 +84,20 @@ function ScratchCardDetailPage() {
   const handleScratchComplete = () => {
     setGameState("REVEALED");
     if (gameResult?.result_type === "WIN") {
-      triggerConfetti();
+      triggerConfetti(gameResult?.isBigWin);
     }
   };
 
-  const triggerConfetti = () => {
-    const duration = 3 * 1000;
+  const triggerConfetti = (isBigWin = false) => {
+    const duration = (isBigWin ? 6 : 3) * 1000;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    const defaults = { 
+      startVelocity: isBigWin ? 45 : 30, 
+      spread: 360, 
+      ticks: isBigWin ? 100 : 60, 
+      zIndex: 0,
+      colors: isBigWin ? ['#D4AF37', '#FFFFFF', '#00FFFF'] : undefined
+    };
 
     const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
@@ -98,9 +108,13 @@ function ScratchCardDetailPage() {
         return clearInterval(interval);
       }
 
-      const particleCount = 50 * (timeLeft / duration);
+      const particleCount = (isBigWin ? 100 : 50) * (timeLeft / duration);
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      
+      if (isBigWin && Math.random() > 0.5) {
+        confetti({ ...defaults, particleCount: 20, origin: { x: 0.5, y: 0.5 } });
+      }
     }, 250);
   };
 
@@ -207,15 +221,23 @@ function ScratchCardDetailPage() {
                     resultImage={gameResult?.prize?.image_url ?? null}
                     onComplete={handleScratchComplete}
                     isAutoRevealing={isAutoRevealing}
+                    isWinner={gameResult?.result_type === "WIN"}
                   />
 
                   {gameState === "SCRATCHING" && (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button 
-                        variant="outline" 
+                        size="lg"
+                        className="h-14 bg-gradient-brand text-primary-foreground font-black shadow-lg shadow-primary/20"
                         onClick={() => setIsAutoRevealing(true)}
+                        disabled={isAutoRevealing}
                       >
-                        <Sparkles className="size-4 mr-2" /> REVELAR TUDO
+                        {isAutoRevealing ? (
+                          <Loader2 className="size-5 animate-spin mr-2" />
+                        ) : (
+                          <Sparkles className="size-5 mr-2" />
+                        )}
+                        RASPAR AUTOMATICAMENTE
                       </Button>
                     </div>
                   )}
@@ -223,13 +245,23 @@ function ScratchCardDetailPage() {
                   {gameState === "REVEALED" && (
                     <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
                       {gameResult?.result_type === "WIN" ? (
-                        <div className="space-y-2">
-                          <h3 className="text-3xl font-black text-gradient-brand tracking-tighter">PARABÉNS!</h3>
+                        <motion.div 
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="space-y-2"
+                        >
+                          <h3 className={`text-3xl font-black tracking-tighter ${gameResult.isBigWin ? 'text-gradient-brand animate-bounce' : 'text-primary'}`}>
+                            {gameResult.isBigWin ? '👑 GRANDE PRÊMIO! 👑' : 'PARABÉNS!'}
+                          </h3>
                           <p className="text-lg">Você ganhou <span className="font-bold">{gameResult.prize?.title}</span></p>
-                          <div className="text-4xl font-display font-black text-primary mt-4">
+                          <motion.div 
+                            animate={gameResult.isBigWin ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className="text-4xl font-display font-black text-primary mt-4 glow-ring inline-block px-6 py-2 rounded-2xl bg-primary/5"
+                          >
                             {formatCurrency(gameResult.prize?.value ?? 0)}
-                          </div>
-                        </div>
+                          </motion.div>
+                        </motion.div>
                       ) : (
                         <div className="space-y-2 py-4">
                           <h3 className="text-xl font-bold text-muted-foreground">Não foi desta vez...</h3>
