@@ -537,6 +537,44 @@ export type Database = {
         }
         Relationships: []
       }
+      winners: {
+        Row: {
+          created_at: string
+          id: string
+          prize_title: string
+          prize_value: number
+          scratch_card_id: string
+          user_id: string
+          winner_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prize_title: string
+          prize_value: number
+          scratch_card_id: string
+          user_id: string
+          winner_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prize_title?: string
+          prize_value?: number
+          scratch_card_id?: string
+          user_id?: string
+          winner_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "winners_scratch_card_id_fkey"
+            columns: ["scratch_card_id"]
+            isOneToOne: false
+            referencedRelation: "scratch_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

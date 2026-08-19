@@ -12,7 +12,9 @@ import {
   Ticket, 
   Trophy, 
   Zap,
-  Wallet
+  Wallet,
+  Gift,
+  History
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -22,12 +24,13 @@ import { PublicPage } from "@/components/layout/PublicPage";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScratchArea } from "@/components/scratch/ScratchArea";
-import { scratchCardBySlugQuery } from "@/lib/queries";
+import { scratchCardBySlugQuery, ScratchCardPrize } from "@/lib/queries";
 import { playScratchCard } from "@/lib/game.functions";
 import { formatCurrency } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import { getWalletBalance } from "@/lib/payments.functions";
 import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
   component: ScratchCardDetailPage,
@@ -306,24 +309,32 @@ function ScratchCardDetailPage() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Prêmios possíveis</h4>
-                {/* We would fetch prizes for this card here */}
+                <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Gift className="size-4" />
+                  Prêmios em jogo
+                </h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-border/50">
-                    <div className="flex items-center gap-3">
-                      <Trophy className="size-4 text-primary" />
-                      <span className="text-sm font-medium">Prêmio Principal</span>
+                  {(card as any).scratch_card_prizes?.map((prize: ScratchCardPrize) => (
+                    <div key={prize.id} className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-border/50">
+                      <div className="flex items-center gap-3">
+                        <Trophy className={`size-4 ${prize.value >= 1000 ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <span className="text-sm font-medium">{prize.title}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-primary">{formatCurrency(prize.value)}</div>
+                        <div className="text-[10px] text-muted-foreground">{prize.quantity_remaining} restantes</div>
+                      </div>
                     </div>
-                    <span className="text-sm font-bold text-primary">R$ 5.000,00</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-border/50">
-                    <div className="flex items-center gap-3">
-                      <Sparkles className="size-4 text-accent" />
-                      <span className="text-sm font-medium">Prêmios Secundários</span>
-                    </div>
-                    <span className="text-sm font-bold text-primary">Até R$ 1.000,00</span>
-                  </div>
+                  ))}
                 </div>
+              </div>
+
+              <div className="space-y-4 pt-6 border-t border-border/50">
+                <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <History className="size-4" />
+                  Últimos ganhadores
+                </h4>
+                <WinnersList cardId={card.id} />
               </div>
 
               <div className="pt-4 border-t border-border/50">
@@ -356,5 +367,54 @@ function ScratchCardDetailPage() {
         </div>
       </div>
     </PublicPage>
+  );
+}
+
+function WinnersList({ cardId }: { cardId: string }) {
+  const { data: winners, isLoading } = useQuery({
+    queryKey: ['card-winners', cardId],
+    queryFn: async () => {
+      const { data: winnersData, error: winnersError } = await (supabase
+        .from('winners' as any)
+        .select('*')
+        .eq('scratch_card_id', cardId)
+        .order('created_at', { ascending: false })
+        .limit(5) as any);
+      
+      if (winnersError) throw winnersError;
+      return winnersData as any[];
+    },
+  });
+
+  if (isLoading) return <div className="h-20 animate-pulse bg-surface rounded-xl" />;
+
+  if (!winners || winners.length === 0) {
+    return (
+      <div className="p-4 text-center rounded-xl bg-surface/30 border border-dashed border-border/50">
+        <p className="text-xs text-muted-foreground">Nenhum ganhador ainda. Seja o primeiro!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {winners.map((winner) => (
+        <div key={winner.id} className="flex items-center justify-between p-2 rounded-lg bg-surface/40">
+          <div className="flex items-center gap-2">
+            <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+              {winner.winner_name.substring(0, 1)}
+            </div>
+            <div>
+              <div className="text-xs font-bold">{winner.winner_name}</div>
+              <div className="text-[9px] text-muted-foreground">{new Date(winner.created_at).toLocaleDateString()}</div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-xs font-black text-primary">{formatCurrency(winner.prize_value)}</div>
+            <div className="text-[8px] uppercase text-muted-foreground">{winner.prize_title}</div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
