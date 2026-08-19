@@ -9,6 +9,11 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => {
+    return {
+      redirect: (search["redirect"] as string) || undefined,
+    };
+  },
   head: () => ({
     meta: [
       { title: "Entrar — RaspaPremium" },
@@ -28,7 +33,10 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!loading && isAuthenticated) navigate({ to: "/dashboard", replace: true });
+    if (!loading && isAuthenticated) {
+      const search = Route.useSearch() as { redirect?: string };
+      navigate({ to: search.redirect || "/dashboard", replace: true });
+    }
   }, [isAuthenticated, loading, navigate]);
 
   async function handleSubmit(event: React.FormEvent) {
@@ -44,7 +52,9 @@ function LoginPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    navigate({ to: "/dashboard", replace: true });
+    
+    const search = Route.useSearch() as { redirect?: string };
+    navigate({ to: search.redirect || "/dashboard", replace: true });
   }
 
   return (
