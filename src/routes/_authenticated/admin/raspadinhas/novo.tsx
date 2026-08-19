@@ -244,17 +244,80 @@ function NewScratchCardWizard() {
             {currentStep === 1 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="aspect-[3/4] rounded-2xl bg-primary/5 border-2 border-dashed border-border flex flex-col items-center justify-center p-6 text-center">
-                    <ImageIcon className="size-10 text-muted-foreground mb-4" />
-                    <p className="text-sm font-medium">Imagem de Capa</p>
-                    <p className="text-xs text-muted-foreground mt-1">Visível no catálogo</p>
-                    <Button variant="outline" size="sm" className="mt-4" type="button">Selecionar Arquivo</Button>
+                  <div className="aspect-[3/4] rounded-2xl bg-primary/5 border-2 border-dashed border-border flex flex-col items-center justify-center p-6 text-center relative overflow-hidden group">
+                    {form.watch("image_url") ? (
+                      <>
+                        <img 
+                          src={form.watch("image_url") || ""} 
+                          className="absolute inset-0 w-full h-full object-cover z-10" 
+                          alt="Capa preview" 
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => form.setValue("image_url", "")}
+                          className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
+                        >
+                          Trocar Capa
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {isUploading === 'image_url' ? (
+                          <Loader2 className="size-10 animate-spin text-primary" />
+                        ) : (
+                          <ImageIcon className="size-10 text-muted-foreground mb-4" />
+                        )}
+                        <p className="text-sm font-medium">Imagem de Capa</p>
+                        <p className="text-xs text-muted-foreground mt-1">Visível no catálogo</p>
+                        <Button variant="outline" size="sm" className="mt-4 relative" type="button" disabled={isUploading === 'image_url'}>
+                          Selecionar Arquivo
+                          <input 
+                            type="file" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'image_url')}
+                          />
+                        </Button>
+                      </>
+                    )}
                   </div>
-                  <div className="aspect-[3/4] rounded-2xl bg-primary/5 border-2 border-dashed border-border flex flex-col items-center justify-center p-6 text-center">
-                    <ImageIcon className="size-10 text-muted-foreground mb-4" />
-                    <p className="text-sm font-medium">Camada de Raspagem</p>
-                    <p className="text-xs text-muted-foreground mt-1">A imagem que será raspada</p>
-                    <Button variant="outline" size="sm" className="mt-4" type="button">Selecionar Arquivo</Button>
+                  
+                  <div className="aspect-[3/4] rounded-2xl bg-primary/5 border-2 border-dashed border-border flex flex-col items-center justify-center p-6 text-center relative overflow-hidden group">
+                    {form.watch("scratch_image_url") ? (
+                      <>
+                        <img 
+                          src={form.watch("scratch_image_url") || ""} 
+                          className="absolute inset-0 w-full h-full object-cover z-10" 
+                          alt="Raspagem preview" 
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => form.setValue("scratch_image_url", "")}
+                          className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
+                        >
+                          Trocar Camada
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {isUploading === 'scratch_image_url' ? (
+                          <Loader2 className="size-10 animate-spin text-primary" />
+                        ) : (
+                          <ImageIcon className="size-10 text-muted-foreground mb-4" />
+                        )}
+                        <p className="text-sm font-medium">Camada de Raspagem</p>
+                        <p className="text-xs text-muted-foreground mt-1">A imagem que será raspada</p>
+                        <Button variant="outline" size="sm" className="mt-4 relative" type="button" disabled={isUploading === 'scratch_image_url'}>
+                          Selecionar Arquivo
+                          <input 
+                            type="file" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'scratch_image_url')}
+                          />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
