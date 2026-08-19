@@ -549,7 +549,7 @@ CREATE TABLE IF NOT EXISTS public.deposits (
     updated_at timestamptz DEFAULT now() NOT NULL
 );
 
-CREATE TABLE public.payment_transactions (
+CREATE TABLE IF NOT EXISTS public.payment_transactions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     deposit_id uuid REFERENCES public.deposits(id) ON DELETE SET NULL,
