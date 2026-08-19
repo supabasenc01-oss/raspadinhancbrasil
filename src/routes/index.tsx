@@ -2,20 +2,21 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Zap, 
-  ShieldCheck, 
-  Trophy, 
-  Sparkles, 
   ArrowRight, 
   Ticket,
-  Clock,
-  History
+  Trophy,
+  Filter
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
 
-import { PublicPage, PageHero } from '@/components/layout/PublicPage';
+import { PublicPage } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';
 import { activeScratchCardsQuery } from '@/lib/queries';
 import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
+import { HomeCarousel } from '@/components/home/HomeCarousel';
+import { WinnersTicker } from '@/components/home/WinnersTicker';
+import { AppDownloadBanner } from '@/components/common/AppDownloadBanner';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -23,74 +24,71 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const { data: scratchCards, isLoading } = useQuery(activeScratchCardsQuery);
+  const [filter, setFilter] = useState<'ALL' | 'CASH' | 'PRODUCTS'>('ALL');
+
+  const filteredCards = scratchCards?.filter(card => {
+    if (filter === 'ALL') return true;
+    if (filter === 'CASH') return card.is_free === false; // Placeholder logic
+    if (filter === 'PRODUCTS') return card.badge?.toLowerCase().includes('produto') || card.name.toLowerCase().includes('cozinha');
+    return true;
+  });
 
   return (
     <PublicPage>
-      {/* Hero Section */}
-      <PageHero 
-        title="RASPA PREMIUM — PADRÃO 2026"
-        description="A plataforma de raspadinhas mais moderna do Brasil. Prêmios instantâneos em PIX, eletrodomésticos e eletrônicos de última geração."
-        centered
-      >
-        <div className="flex flex-wrap justify-center gap-4 mt-8">
-          <Button size="lg" className="bg-gradient-brand text-primary-foreground group" asChild>
-            <Link to="/raspadinhas">
-              VER TODAS AS RASPADINHAS 
-              <Zap className="ml-2 size-4 group-hover:scale-110 transition-transform" />
-            </Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild>
-            <Link to="/como-funciona">
-              SAIBA MAIS
-            </Link>
-          </Button>
-        </div>
-      </PageHero>
+      <AppDownloadBanner />
+      
+      {/* Hero / Banner Area */}
+      <HomeCarousel />
 
-      {/* Stats / Features Bar */}
-      <div className="border-y border-border/50 bg-surface/50 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="text-2xl font-black text-primary">100%</div>
-              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">SEGURO & AUDITÁVEL</div>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="text-2xl font-black text-primary">INSTANTÂNEO</div>
-              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">PRÊMIOS NA HORA</div>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="text-2xl font-black text-primary">+20</div>
-              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">PRÊMIOS POR JOGO</div>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="text-2xl font-black text-primary">PIX</div>
-              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">PAGAMENTOS RÁPIDOS</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Winners Ticker */}
+      <WinnersTicker />
 
       {/* Featured & Categories */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-background">
         <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-display font-black tracking-tight uppercase">
-                EM <span className="text-primary">DESTAQUE</span>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="space-y-4">
+              <h2 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
+                EXPLORE AS <span className="text-primary">RASPADINHAS</span>
               </h2>
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Badge className="cursor-pointer bg-primary text-primary-foreground">TUDO</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-primary/10">POPULARES</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-primary/10">NOVIDADES</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-primary/10 text-accent border-accent/30">GRÁTIS</Badge>
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant={filter === 'ALL' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setFilter('ALL')}
+                  className="rounded-full px-6"
+                >
+                  TODAS
+                </Button>
+                <Button 
+                  variant={filter === 'CASH' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setFilter('CASH')}
+                  className="rounded-full px-6"
+                >
+                  DINHEIRO
+                </Button>
+                <Button 
+                  variant={filter === 'PRODUCTS' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setFilter('PRODUCTS')}
+                  className="rounded-full px-6"
+                >
+                  PRODUTOS
+                </Button>
               </div>
             </div>
-            <Button variant="ghost" className="group" asChild>
-              <Link to="/raspadinhas">
-                Ver todas <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:block text-right">
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Prêmios Distribuídos</div>
+                <div className="text-xl font-black text-success">R$ 47.572,00</div>
+              </div>
+              <Button variant="ghost" className="group h-12 px-6 bg-surface/50 border border-border/50" asChild>
+                <Link to="/raspadinhas">
+                  Ver catálogo completo <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
           </div>
 
           {isLoading ? (
@@ -99,17 +97,20 @@ function HomePage() {
                 <div key={i} className="aspect-[3/4] rounded-3xl bg-surface animate-pulse" />
               ))}
             </div>
-          ) : scratchCards && scratchCards.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {scratchCards.map((card) => (
+          ) : filteredCards && filteredCards.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {filteredCards.map((card) => (
                 <ScratchCardTile key={card.id} card={card} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 surface-card">
-              <Ticket className="size-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-              <h3 className="text-lg font-medium">Nenhuma raspadinha ativa no momento</h3>
-              <p className="text-sm text-muted-foreground mt-1">Volte em breve para novas oportunidades.</p>
+            <div className="text-center py-32 surface-card border-dashed">
+              <Ticket className="size-16 text-muted-foreground mx-auto mb-6 opacity-10" />
+              <h3 className="text-2xl font-bold">Nenhuma raspadinha encontrada</h3>
+              <p className="text-muted-foreground mt-2 max-w-md mx-auto">Tente ajustar sua busca ou explore outras categorias para encontrar sua próxima chance de ganhar.</p>
+              <Button variant="outline" className="mt-8" onClick={() => setFilter('ALL')}>
+                MOSTRAR TODAS AS RASPADINHAS
+              </Button>
             </div>
           )}
         </div>

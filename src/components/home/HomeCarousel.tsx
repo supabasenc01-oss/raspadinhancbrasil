@@ -62,7 +62,7 @@ export function HomeCarousel() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="text-4xl sm:text-6xl font-display font-black leading-tight"
-              dangerouslySetInnerHTML={{ __html: SLIDES[current].title }}
+              dangerouslySetInnerHTML={{ __html: SLIDES[current]?.title ?? "" }}
             />
             <motion.p 
               initial={{ y: 20, opacity: 0 }}
@@ -70,7 +70,7 @@ export function HomeCarousel() {
               transition={{ delay: 0.3 }}
               className="text-lg text-muted-foreground max-w-lg"
             >
-              {SLIDES[current].description}
+              {SLIDES[current]?.description ?? ""}
             </motion.p>
             <motion.div
               initial={{ y: 20, opacity: 0 }}
@@ -79,7 +79,7 @@ export function HomeCarousel() {
             >
               <Button size="lg" className="bg-gradient-brand text-primary-foreground h-14 px-10 text-lg font-bold group" asChild>
                 <Link to="/raspadinhas">
-                  {SLIDES[current].cta}
+                  {SLIDES[current]?.cta ?? "JOGAR AGORA"}
                   <Zap className="ml-2 size-5 group-hover:scale-110 transition-transform fill-current" />
                 </Link>
               </Button>
