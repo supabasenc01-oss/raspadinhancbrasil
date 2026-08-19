@@ -52,9 +52,9 @@ function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="space-y-4">
-              <h2 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
+              <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
                 EXPLORE AS <span className="text-primary">RASPADINHAS</span>
-              </h2>
+              </h1>
               <div className="flex flex-wrap gap-2">
                 <Button 
                   variant={filter === 'ALL' ? 'default' : 'outline'} 
