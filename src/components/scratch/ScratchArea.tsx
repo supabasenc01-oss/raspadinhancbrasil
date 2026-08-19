@@ -27,11 +27,19 @@ export function ScratchArea({
   
   const coverUrl = useFileUrl(coverImage);
   const resultUrl = useFileUrl(resultImage);
-  const { logoUrl: rawLogoUrl } = useSettings();
-  const logoUrl = useFileUrl(rawLogoUrl);
+  const { 
+    logoUrl: rawLogoUrl, 
+    scratchOverlayLogoUrl: rawScratchLogoUrl,
+    scratchOverlayBgColor,
+    scratchOverlayText
+  } = useSettings();
+  
+  const logoUrl = useFileUrl(rawScratchLogoUrl || rawLogoUrl);
+  const resultUrl = useFileUrl(resultImage);
 
   const SCRATCH_THRESHOLD = 45; 
   const BRUSH_SIZE = 80; 
+
 
 
   // Initialize Canvas with cover image and premium effects
@@ -46,12 +54,17 @@ export function ScratchArea({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.globalCompositeOperation = 'source-over';
       
-      // Background base (Gradient matching the brand)
-      const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      bgGradient.addColorStop(0, '#0F172A');
-      bgGradient.addColorStop(1, '#020617');
-      ctx.fillStyle = bgGradient;
+      // Background base (Customizable via admin)
+      ctx.fillStyle = scratchOverlayBgColor || '#0F172A';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add a subtle gradient anyway for depth
+      const overlayGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      overlayGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+      overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
+      ctx.fillStyle = overlayGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 
       if (img) {
         // Draw the cover image if provided
@@ -96,12 +109,30 @@ export function ScratchArea({
 
           ctx.drawImage(logoImg, x, y, drawWidth, drawHeight);
           
+          // Draw custom orientation text if set
+          if (scratchOverlayText) {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.font = 'bold 24px system-ui';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.textAlign = 'center';
+            ctx.fillText(scratchOverlayText, canvas.width / 2, y + drawHeight + 40);
+          }
+
           // Reset to scratching mode
           ctx.globalCompositeOperation = 'destination-out';
         };
       } else {
+        // Draw text even without logo if set
+        if (scratchOverlayText) {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.font = 'bold 24px system-ui';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.textAlign = 'center';
+          ctx.fillText(scratchOverlayText, canvas.width / 2, canvas.height / 2);
+        }
         ctx.globalCompositeOperation = 'destination-out';
       }
+
       
       // Add Premium Shine Overlay
       ctx.globalAlpha = 0.5;
