@@ -31,7 +31,7 @@ export function useSettings() {
         } catch (e) {
           // If parsing fails, fall back to simple quote removal if applicable
           return cleanVal.replace(/^"|"$/g, '').replace(/\\"/g, '"');
-        Part: }
+        }
       }
       return cleanVal;
     }
