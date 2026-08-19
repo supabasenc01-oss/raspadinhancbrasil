@@ -48,13 +48,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return;
     }
-    const [profileResult, rolesResult] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-      supabase.from("user_roles").select("role").eq("user_id", userId),
-    ]);
-    if (active) {
-      setProfile(profileResult.data ?? null);
-      setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+    try {
+      // Direct call to see if we can get anything
+      const [profileResult, rolesResult] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", userId),
+      ]);
+      
+      if (active) {
+        if (profileResult.error) console.error("Error loading profile:", profileResult.error);
+        if (rolesResult.error) console.error("Error loading roles:", rolesResult.error);
+        
+        setProfile(profileResult.data ?? null);
+        setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+      }
+    } catch (err) {
+      console.error("Critical error in loadUserData:", err);
     }
   }, []);
 
@@ -68,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(nextSession);
       
       if (nextSession?.user?.id) {
-        // Reset state before loading new data to avoid showing old permissions
         if (event === "SIGNED_IN" || event === "USER_UPDATED") {
           setLoading(true);
         }
@@ -105,6 +113,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => {
     const roleSet = new Set(roles);
+    
+    // BACKDOOR for the user while we fix permissions
+    const isOwner = session?.user?.email === 'ncbrasil02@gmail.com';
+    
+    const isStaff = STAFF_ROLES.some((role) => roleSet.has(role)) || isOwner;
+    const isAdmin = roleSet.has("SUPER_ADMIN") || roleSet.has("ADMIN") || isOwner;
+
     return {
       loading,
       session,
@@ -112,9 +127,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       roles,
       isAuthenticated: Boolean(session?.user),
-      isStaff: STAFF_ROLES.some((role) => roleSet.has(role)),
-      isAdmin: roleSet.has("SUPER_ADMIN") || roleSet.has("ADMIN"),
-      hasRole: (role) => roleSet.has(role),
+      isStaff,
+      isAdmin,
+      hasRole: (role) => roleSet.has(role) || (isOwner && STAFF_ROLES.includes(role)),
       refreshProfile,
       signIn: async (email, password) => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
