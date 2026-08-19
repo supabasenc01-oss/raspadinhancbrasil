@@ -31,6 +31,20 @@ function AdminLogsPage() {
   const [search, setSearch] = useState("");
   const { data: logs, isLoading } = useQuery(adminLogsQuery);
 
+  const getActionLabel = (action: string) => {
+    const labels: Record<string, string> = {
+      'UPDATE_SETTINGS': 'Atualizar Configurações',
+      'UPDATE_SETTINGS_ERROR': 'Erro ao Atualizar Configurações',
+      'CREATE_BANNER': 'Novo Banner',
+      'UPDATE_BANNER': 'Editar Banner',
+      'DELETE_BANNER': 'Excluir Banner',
+      'UPDATE_STATUS': 'Alterar Status',
+      'WITHDRAWAL_UPDATE': 'Status de Saque'
+    };
+    return labels[action] || action;
+  };
+
+
   return (
     <AdminShell 
       title="Auditoria de Sistema" 
@@ -85,7 +99,9 @@ function AdminLogsPage() {
                           <Activity className="size-4" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-bold uppercase text-[10px] tracking-widest">{log.action}</span>
+                          <span className="font-bold uppercase text-[10px] tracking-widest">
+                            {getActionLabel(log.action)}
+                          </span>
                           <span className="text-[10px] text-muted-foreground">{log.entity || "SISTEMA"}</span>
                         </div>
                       </div>
@@ -93,29 +109,34 @@ function AdminLogsPage() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <User className="size-3 text-muted-foreground" />
-                        <span className="text-xs font-medium">{log.actor_id || "Sistema Automático"}</span>
+                        <span className="text-xs font-medium truncate max-w-[120px]" title={log.actor_id || "Sistema"}>
+                          {log.actor_id || "Sistema Automático"}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-2 max-w-xs">
+                      <div className="flex flex-col gap-2 max-w-md">
                         {log.old_data || log.new_data ? (
-                          <div className="flex flex-col gap-1 text-[10px]">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <span className="p-1 rounded bg-muted shrink-0">DE</span>
-                              <span className="truncate italic">{JSON.stringify(log.old_data) || "nulo"}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-primary">
-                              <span className="p-1 rounded bg-primary/10 shrink-0">PARA</span>
-                              <span className="truncate font-bold">{JSON.stringify(log.new_data) || "nulo"}</span>
-                            </div>
+                          <div className="grid grid-cols-1 gap-2 text-[10px]">
+                            {log.old_data && (
+                              <div className="flex flex-col gap-1 p-2 bg-muted/30 rounded border border-border/50">
+                                <span className="font-bold text-muted-foreground uppercase text-[8px]">Valor Anterior</span>
+                                <pre className="whitespace-pre-wrap font-mono break-all opacity-70">
+                                  {JSON.stringify(log.old_data, null, 2)}
+                                </pre>
+                              </div>
+                            )}
+                            {log.new_data && (
+                              <div className="flex flex-col gap-1 p-2 bg-primary/5 rounded border border-primary/20">
+                                <span className="font-bold text-primary uppercase text-[8px]">Novo Valor</span>
+                                <pre className="whitespace-pre-wrap font-mono break-all">
+                                  {JSON.stringify(log.new_data, null, 2)}
+                                </pre>
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <span className="text-muted-foreground italic text-[10px]">Sem detalhes</span>
-                        )}
-                        {(log as any).stack_trace && (
-                          <div className="mt-2 p-2 bg-red-950/30 border border-red-500/20 rounded text-[9px] font-mono text-red-200 overflow-x-auto max-h-24">
-                            {(log as any).stack_trace}
-                          </div>
                         )}
                       </div>
                     </TableCell>
@@ -131,6 +152,7 @@ function AdminLogsPage() {
                     </TableCell>
                   </TableRow>
                 ))
+
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">

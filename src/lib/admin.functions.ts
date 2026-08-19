@@ -106,6 +106,7 @@ export const updateWithdrawalStatus = createServerFn({ method: "POST" })
   });
 
 export const upsertBanner = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({
     id: z.string().optional(),
     title: z.string().min(1, "Título é obrigatório"),
@@ -118,8 +119,9 @@ export const upsertBanner = createServerFn({ method: "POST" })
     starts_at: z.string().nullable().optional(),
     ends_at: z.string().nullable().optional(),
   }).parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const userId = context.userId;
     
     const bannerData = {
       title: data.title,
@@ -135,7 +137,18 @@ export const upsertBanner = createServerFn({ method: "POST" })
     };
 
     let result;
+    let oldData = null;
+    let action = 'CREATE_BANNER';
+
     if (data.id) {
+      action = 'UPDATE_BANNER';
+      const { data: current } = await supabaseAdmin
+        .from('banners')
+        .select('*')
+        .eq('id', data.id)
+        .single();
+      oldData = current;
+
       result = await supabaseAdmin
         .from('banners')
         .update(bannerData)
@@ -147,20 +160,52 @@ export const upsertBanner = createServerFn({ method: "POST" })
     }
 
     if (result.error) throw new Error(result.error.message);
+
+    // Record Audit Log
+    await (supabaseAdmin.from('admin_logs').insert as any)({
+      action,
+      entity: 'banners',
+      actor_id: userId,
+      old_data: oldData,
+      new_data: bannerData,
+      severity: 'INFO'
+    });
+
     return { success: true };
   });
 
+
 export const deleteBanner = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({
     id: z.string()
   }).parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const userId = context.userId;
+
+    const { data: current } = await supabaseAdmin
+      .from('banners')
+      .select('*')
+      .eq('id', data.id)
+      .single();
+
     const { error } = await supabaseAdmin
       .from('banners')
       .delete()
       .eq('id', data.id);
     
     if (error) throw new Error(error.message);
+
+    // Record Audit Log
+    await (supabaseAdmin.from('admin_logs').insert as any)({
+      action: 'DELETE_BANNER',
+      entity: 'banners',
+      actor_id: userId,
+      old_data: current,
+      severity: 'WARNING'
+    });
+
     return { success: true };
   });
+
