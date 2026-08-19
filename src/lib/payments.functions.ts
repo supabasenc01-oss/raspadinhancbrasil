@@ -37,16 +37,62 @@ export const createPayment = createServerFn({ method: "POST" })
     if (depositError) throw depositError;
 
     // 2. Chamar Mercado Pago API (Server-side)
-    // Aqui usaríamos o process.env.MERCADOPAGO_ACCESS_TOKEN
-    // Por enquanto, simulamos uma resposta de sucesso para o fluxo de frontend
+    const mpAccessToken = process.env['MERCADOPAGO_ACCESS_TOKEN'] || 
+                         (await supabaseAdmin.from('system_settings').select('value').eq('key', 'mercadopago_access_token').maybeSingle()).data?.value;
     
-    return {
-      success: true,
-      paymentId: `mp_fake_${deposit.id}`,
-      qrCode: paymentMethod === "pix" ? "00020126330014BR.GOV.BCB.PIX..." : null,
-      qrCodeBase64: paymentMethod === "pix" ? "iVBORw0KGgoAAAANSUhEUgA..." : null,
-      status: "pending"
-    };
+    // Remover aspas se vier do JSONB
+    const cleanToken = typeof mpAccessToken === 'string' ? mpAccessToken.replace(/^"|"$/g, '') : '';
+
+    if (!cleanToken || cleanToken.includes('fake')) {
+      console.warn("Mercado Pago Access Token não configurado ou inválido.");
+      return {
+        success: true,
+        paymentId: `mp_fake_${deposit.id}`,
+        qrCode: paymentMethod === "pix" ? "00020126330014BR.GOV.BCB.PIX..." : null,
+        qrCodeBase64: paymentMethod === "pix" ? "iVBORw0KGgoAAAANSUhEUgA..." : null,
+        status: "pending",
+        message: "Modo de teste: Credenciais do Mercado Pago não configuradas."
+      };
+    }
+
+    try {
+      const mpResponse = await fetch("https://api.mercadopago.com/v1/payments", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${cleanToken}`,
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": deposit.id
+        },
+        body: JSON.stringify({
+          transaction_amount: amount,
+          description: `Recarga de Saldo - ${user.email}`,
+          payment_method_id: paymentMethod,
+          payer: {
+            email: user.email,
+          },
+          external_reference: deposit.id,
+          notification_url: `${process.env['SITE_URL'] || 'https://raspadinhancbrasil.lovable.app'}/api/public/mercadopago-webhook`
+        })
+      });
+
+      const paymentData = await mpResponse.json();
+
+      if (!mpResponse.ok) {
+        console.error("Erro MP API:", paymentData);
+        throw new Error(paymentData.message || "Erro ao processar pagamento no Mercado Pago");
+      }
+
+      return {
+        success: true,
+        paymentId: paymentData.id.toString(),
+        qrCode: paymentData.point_of_interaction?.transaction_data?.qr_code,
+        qrCodeBase64: paymentData.point_of_interaction?.transaction_data?.qr_code_base64,
+        status: paymentData.status
+      };
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      throw error;
+    }
   });
 
 export const getWalletBalance = createServerFn({ method: "GET" })
