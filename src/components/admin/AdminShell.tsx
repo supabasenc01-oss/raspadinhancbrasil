@@ -87,13 +87,16 @@ export function AdminShell({
     );
   }
 
-  if (!isStaff) {
+  const isOwner = profile?.email === 'ncbrasil02@gmail.com' || user?.email === 'ncbrasil02@gmail.com';
+  const hasAccess = isStaff || isOwner;
+
+  if (!hasAccess) {
     return (
       <div className="grid min-h-screen place-items-center bg-background px-4">
         <div className="surface-card max-w-md p-8 text-center">
           <h1 className="font-display text-xl font-semibold">Acesso restrito</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua conta ({profile?.email}) não possui permissão administrativa. 
+            Sua conta ({profile?.email || user?.email || 'Não identificado'}) não possui permissão administrativa. 
             Papéis atuais: {roles.length > 0 ? roles.join(", ") : "Nenhum"}.
             Fale com um administrador da plataforma.
           </p>
