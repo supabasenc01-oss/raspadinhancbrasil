@@ -616,23 +616,12 @@ function AdminSettingsPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="scratch_overlay_bg_color">Cor de Fundo da Cobertura</Label>
-                    <div className="flex gap-2">
-                      <Input 
-                        id="scratch_overlay_bg_color" 
-                        type="text"
-                        value={values["scratch_overlay_bg_color"] || "#0F172A"} 
-                        onChange={(e) => handleChange("scratch_overlay_bg_color", e.target.value)}
-                        placeholder="#0F172A"
-                        className="flex-1"
-                      />
-                      <div 
-                        className="size-10 rounded-lg border border-border" 
-                        style={{ backgroundColor: values["scratch_overlay_bg_color"] || "#0F172A" }}
-                      />
-                    </div>
-                  </div>
+                  <ColorInput 
+                    id="scratch_overlay_bg_color" 
+                    label="Cor de Fundo da Cobertura"
+                    value={values["scratch_overlay_bg_color"] || "#0F172A"} 
+                    onChange={(val) => handleChange("scratch_overlay_bg_color", val)}
+                  />
 
                   <div className="grid gap-2">
                     <Label htmlFor="scratch_overlay_text">Texto de Orientação</Label>
