@@ -109,6 +109,8 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.is_admin(UUID) TO authenticated, anon;
 
+GRANT EXECUTE ON FUNCTION public.is_admin(UUID) TO authenticated, anon;
+
 DO $$ 
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'profiles_select_own') THEN
