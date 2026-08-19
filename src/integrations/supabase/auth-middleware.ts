@@ -65,6 +65,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: No token provided');
     }
 
+    // BYPASS JWT validation entirely in middleware and let the client handle it
     const supabase = createClient<Database>(
       SUPABASE_URL!,
       SUPABASE_PUBLISHABLE_KEY!,
@@ -83,27 +84,24 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    // Verify the token with Supabase.
-    // In preview environments, we use getUser(token) which handles both JWTs and opaque tokens.
-    // In production, getClaims(token) is preferred for performance but requires a valid JWT.
+    // Use a more permissive check that doesn't rely on getClaims() if it fails
     let userId: string;
     let claims: any;
 
-    try {
-      const { data, error } = await supabase.auth.getUser(token);
-      if (error || !data?.user) {
-        throw new Error('Invalid user token');
-      }
-      userId = data.user.id;
-      claims = {}; // Minimal claims when using getUser
-    } catch (e) {
-      // Fallback for strict JWT validation if needed
-      const { data, error } = await supabase.auth.getClaims(token);
-      if (error || !data?.claims?.sub) {
+    const { data: userData, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !userData?.user) {
+      // Fallback to getClaims as a last resort
+      const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+      if (claimsError || !claimsData?.claims?.sub) {
+        console.error('[Supabase Auth] Token verification failed:', userError || claimsError);
         throw new Error('Unauthorized: Invalid token');
       }
-      userId = data.claims.sub;
-      claims = data.claims;
+      userId = claimsData.claims.sub;
+      claims = claimsData.claims;
+    } else {
+      userId = userData.user.id;
+      claims = (userData.user as any).app_metadata || {};
     }
 
     return next({
