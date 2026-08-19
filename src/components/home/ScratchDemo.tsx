@@ -13,7 +13,10 @@ export function ScratchDemo() {
 
   // Use a professional tech/luxury look for the demo
   const demoCover = "https://images.unsplash.com/photo-1634157703702-3c124b455499?q=80&w=800&auto=format&fit=crop"; // Premium golden texture
-  const demoResult = "https://images.unsplash.com/photo-1553481187-be93c21490a9?q=80&w=400&auto=format&fit=crop"; // Gold coins
+  // High attractiveness prizes as requested: Fridge or PIX R$ 1000
+  const demoResult = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop"; // Modern Fridge look
+  const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
+
 
   const handleComplete = () => {
     setFinished(true);
@@ -116,6 +119,27 @@ export function ScratchDemo() {
                     onComplete={handleComplete}
                     isWinner={true}
                   />
+                  
+                  {/* Floating Prize Info for Demo */}
+                  {finished && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 w-[90%] pointer-events-none"
+                    >
+                      <div className="bg-gradient-to-r from-success via-emerald-400 to-success p-[2px] rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.4)]">
+                        <div className="bg-black/90 backdrop-blur-xl px-4 py-4 rounded-[calc(1rem-1px)] text-center">
+                          <div className="text-white font-black text-2xl tracking-tighter uppercase italic">
+                            {demoPrizeLabel}
+                          </div>
+                          <div className="text-success text-xs font-bold uppercase tracking-[0.2em] mt-1">
+                            Resgatado com sucesso
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
                 </div>
 
                 <div className="mt-8 flex justify-center">
