@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT profiles_full_name_len CHECK (full_name IS NULL OR char_length(full_name) <= 120)
 );
-CREATE INDEX idx_profiles_email ON public.profiles (email);
-CREATE INDEX idx_profiles_status ON public.profiles (status);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles (email);
+CREATE INDEX IF NOT EXISTS idx_profiles_status ON public.profiles (status);
 GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
 GRANT ALL ON public.profiles TO service_role;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
