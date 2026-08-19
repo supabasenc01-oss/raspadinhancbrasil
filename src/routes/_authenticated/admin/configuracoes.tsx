@@ -89,6 +89,28 @@ function AdminSettingsPage() {
     mutation.mutate(data);
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(key);
+    try {
+      const { path, error } = await uploadPlatformFile("logos", file);
+      if (error) throw new Error(error);
+      
+      if (path) {
+        // Construct the full URL for internal use (or signed URL will be used in components)
+        // For simplicity in the admin settings, we store the path and resolve it where needed
+        handleChange(key, path);
+        toast.success("Upload realizado com sucesso!");
+      }
+    } catch (error: any) {
+      toast.error("Erro no upload: " + error.message);
+    } finally {
+      setIsUploading(null);
+    }
+  };
+
   if (isLoading) return <AdminShell title="Configurações"><div className="animate-pulse space-y-4"><div className="h-8 bg-surface w-1/4 rounded"></div><div className="h-64 bg-surface w-full rounded"></div></div></AdminShell>;
 
   return (
