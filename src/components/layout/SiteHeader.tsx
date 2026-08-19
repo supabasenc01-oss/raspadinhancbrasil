@@ -51,12 +51,8 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
   const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
   
   // Use the database URL if available, fallback to the direct file pointer
-  const logoUrl = useFileUrl(rawLogoUrl || "/logo.png", cacheBust, true);
-  
-  // Debug log to trace logo resolution
-  if (rawLogoUrl) {
-    console.log("[BrandLogo] Raw:", rawLogoUrl, "Resolved:", logoUrl);
-  }
+  // We avoid thumbnails for the logo to ensure high quality and avoid potential broken thumb paths
+  const logoUrl = useFileUrl(rawLogoUrl || "/logo.png", cacheBust, false);
   
   return (
     <Link to="/" className="flex items-center gap-2.5">
@@ -65,7 +61,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
           <img 
             src={logoUrl} 
             alt={siteName} 
-            className="h-9 w-auto object-contain"
+            className="h-9 w-auto object-contain block"
             key={logoUrl} // Force re-render on URL change
             onError={(e) => {
               console.error("[BrandLogo] Failed to load image:", logoUrl);
