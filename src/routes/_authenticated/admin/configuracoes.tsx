@@ -29,6 +29,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { uploadPlatformFile } from "@/lib/storage";
 import { uploadPlatformFileFn } from "@/lib/storage.functions";
 import { ensureStorageBuckets } from "@/lib/storage-init.functions";
+import { useFileUrl } from "@/hooks/useFileUrl";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
