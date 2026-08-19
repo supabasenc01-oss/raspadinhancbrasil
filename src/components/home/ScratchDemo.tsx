@@ -4,6 +4,7 @@ import { ScratchArea } from '@/components/scratch/ScratchArea';
 import { Button } from '@/components/ui/button';
 import { Zap, Trophy, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useSettings } from '@/hooks/useSettings';
 
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
