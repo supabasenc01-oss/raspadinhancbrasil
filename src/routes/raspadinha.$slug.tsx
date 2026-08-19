@@ -49,6 +49,7 @@ function ScratchCardDetailPage() {
   const [gameResult, setGameResult] = useState<{
     result_type: "WIN" | "LOSE";
     prize?: { title: string; value: number; image_url: string | null };
+    isBigWin?: boolean;
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -64,9 +65,11 @@ function ScratchCardDetailPage() {
     try {
       const result = await playScratchCard({ data: { cardId: card.id } });
       if (result.success) {
-        setGameResult(result);
+        // Define Big Win (e.g., value > 1000)
+        const isBigWin = result.result_type === "WIN" && (result.prize?.value ?? 0) >= 1000;
+        setGameResult({ ...result, isBigWin });
         setGameState("SCRATCHING");
-        refetchBalance(); // Update balance after purchase/win
+        refetchBalance(); 
       } else {
         toast.error("Não foi possível iniciar a jogada.");
       }
@@ -207,6 +210,7 @@ function ScratchCardDetailPage() {
                     resultImage={gameResult?.prize?.image_url ?? null}
                     onComplete={handleScratchComplete}
                     isAutoRevealing={isAutoRevealing}
+                    isWinner={gameResult?.result_type === "WIN"}
                   />
 
                   {gameState === "SCRATCHING" && (
@@ -223,13 +227,23 @@ function ScratchCardDetailPage() {
                   {gameState === "REVEALED" && (
                     <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
                       {gameResult?.result_type === "WIN" ? (
-                        <div className="space-y-2">
-                          <h3 className="text-3xl font-black text-gradient-brand tracking-tighter">PARABÉNS!</h3>
+                        <motion.div 
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="space-y-2"
+                        >
+                          <h3 className={`text-3xl font-black tracking-tighter ${gameResult.isBigWin ? 'text-gradient-brand animate-bounce' : 'text-primary'}`}>
+                            {gameResult.isBigWin ? '👑 GRANDE PRÊMIO! 👑' : 'PARABÉNS!'}
+                          </h3>
                           <p className="text-lg">Você ganhou <span className="font-bold">{gameResult.prize?.title}</span></p>
-                          <div className="text-4xl font-display font-black text-primary mt-4">
+                          <motion.div 
+                            animate={gameResult.isBigWin ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className="text-4xl font-display font-black text-primary mt-4 glow-ring inline-block px-6 py-2 rounded-2xl bg-primary/5"
+                          >
                             {formatCurrency(gameResult.prize?.value ?? 0)}
-                          </div>
-                        </div>
+                          </motion.div>
+                        </motion.div>
                       ) : (
                         <div className="space-y-2 py-4">
                           <h3 className="text-xl font-bold text-muted-foreground">Não foi desta vez...</h3>
