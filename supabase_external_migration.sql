@@ -101,17 +101,41 @@ RETURNS BOOLEAN LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
   );
 $$;
 
-CREATE POLICY "profiles_select_own" ON public.profiles FOR SELECT TO authenticated USING (id = auth.uid());
-CREATE POLICY "profiles_select_staff" ON public.profiles FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "profiles_insert_own" ON public.profiles FOR INSERT TO authenticated WITH CHECK (id = auth.uid());
-CREATE POLICY "profiles_update_own" ON public.profiles FOR UPDATE TO authenticated USING (id = auth.uid()) WITH CHECK (id = auth.uid());
-CREATE POLICY "profiles_update_admin" ON public.profiles FOR UPDATE TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'profiles_select_own') THEN
+        CREATE POLICY "profiles_select_own" ON public.profiles FOR SELECT TO authenticated USING (id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'profiles_select_staff') THEN
+        CREATE POLICY "profiles_select_staff" ON public.profiles FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'profiles_insert_own') THEN
+        CREATE POLICY "profiles_insert_own" ON public.profiles FOR INSERT TO authenticated WITH CHECK (id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'profiles_update_own') THEN
+        CREATE POLICY "profiles_update_own" ON public.profiles FOR UPDATE TO authenticated USING (id = auth.uid()) WITH CHECK (id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'profiles_update_admin') THEN
+        CREATE POLICY "profiles_update_admin" ON public.profiles FOR UPDATE TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+    END IF;
+END $$;
 
-CREATE POLICY "roles_select_all" ON public.roles FOR SELECT TO authenticated, anon USING (true);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'roles' AND policyname = 'roles_select_all') THEN
+        CREATE POLICY "roles_select_all" ON public.roles FOR SELECT TO authenticated, anon USING (true);
+    END IF;
 
-CREATE POLICY "user_roles_select_own" ON public.user_roles FOR SELECT TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "user_roles_select_staff" ON public.user_roles FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "user_roles_admin_write" ON public.user_roles FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_roles' AND policyname = 'user_roles_select_own') THEN
+        CREATE POLICY "user_roles_select_own" ON public.user_roles FOR SELECT TO authenticated USING (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_roles' AND policyname = 'user_roles_select_staff') THEN
+        CREATE POLICY "user_roles_select_staff" ON public.user_roles FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_roles' AND policyname = 'user_roles_admin_write') THEN
+        CREATE POLICY "user_roles_admin_write" ON public.user_roles FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.scratch_cards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -147,9 +171,18 @@ BEGIN
         CREATE TRIGGER trg_scratch_cards_updated BEFORE UPDATE ON public.scratch_cards FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO anon, authenticated USING (status = 'ACTIVE');
-CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_cards' AND policyname = 'scratch_cards_public_read') THEN
+        CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO anon, authenticated USING (status = 'ACTIVE');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_cards' AND policyname = 'scratch_cards_staff_read') THEN
+        CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_cards' AND policyname = 'scratch_cards_staff_write') THEN
+        CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -179,10 +212,19 @@ BEGIN
         CREATE TRIGGER trg_prizes_updated BEFORE UPDATE ON public.scratch_card_prizes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "prizes_public_read" ON public.scratch_card_prizes FOR SELECT TO anon, authenticated
-  USING (is_active AND EXISTS (SELECT 1 FROM public.scratch_cards c WHERE c.id = scratch_card_id AND c.status = 'ACTIVE'));
-CREATE POLICY "prizes_staff_read" ON public.scratch_card_prizes FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "prizes_staff_write" ON public.scratch_card_prizes FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_prizes' AND policyname = 'prizes_public_read') THEN
+        CREATE POLICY "prizes_public_read" ON public.scratch_card_prizes FOR SELECT TO anon, authenticated
+          USING (is_active AND EXISTS (SELECT 1 FROM public.scratch_cards c WHERE c.id = scratch_card_id AND c.status = 'ACTIVE'));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_prizes' AND policyname = 'prizes_staff_read') THEN
+        CREATE POLICY "prizes_staff_read" ON public.scratch_card_prizes FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_prizes' AND policyname = 'prizes_staff_write') THEN
+        CREATE POLICY "prizes_staff_write" ON public.scratch_card_prizes FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.banners (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -210,9 +252,18 @@ BEGIN
         CREATE TRIGGER trg_banners_updated BEFORE UPDATE ON public.banners FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authenticated USING (is_active);
-CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'banners' AND policyname = 'banners_public_read') THEN
+        CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authenticated USING (is_active);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'banners' AND policyname = 'banners_staff_read') THEN
+        CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'banners' AND policyname = 'banners_staff_write') THEN
+        CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -234,9 +285,18 @@ BEGIN
         CREATE TRIGGER trg_notifications_updated BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "notifications_select_own" ON public.notifications FOR SELECT TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "notifications_update_own" ON public.notifications FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
-CREATE POLICY "notifications_delete_own" ON public.notifications FOR DELETE TO authenticated USING (user_id = auth.uid());
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'notifications' AND policyname = 'notifications_select_own') THEN
+        CREATE POLICY "notifications_select_own" ON public.notifications FOR SELECT TO authenticated USING (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'notifications' AND policyname = 'notifications_update_own') THEN
+        CREATE POLICY "notifications_update_own" ON public.notifications FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'notifications' AND policyname = 'notifications_delete_own') THEN
+        CREATE POLICY "notifications_delete_own" ON public.notifications FOR DELETE TO authenticated USING (user_id = auth.uid());
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.admin_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -254,8 +314,15 @@ CREATE INDEX IF NOT EXISTS idx_admin_logs_created ON public.admin_logs (created_
 GRANT SELECT, INSERT ON public.admin_logs TO authenticated;
 GRANT ALL ON public.admin_logs TO service_role;
 ALTER TABLE public.admin_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "admin_logs_admin_read" ON public.admin_logs FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
-CREATE POLICY "admin_logs_staff_insert" ON public.admin_logs FOR INSERT TO authenticated WITH CHECK (public.is_staff(auth.uid()) AND actor_id = auth.uid());
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'admin_logs' AND policyname = 'admin_logs_admin_read') THEN
+        CREATE POLICY "admin_logs_admin_read" ON public.admin_logs FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'admin_logs' AND policyname = 'admin_logs_staff_insert') THEN
+        CREATE POLICY "admin_logs_staff_insert" ON public.admin_logs FOR INSERT TO authenticated WITH CHECK (public.is_staff(auth.uid()) AND actor_id = auth.uid());
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.system_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -276,9 +343,18 @@ BEGIN
         CREATE TRIGGER trg_settings_updated BEFORE UPDATE ON public.system_settings FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "settings_public_read" ON public.system_settings FOR SELECT TO anon, authenticated USING (is_public);
-CREATE POLICY "settings_staff_read" ON public.system_settings FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "settings_admin_write" ON public.system_settings FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'system_settings' AND policyname = 'settings_public_read') THEN
+        CREATE POLICY "settings_public_read" ON public.system_settings FOR SELECT TO anon, authenticated USING (is_public);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'system_settings' AND policyname = 'settings_staff_read') THEN
+        CREATE POLICY "settings_staff_read" ON public.system_settings FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'system_settings' AND policyname = 'settings_admin_write') THEN
+        CREATE POLICY "settings_admin_write" ON public.system_settings FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+    END IF;
+END $$;
 
 INSERT INTO public.system_settings (key, value, description, is_public) VALUES
   ('site_name', '"Raspa Premium"', 'Nome exibido da plataforma', true),
@@ -310,24 +386,46 @@ BEGIN
     END IF;
 END $$;
 
-CREATE POLICY "storage_platform_read" ON storage.objects FOR SELECT TO anon, authenticated
-  USING (bucket_id IN ('avatars','scratch-cards','scratch-cards-backgrounds','prizes','banners','logos'));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_platform_read') THEN
+        CREATE POLICY "storage_platform_read" ON storage.objects FOR SELECT TO anon, authenticated
+          USING (bucket_id IN ('avatars','scratch-cards','scratch-cards-backgrounds','prizes','banners','logos'));
+    END IF;
 
-CREATE POLICY "storage_avatars_own_insert" ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
-CREATE POLICY "storage_avatars_own_update" ON storage.objects FOR UPDATE TO authenticated
-  USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text)
-  WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
-CREATE POLICY "storage_avatars_own_delete" ON storage.objects FOR DELETE TO authenticated
-  USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_avatars_own_insert') THEN
+        CREATE POLICY "storage_avatars_own_insert" ON storage.objects FOR INSERT TO authenticated
+          WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
 
-CREATE POLICY "storage_staff_insert" ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
-CREATE POLICY "storage_staff_update" ON storage.objects FOR UPDATE TO authenticated
-  USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()))
-  WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
-CREATE POLICY "storage_staff_delete" ON storage.objects FOR DELETE TO authenticated
-  USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));REVOKE ALL ON FUNCTION public.set_updated_at() FROM anon, authenticated;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_avatars_own_update') THEN
+        CREATE POLICY "storage_avatars_own_update" ON storage.objects FOR UPDATE TO authenticated
+          USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text)
+          WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_avatars_own_delete') THEN
+        CREATE POLICY "storage_avatars_own_delete" ON storage.objects FOR DELETE TO authenticated
+          USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_staff_insert') THEN
+        CREATE POLICY "storage_staff_insert" ON storage.objects FOR INSERT TO authenticated
+          WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_staff_update') THEN
+        CREATE POLICY "storage_staff_update" ON storage.objects FOR UPDATE TO authenticated
+          USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()))
+          WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_staff_delete') THEN
+        CREATE POLICY "storage_staff_delete" ON storage.objects FOR DELETE TO authenticated
+          USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
+    END IF;
+END $$;
+REVOKE ALL ON FUNCTION public.set_updated_at() FROM anon, authenticated;
 REVOKE ALL ON FUNCTION public.handle_new_user() FROM anon, authenticated;
 REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM anon;
 REVOKE ALL ON FUNCTION public.is_staff(uuid) FROM anon;
@@ -361,8 +459,15 @@ GRANT SELECT ON public.scratch_card_results TO authenticated;
 GRANT ALL ON public.scratch_card_results TO service_role;
 ALTER TABLE public.scratch_card_results ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "results_select_own" ON public.scratch_card_results FOR SELECT TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "results_staff_read" ON public.scratch_card_results FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_results' AND policyname = 'results_select_own') THEN
+        CREATE POLICY "results_select_own" ON public.scratch_card_results FOR SELECT TO authenticated USING (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_results' AND policyname = 'results_staff_read') THEN
+        CREATE POLICY "results_staff_read" ON public.scratch_card_results FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 -- Tabela de sessões de raspadinhas (Idempotência / Pre-lock)
 CREATE TABLE IF NOT EXISTS public.scratch_card_sessions (
@@ -379,8 +484,15 @@ GRANT SELECT, INSERT, UPDATE ON public.scratch_card_sessions TO authenticated;
 GRANT ALL ON public.scratch_card_sessions TO service_role;
 ALTER TABLE public.scratch_card_sessions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "sessions_select_own" ON public.scratch_card_sessions FOR SELECT TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "sessions_insert_own" ON public.scratch_card_sessions FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_sessions' AND policyname = 'sessions_select_own') THEN
+        CREATE POLICY "sessions_select_own" ON public.scratch_card_sessions FOR SELECT TO authenticated USING (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_sessions' AND policyname = 'sessions_insert_own') THEN
+        CREATE POLICY "sessions_insert_own" ON public.scratch_card_sessions FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+    END IF;
+END $$;
 
 -- Tabela de ganhadores (Visualização pública)
 DO $$ 
@@ -405,7 +517,12 @@ GRANT SELECT ON public.winners TO anon, authenticated;
 GRANT ALL ON public.winners TO service_role;
 ALTER TABLE public.winners ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "winners_public_read" ON public.winners FOR SELECT TO anon, authenticated USING (true);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'winners' AND policyname = 'winners_public_read') THEN
+        CREATE POLICY "winners_public_read" ON public.winners FOR SELECT TO anon, authenticated USING (true);
+    END IF;
+END $$;
 
 -- 2. Adição de coluna de versão na scratch_cards para rastrear mudanças de probabilidade
 DO $$ 
