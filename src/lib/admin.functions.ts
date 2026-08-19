@@ -102,3 +102,63 @@ export const updateWithdrawalStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { success: true };
   });
+
+export const upsertBanner = createServerFn({ method: "POST" })
+  .validator((data: any) => z.object({
+    id: z.string().optional(),
+    title: z.string().min(1, "Título é obrigatório"),
+    subtitle: z.string().optional(),
+    image_url: z.string().min(1, "Imagem é obrigatória"),
+    link_url: z.string().optional(),
+    position: z.string().default("HOME_HERO"),
+    sort_order: z.number().default(0),
+    is_active: z.boolean().default(true),
+    starts_at: z.string().nullable().optional(),
+    ends_at: z.string().nullable().optional(),
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const bannerData = {
+      title: data.title,
+      subtitle: data.subtitle || null,
+      image_url: data.image_url,
+      link_url: data.link_url || null,
+      position: data.position,
+      sort_order: data.sort_order,
+      is_active: data.is_active,
+      starts_at: data.starts_at || null,
+      ends_at: data.ends_at || null,
+      updated_at: new Date().toISOString()
+    };
+
+    let result;
+    if (data.id) {
+      result = await supabaseAdmin
+        .from('banners')
+        .update(bannerData)
+        .eq('id', data.id);
+    } else {
+      result = await supabaseAdmin
+        .from('banners')
+        .insert(bannerData);
+    }
+
+    if (result.error) throw new Error(result.error.message);
+    return { success: true };
+  });
+
+export const deleteBanner = createServerFn({ method: "POST" })
+  .validator((data: any) => z.object({
+    id: z.string()
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from('banners')
+      .delete()
+      .eq('id', data.id);
+    
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
