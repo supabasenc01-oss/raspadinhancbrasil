@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useSettings } from "@/hooks/useSettings";
+import { useFileUrl } from "@/hooks/useFileUrl";
 import { Toaster } from "@/components/ui/sonner";
 import { UserFloatingBubbles } from "@/components/home/UserFloatingBubbles";
 import { supabase } from "@/integrations/supabase/client";
@@ -140,7 +141,10 @@ function RootContent() {
   
   // Use useSettings only if queryClient is available in context (it is, because of the provider above)
   const settings = useSettings();
-  const { siteName, metaDescription, faviconUrl } = settings;
+  const { siteName, metaDescription, faviconUrl: rawFaviconUrl } = settings;
+  // Use the update timestamp or a version string from settings as cache bust
+  const faviconCacheBust = settings.settings?.find((s: any) => s.key === 'favicon_url')?.updated_at || '';
+  const faviconUrl = useFileUrl(rawFaviconUrl, faviconCacheBust);
 
   useEffect(() => {
     // Dynamic Head update for Name, Description and Favicon
@@ -151,7 +155,7 @@ function RootContent() {
       if (metaDesc) metaDesc.setAttribute("content", metaDescription);
 
       const favicon = document.querySelector('link[rel="icon"]');
-      if (favicon) favicon.setAttribute("href", faviconUrl);
+      if (favicon && faviconUrl) favicon.setAttribute("href", faviconUrl);
     }
 
     const { data } = supabase.auth.onAuthStateChange((event) => {
