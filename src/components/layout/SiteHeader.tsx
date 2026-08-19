@@ -245,7 +245,7 @@ export function SiteHeader() {
                 <Link to="/login" search={{ redirect: undefined }}>Entrar</Link>
               </Button>
               <Button asChild size="sm" className="bg-gradient-brand text-primary-foreground font-bold px-6 shadow-glow">
-                <Link to="/cadastro">CRIAR CONTA</Link>
+                <Link to="/cadastro" search={{ redirect: undefined }}>CRIAR CONTA</Link>
               </Button>
             </div>
           )}
@@ -276,7 +276,7 @@ export function SiteHeader() {
               {!isAuthenticated && (
                 <div className="mt-auto pt-6 border-t border-border/50 flex flex-col gap-3">
                   <Button asChild className="bg-gradient-brand text-primary-foreground h-12 text-base font-bold">
-                    <Link to="/cadastro" onClick={() => setOpen(false)}>
+                    <Link to="/cadastro" search={{ redirect: undefined }} onClick={() => setOpen(false)}>
                       CRIAR MINHA CONTA
                     </Link>
                   </Button>
