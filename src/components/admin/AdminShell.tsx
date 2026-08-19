@@ -88,13 +88,21 @@ export function AdminShell({
   }
 
   if (!isStaff) {
+    console.warn("[AdminShell] Access restricted for user:", {
+      email: profile?.email,
+      roles,
+      isStaff
+    });
     return (
       <div className="grid min-h-screen place-items-center bg-background px-4">
         <div className="surface-card max-w-md p-8 text-center">
           <h1 className="font-display text-xl font-semibold">Acesso restrito</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua conta não possui permissão administrativa. Fale com um administrador da plataforma.
+            Sua conta ({profile?.email}) não possui permissão administrativa. Fale com um administrador da plataforma.
           </p>
+          <div className="mt-4 p-3 bg-muted rounded text-xs text-left overflow-auto max-h-32">
+            <strong>Debug:</strong> Roles: {JSON.stringify(roles)}
+          </div>
           <Button asChild className="mt-6" variant="secondary">
             <Link to="/dashboard">Voltar ao meu painel</Link>
           </Button>
