@@ -140,7 +140,7 @@ function AdminSettingsPage() {
 
       const base64Data = await base64Promise;
       
-      const result = await callEdgeFunction<{ path: string | null; error: string | null }>(
+      const result = await callEdgeFunction<{ path: string | null; thumbnailPath?: string | null; error: string | null }>(
         'upload-platform-file',
         {
           bucket: "logos",
