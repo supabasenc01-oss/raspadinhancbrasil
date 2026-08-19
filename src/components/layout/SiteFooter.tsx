@@ -40,7 +40,7 @@ export function SiteFooter() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>
               <Link to="/faq" className="transition-colors hover:text-foreground">
-                Perguntas frequentes
+                Central de Ajuda & FAQ
               </Link>
             </li>
             <li>
