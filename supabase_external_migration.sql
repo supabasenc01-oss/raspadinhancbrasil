@@ -208,7 +208,7 @@ CREATE POLICY "notifications_select_own" ON public.notifications FOR SELECT TO a
 CREATE POLICY "notifications_update_own" ON public.notifications FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "notifications_delete_own" ON public.notifications FOR DELETE TO authenticated USING (user_id = auth.uid());
 
-CREATE TABLE public.admin_logs (
+CREATE TABLE IF NOT EXISTS public.admin_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   action TEXT NOT NULL,
