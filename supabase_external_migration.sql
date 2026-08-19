@@ -1172,6 +1172,7 @@ ALTER FUNCTION public.is_staff(uuid) SET search_path = public;
 
 INSERT INTO public.system_settings (key, value, description, is_public)
 VALUES 
+  ('site_name', '"Raspa Premium"'::jsonb, 'Nome do site', true),
   ('logo_url', '"https://raspapremium.com/logo.png"'::jsonb, 'URL do logotipo da plataforma', true),
   ('favicon_url', '"/favicon.ico"'::jsonb, 'URL do favicon', true),
   ('meta_description', '"Plataforma premium de raspadinhas online."'::jsonb, 'Desc', true),
