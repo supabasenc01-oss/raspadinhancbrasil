@@ -79,8 +79,18 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-border/70 px-4 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} RaspaPremium. Todos os direitos reservados.
+      <div className="border-t border-border/70 px-4 py-6 text-center text-xs text-muted-foreground space-y-2">
+        <div>© {new Date().getFullYear()} RaspaPremium. Todos os direitos reservados.</div>
+        <div>
+          <a 
+            href="https://www.ncbrasil.com.br" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:text-primary transition-colors font-medium"
+          >
+            Sistema de Raspadinha por NC Brasil
+          </a>
+        </div>
       </div>
     </footer>
   );
