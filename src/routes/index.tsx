@@ -29,6 +29,8 @@ function HomePage() {
       <PageHero 
         title="ETAPA 2 — MOTOR COMPLETO DE RASPADINHAS E PRÊMIOS"
         description="Agora implemente o sistema real de raspadinhas sobre a estrutura criada na ETAPA 1. Não refazer o projeto. Aproveitar a arquitetura existente."
+        centered
+      >
 
       >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
