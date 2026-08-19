@@ -74,9 +74,12 @@ function WalletPage() {
               <Plus className="mr-2 size-5" /> ADICIONAR SALDO
             </Link>
           </Button>
-            <Button size="lg" variant="outline">
-              <History className="mr-2 size-5" /> VER EXTRATO COMPLETO
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/transacoes">
+                <History className="mr-2 size-5" /> VER EXTRATO COMPLETO
+              </Link>
             </Button>
+
           </div>
         </div>
       </div>
