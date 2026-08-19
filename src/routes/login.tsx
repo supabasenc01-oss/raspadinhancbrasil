@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      redirect: search.redirect as string | undefined,
+      redirect: (search.redirect as string) || undefined,
     };
   },
   head: () => ({
