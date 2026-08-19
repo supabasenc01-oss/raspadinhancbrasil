@@ -14,7 +14,7 @@ export function useSettings() {
     
     if (typeof val === 'string') {
       // Remove double quotes if present (common in JSONB text values)
-      const cleanVal = val.replace(/^"|"$/g, '');
+      const cleanVal = val.trim().replace(/^"|"$/g, '');
       if (cleanVal === "null" || cleanVal === "") return defaultValue;
       return cleanVal;
     }
