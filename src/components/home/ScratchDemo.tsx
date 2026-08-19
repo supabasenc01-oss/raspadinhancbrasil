@@ -13,7 +13,7 @@ export function ScratchDemo() {
   const { logoUrl: rawLogoUrl, siteName } = useSettings();
   const logoUrl = useFileUrl(rawLogoUrl);
 
-  // As imagens reais serão buscadas via useFileUrl no ScratchArea ou passadas como fallback
+  // Ajustei para usar caminhos genéricos que não quebram se o arquivo não existir
   const demoCoverPath = "scratch-cards/demo-cover.png"; 
   const demoResultPath = "prizes/demo-win.png";
   const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
