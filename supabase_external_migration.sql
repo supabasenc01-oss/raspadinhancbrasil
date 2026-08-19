@@ -907,25 +907,30 @@ BEGIN
 
 END $$;
 
-CREATE TABLE public.winners (
-    id uuid primary key default gen_random_uuid(),
-    scratch_card_id uuid references public.scratch_cards(id) on delete cascade not null,
-    user_id uuid references auth.users(id) on delete cascade not null,
-    winner_name text not null,
-    prize_title text not null,
-    prize_value numeric(12,2) not null,
-    created_at timestamp with time zone default now() not null
-);
+-- Tabela de ganhadores (Histórico de prêmios entregues)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'winners') THEN
+        CREATE TABLE public.winners (
+            id uuid primary key default gen_random_uuid(),
+            scratch_card_id uuid references public.scratch_cards(id) on delete cascade not null,
+            user_id uuid references auth.users(id) on delete cascade not null,
+            winner_name text not null,
+            prize_title text not null,
+            prize_value numeric(12,2) not null,
+            created_at timestamp with time zone default now() not null
+        );
 
-GRANT SELECT ON public.winners TO authenticated, anon;
-GRANT ALL ON public.winners TO service_role;
+        GRANT SELECT ON public.winners TO authenticated, anon;
+        GRANT ALL ON public.winners TO service_role;
+        ALTER TABLE public.winners ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE public.winners ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can view winners"
-ON public.winners FOR SELECT
-TO authenticated, anon
-USING (true);
+        CREATE POLICY "Anyone can view winners"
+        ON public.winners FOR SELECT
+        TO authenticated, anon
+        USING (true);
+    END IF;
+END $$;
 
 -- Endurecendo RLS e garantindo GRANTs
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO authenticated;
