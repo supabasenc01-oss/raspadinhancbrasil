@@ -49,10 +49,8 @@ export async function uploadPlatformFile(
       return { path: null, error: error.message };
     }
     
-    // Construct public URL if the bucket is public (which they should be as per instructions)
-    const { data } = supabase.storage.from(bucket).getPublicUrl(objectPath);
-    
-    return { path: data.publicUrl, error: null };
+    // Store as "bucket/path" for private signed URL resolution or public access
+    return { path: `${bucket}/${objectPath}`, error: null };
   } catch (err: any) {
     console.error("Upload exception:", err);
     return { path: null, error: err.message };

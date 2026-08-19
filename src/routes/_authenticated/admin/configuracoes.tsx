@@ -206,8 +206,8 @@ function AdminSettingsPage() {
                   <div className="flex flex-col gap-4">
                     <div className="aspect-video w-full rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-4 relative overflow-hidden group">
                       {values["logo_url"] ? (
-                        <>
-                          <img src={values["logo_url"]} className="max-h-full max-w-full object-contain z-10" alt="Logo preview" />
+                        <LogoPreview url={values["logo_url"]} />
+                      ) : (
                           <button 
                             onClick={() => handleChange("logo_url", "")}
                             className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
@@ -262,8 +262,8 @@ function AdminSettingsPage() {
                   <div className="flex flex-col gap-4">
                     <div className="size-20 rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-2 relative overflow-hidden group mx-auto sm:mx-0">
                       {values["favicon_url"] ? (
-                        <>
-                          <img src={values["favicon_url"]} className="size-10 object-contain z-10" alt="Favicon preview" />
+                        <FaviconPreview url={values["favicon_url"]} />
+                      ) : (
                           <button 
                             onClick={() => handleChange("favicon_url", "")}
                             className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white text-[10px] font-bold"
@@ -443,5 +443,37 @@ function AdminSettingsPage() {
         </TabsContent>
       </Tabs>
     </AdminShell>
+  );
+
+function LogoPreview({ url }: { url: string }) {
+  const fileUrl = useFileUrl(url);
+  const [removed, setRemoved] = useState(false);
+  
+  if (removed) return null;
+
+  return (
+    <>
+      {fileUrl && <img src={fileUrl} className="max-h-full max-w-full object-contain z-10" alt="Logo preview" />}
+      <button 
+        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
+      >
+        Substituir Logotipo
+      </button>
+    </>
+  );
+}
+
+function FaviconPreview({ url }: { url: string }) {
+  const fileUrl = useFileUrl(url);
+  
+  return (
+    <>
+      {fileUrl && <img src={fileUrl} className="size-10 object-contain z-10" alt="Favicon preview" />}
+      <button 
+        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white text-[10px] font-bold"
+      >
+        Substituir
+      </button>
+    </>
   );
 }
