@@ -52,6 +52,8 @@ const formSchema = z.object({
   is_free: z.boolean().default(false),
   status: z.enum(["ACTIVE", "DRAFT", "INACTIVE"]).default("DRAFT"),
   featured: z.boolean().default(false),
+  image_url: z.string().optional().nullable(),
+  scratch_image_url: z.string().optional().nullable(),
   prizes: z.array(prizeSchema).min(1, "Adicione pelo menos um prêmio"),
 });
 
