@@ -281,7 +281,7 @@ export function SiteHeader() {
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="h-12 text-base">
-                    <Link to="/login" onClick={() => setOpen(false)}>
+                    <Link to="/login" search={{ redirect: undefined }} onClick={() => setOpen(false)}>
                       ENTRAR
                     </Link>
                   </Button>
