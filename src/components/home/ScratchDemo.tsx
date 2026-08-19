@@ -13,12 +13,12 @@ export function ScratchDemo() {
   const { logoUrl: rawLogoUrl, siteName } = useSettings();
   const logoUrl = useFileUrl(rawLogoUrl);
 
-  // Use a professional tech/luxury look for the demo
-  const demoCover = "https://images.unsplash.com/photo-1634157703702-3c124b455499?q=80&w=800&auto=format&fit=crop"; // Premium golden texture
-  // High attractiveness prizes as requested: Fridge or PIX R$ 1000
-  const demoResult = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop"; // Modern Fridge look
+  const demoCoverPath = "scratch-cards/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png";
+  const demoResultPath = "prizes/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png";
   const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
 
+  const demoCover = useFileUrl(demoCoverPath);
+  const demoResult = useFileUrl(demoResultPath);
 
   const handleComplete = () => {
     setFinished(true);
