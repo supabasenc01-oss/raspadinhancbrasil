@@ -25,8 +25,17 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as RaspadinhaSlugRouteImport } from './routes/raspadinha.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
+import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminFinanceiroRouteImport } from './routes/_authenticated/admin/financeiro'
+import { Route as AuthenticatedAdminGanhadoresRouteImport } from './routes/_authenticated/admin/ganhadores'
+import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authenticated/admin/logs'
+import { Route as AuthenticatedAdminPremiosRouteImport } from './routes/_authenticated/admin/premios'
+import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_authenticated/admin/relatorios'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedAdminRaspadinhasIndexRouteImport } from './routes/_authenticated/admin/raspadinhas/index'
+import { Route as AuthenticatedAdminRaspadinhasNovoRouteImport } from './routes/_authenticated/admin/raspadinhas/novo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -107,16 +116,69 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminBannersRoute =
+  AuthenticatedAdminBannersRouteImport.update({
+    id: '/admin/banners',
+    path: '/admin/banners',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminConfiguracoesRoute =
+  AuthenticatedAdminConfiguracoesRouteImport.update({
+    id: '/admin/configuracoes',
+    path: '/admin/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/admin/dashboard',
     path: '/admin/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminFinanceiroRoute =
+  AuthenticatedAdminFinanceiroRouteImport.update({
+    id: '/admin/financeiro',
+    path: '/admin/financeiro',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminGanhadoresRoute =
+  AuthenticatedAdminGanhadoresRouteImport.update({
+    id: '/admin/ganhadores',
+    path: '/admin/ganhadores',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminLogsRoute = AuthenticatedAdminLogsRouteImport.update({
+  id: '/admin/logs',
+  path: '/admin/logs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminPremiosRoute =
+  AuthenticatedAdminPremiosRouteImport.update({
+    id: '/admin/premios',
+    path: '/admin/premios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRelatoriosRoute =
+  AuthenticatedAdminRelatoriosRouteImport.update({
+    id: '/admin/relatorios',
+    path: '/admin/relatorios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRaspadinhasIndexRoute =
   AuthenticatedAdminRaspadinhasIndexRouteImport.update({
     id: '/admin/raspadinhas/',
     path: '/admin/raspadinhas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRaspadinhasNovoRoute =
+  AuthenticatedAdminRaspadinhasNovoRouteImport.update({
+    id: '/admin/raspadinhas/novo',
+    path: '/admin/raspadinhas/novo',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -135,8 +197,17 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
+  '/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/admin/premios': typeof AuthenticatedAdminPremiosRoute
+  '/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRoutesByTo {
@@ -154,8 +225,17 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
+  '/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/admin/premios': typeof AuthenticatedAdminPremiosRoute
+  '/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRoutesById {
@@ -175,8 +255,17 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
+  '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
+  '/_authenticated/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
+  '/_authenticated/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/_authenticated/admin/premios': typeof AuthenticatedAdminPremiosRoute
+  '/_authenticated/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/_authenticated/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRouteTypes {
@@ -196,8 +285,17 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/raspadinha/$slug'
+    | '/admin/banners'
+    | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/financeiro'
+    | '/admin/ganhadores'
+    | '/admin/logs'
+    | '/admin/premios'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
     | '/admin/'
+    | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -215,8 +313,17 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/raspadinha/$slug'
+    | '/admin/banners'
+    | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/financeiro'
+    | '/admin/ganhadores'
+    | '/admin/logs'
+    | '/admin/premios'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
     | '/admin'
+    | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas'
   id:
     | '__root__'
@@ -235,8 +342,17 @@ export interface FileRouteTypes {
     | '/termos'
     | '/_authenticated/dashboard'
     | '/raspadinha/$slug'
+    | '/_authenticated/admin/banners'
+    | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/financeiro'
+    | '/_authenticated/admin/ganhadores'
+    | '/_authenticated/admin/logs'
+    | '/_authenticated/admin/premios'
+    | '/_authenticated/admin/relatorios'
+    | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/raspadinhas/novo'
     | '/_authenticated/admin/raspadinhas/'
   fileRoutesById: FileRoutesById
 }
@@ -371,11 +487,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/banners': {
+      id: '/_authenticated/admin/banners'
+      path: '/admin/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AuthenticatedAdminBannersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/configuracoes': {
+      id: '/_authenticated/admin/configuracoes'
+      path: '/admin/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AuthenticatedAdminConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
       path: '/admin/dashboard'
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/financeiro': {
+      id: '/_authenticated/admin/financeiro'
+      path: '/admin/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AuthenticatedAdminFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/ganhadores': {
+      id: '/_authenticated/admin/ganhadores'
+      path: '/admin/ganhadores'
+      fullPath: '/admin/ganhadores'
+      preLoaderRoute: typeof AuthenticatedAdminGanhadoresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/logs': {
+      id: '/_authenticated/admin/logs'
+      path: '/admin/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AuthenticatedAdminLogsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/premios': {
+      id: '/_authenticated/admin/premios'
+      path: '/admin/premios'
+      fullPath: '/admin/premios'
+      preLoaderRoute: typeof AuthenticatedAdminPremiosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/relatorios': {
+      id: '/_authenticated/admin/relatorios'
+      path: '/admin/relatorios'
+      fullPath: '/admin/relatorios'
+      preLoaderRoute: typeof AuthenticatedAdminRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/raspadinhas/': {
@@ -385,20 +557,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRaspadinhasIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/raspadinhas/novo': {
+      id: '/_authenticated/admin/raspadinhas/novo'
+      path: '/admin/raspadinhas/novo'
+      fullPath: '/admin/raspadinhas/novo'
+      preLoaderRoute: typeof AuthenticatedAdminRaspadinhasNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
+  AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminFinanceiroRoute: typeof AuthenticatedAdminFinanceiroRoute
+  AuthenticatedAdminGanhadoresRoute: typeof AuthenticatedAdminGanhadoresRoute
+  AuthenticatedAdminLogsRoute: typeof AuthenticatedAdminLogsRoute
+  AuthenticatedAdminPremiosRoute: typeof AuthenticatedAdminPremiosRoute
+  AuthenticatedAdminRelatoriosRoute: typeof AuthenticatedAdminRelatoriosRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminRaspadinhasNovoRoute: typeof AuthenticatedAdminRaspadinhasNovoRoute
   AuthenticatedAdminRaspadinhasIndexRoute: typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
+  AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminFinanceiroRoute: AuthenticatedAdminFinanceiroRoute,
+  AuthenticatedAdminGanhadoresRoute: AuthenticatedAdminGanhadoresRoute,
+  AuthenticatedAdminLogsRoute: AuthenticatedAdminLogsRoute,
+  AuthenticatedAdminPremiosRoute: AuthenticatedAdminPremiosRoute,
+  AuthenticatedAdminRelatoriosRoute: AuthenticatedAdminRelatoriosRoute,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminRaspadinhasNovoRoute:
+    AuthenticatedAdminRaspadinhasNovoRoute,
   AuthenticatedAdminRaspadinhasIndexRoute:
     AuthenticatedAdminRaspadinhasIndexRoute,
 }
