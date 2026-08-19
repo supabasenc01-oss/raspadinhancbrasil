@@ -28,7 +28,7 @@ export function ScratchArea({
   const resultUrl = useFileUrl(resultImage);
 
   const SCRATCH_THRESHOLD = 45; // Slightly lower threshold for better UX
-  const BRUSH_SIZE = 45;
+  const BRUSH_SIZE = 80; // Larger brush size as requested by user
 
   // Initialize Canvas with cover image and premium effects
   useEffect(() => {
@@ -168,7 +168,7 @@ export function ScratchArea({
       }}
     >
       {/* Background Result Layer */}
-      <div className="absolute inset-0 flex items-center justify-center p-8 text-center bg-surface-2">
+      <div className="absolute inset-0 flex items-center justify-center bg-surface-2 overflow-hidden">
         <AnimatePresence mode="wait">
           {resultUrl ? (
             <motion.div
@@ -180,7 +180,7 @@ export function ScratchArea({
               <img 
                 src={resultUrl} 
                 alt="Resultado" 
-                className="max-w-full max-h-full object-contain drop-shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]" 
+                className="size-full object-cover drop-shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]" 
               />
               
               {/* Shine effect for winners */}
