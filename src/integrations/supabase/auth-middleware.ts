@@ -83,29 +83,20 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    // Verify the token with Supabase - getUser() is more robust for different token types
-    const { data, error } = await supabase.auth.getUser(token);
-    
-    if (error || !data?.user) {
-      // Fallback for some environments where getClaims might be needed
-      const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-      if (claimsError || !claimsData?.claims?.sub) {
-        throw new Error('Unauthorized: Invalid token');
-      }
-      return next({
-        context: {
-          supabase,
-          userId: claimsData.claims.sub,
-          claims: claimsData.claims,
-        },
-      });
+    const { data, error } = await supabase.auth.getClaims(token);
+    if (error || !data?.claims) {
+      throw new Error('Unauthorized: Invalid token');
+    }
+
+    if (!data.claims.sub) {
+      throw new Error('Unauthorized: No user ID found in token');
     }
 
     return next({
       context: {
         supabase,
-        userId: data.user.id,
-        claims: {},
+        userId: data.claims.sub,
+        claims: data.claims,
       },
     });
   },
