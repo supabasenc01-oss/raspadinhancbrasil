@@ -315,6 +315,8 @@ CREATE TABLE IF NOT EXISTS public.admin_logs (
   old_data JSONB,
   new_data JSONB,
   ip_address TEXT,
+  severity TEXT DEFAULT 'INFO', -- INFO, WARNING, ERROR, CRITICAL
+  stack_trace TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_admin_logs_actor ON public.admin_logs (actor_id);

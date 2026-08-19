@@ -51,9 +51,10 @@ function AdminLogsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Nível</TableHead>
                 <TableHead>Ação / Entidade</TableHead>
                 <TableHead>Administrador</TableHead>
-                <TableHead>Detalhes (Variação)</TableHead>
+                <TableHead>Detalhes / Erro</TableHead>
                 <TableHead>Data / IP</TableHead>
               </TableRow>
             </TableHeader>
@@ -67,6 +68,17 @@ function AdminLogsPage() {
               ) : logs && logs.length > 0 ? (
                 logs.map((log) => (
                   <TableRow key={log.id} className="text-sm">
+                    <TableCell>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        (log as any).severity === 'ERROR' || (log as any).severity === 'CRITICAL' 
+                          ? 'bg-red-500/20 text-red-500' 
+                          : (log as any).severity === 'WARNING'
+                          ? 'bg-yellow-500/20 text-yellow-500'
+                          : 'bg-blue-500/20 text-blue-500'
+                      }`}>
+                        {(log as any).severity || 'INFO'}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary">
@@ -85,26 +97,31 @@ function AdminLogsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 text-[10px]">
+                      <div className="flex flex-col gap-2 max-w-xs">
                         {log.old_data || log.new_data ? (
-                          <div className="flex flex-col gap-1 w-full max-w-xs">
+                          <div className="flex flex-col gap-1 text-[10px]">
                             <div className="flex items-center gap-2 text-muted-foreground">
-                              <span className="p-1 rounded bg-muted">DE</span>
+                              <span className="p-1 rounded bg-muted shrink-0">DE</span>
                               <span className="truncate italic">{JSON.stringify(log.old_data) || "nulo"}</span>
                             </div>
                             <div className="flex items-center gap-2 text-primary">
-                              <span className="p-1 rounded bg-primary/10">PARA</span>
+                              <span className="p-1 rounded bg-primary/10 shrink-0">PARA</span>
                               <span className="truncate font-bold">{JSON.stringify(log.new_data) || "nulo"}</span>
                             </div>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground italic">Sem detalhes de payload</span>
+                          <span className="text-muted-foreground italic text-[10px]">Sem detalhes</span>
+                        )}
+                        {(log as any).stack_trace && (
+                          <div className="mt-2 p-2 bg-red-950/30 border border-red-500/20 rounded text-[9px] font-mono text-red-200 overflow-x-auto max-h-24">
+                            {(log as any).stack_trace}
+                          </div>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col text-[10px] text-muted-foreground">
-                        <span className="flex items-center gap-1 font-medium text-foreground">
+                        <span className="flex items-center gap-1 font-medium text-foreground whitespace-nowrap">
                           <Clock className="size-3" /> {formatDate(log.created_at)}
                         </span>
                         <span className="flex items-center gap-1">
