@@ -11,7 +11,7 @@ const SLIDES = [
     id: 1,
     title: "Aqui <span class='text-success'>R$ 1,00</span> pode virar <br/><span class='text-primary'>R$ 2.500</span> no PIX",
     description: "Basta uma raspadinha para mudar sua vida!",
-    image: "https://images.unsplash.com/photo-1621504450181-5d356f63d3ee?q=80&w=1974&auto=format&fit=crop",
+    image: "banners/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png",
     cta: "JOGAR AGORA",
     color: "from-primary/20"
   },
@@ -19,7 +19,7 @@ const SLIDES = [
     id: 2,
     title: "Cozinha <span class='text-accent'>Premium</span> <br/>e Tech de Ponta",
     description: "Concorra a geladeiras, microondas e batedeiras elétricas.",
-    image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070&auto=format&fit=crop",
+    image: "banners/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png",
     cta: "VER PRÊMIOS",
     color: "from-accent/20"
   },
@@ -27,7 +27,7 @@ const SLIDES = [
     id: 3,
     title: "Mega PIX <br/><span class='text-success'>Instantâneo</span>",
     description: "O prêmio cai na sua conta em segundos após raspar.",
-    image: "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?q=80&w=2071&auto=format&fit=crop",
+    image: "banners/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png",
     cta: "QUERO GANHAR",
     color: "from-success/20"
   }
@@ -54,11 +54,7 @@ export function HomeCarousel() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-10" />
           <div className={`absolute inset-0 bg-gradient-to-t ${SLIDES[current]?.color ?? ""} to-transparent z-10`} />
-          <img 
-            src={SLIDES[current]?.image ?? ""} 
-            className="w-full h-full object-cover scale-105 animate-slow-zoom carousel-image" 
-            alt="Promo"
-          />
+          <CarouselImage src={SLIDES[current]?.image ?? ""} />
           
           <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 sm:px-20 max-w-4xl space-y-6">
             {logoUrl && (
@@ -122,3 +118,15 @@ export function HomeCarousel() {
     </div>
   );
 }
+
+function CarouselImage({ src }: { src: string }) {
+  const url = useFileUrl(src);
+  return (
+    <img 
+      src={url || ""} 
+      className="w-full h-full object-cover scale-105 animate-slow-zoom carousel-image" 
+      alt="Promo"
+    />
+  );
+}
+

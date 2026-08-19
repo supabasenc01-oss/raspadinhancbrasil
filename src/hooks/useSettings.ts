@@ -13,11 +13,10 @@ export function useSettings() {
     if (val === null || val === undefined) return defaultValue;
     
     if (typeof val === 'string') {
-      if (val.startsWith('"') && val.endsWith('"')) {
-        val = val.slice(1, -1);
-      }
-      if (val === "null" || val === "") return defaultValue;
-      return val;
+      // Remove double quotes if present (common in JSONB text values)
+      const cleanVal = val.replace(/^"|"$/g, '');
+      if (cleanVal === "null" || cleanVal === "") return defaultValue;
+      return cleanVal;
     }
     
     // Convert all non-string values to string to satisfy return type

@@ -57,7 +57,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
         </span>
       )}
       {(!compact && !logoUrl) && (
-        <span className="font-display text-lg font-semibold tracking-tight">
+        <span className="font-display text-lg font-black tracking-tighter uppercase italic">
           {siteName.includes("Premium") ? (
             <>
               {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
