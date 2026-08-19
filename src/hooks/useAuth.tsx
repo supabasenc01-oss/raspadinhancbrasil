@@ -40,18 +40,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
 
-  const loadUserData = useCallback(async (userId: string | undefined) => {
+  const loadUserData = useCallback(async (userId: string | undefined, active: boolean = true) => {
     if (!userId) {
-      setProfile(null);
-      setRoles([]);
+      if (active) {
+        setProfile(null);
+        setRoles([]);
+      }
       return;
     }
     const [profileResult, rolesResult] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId),
     ]);
-    setProfile(profileResult.data ?? null);
-    setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+    if (active) {
+      setProfile(profileResult.data ?? null);
+      setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+    }
   }, []);
 
   useEffect(() => {
@@ -60,13 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (!active) return;
       setSession(nextSession);
-      void loadUserData(nextSession?.user?.id);
+      void loadUserData(nextSession?.user?.id, active);
     });
 
     void supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       setSession(data.session);
-      void loadUserData(data.session?.user?.id).finally(() => setLoading(false));
+      void loadUserData(data.session?.user?.id, active).finally(() => {
+        if (active) setLoading(false);
+      });
     });
 
     return () => {
@@ -76,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadUserData]);
 
   const refreshProfile = useCallback(async () => {
-    await loadUserData(session?.user?.id);
+    await loadUserData(session?.user?.id, true);
   }, [loadUserData, session?.user?.id]);
 
   const value = useMemo<AuthContextValue>(() => {
