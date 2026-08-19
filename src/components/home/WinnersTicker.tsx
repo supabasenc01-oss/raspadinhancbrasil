@@ -1,13 +1,22 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Medal, Trophy } from "lucide-react";
 
-export function WinnersTicker() {
-  const mockWinners = [
-    { id: 1, name: "Carlos A.", amount: 500, time: "2 min atrás" },
-    { id: 2, name: "Ana P.", amount: 50, time: "5 min atrás" },
-    { id: 3, name: "Beto F.", amount: 1000, time: "12 min atrás" },
-    { id: 4, name: "Julia M.", amount: 200, time: "15 min atrás" },
-    { id: 5, name: "Ricardo S.", amount: 2500, time: "22 min atrás" },
+interface Winner {
+  id: string | number;
+  display_name?: string;
+  winner_name?: string;
+  amount?: number;
+  prize_value?: number;
+  created_at: string;
+}
+
+export function WinnersTicker({ winners }: { winners?: Winner[] }) {
+  const displayWinners = winners && winners.length > 0 ? winners : [
+    { id: 1, winner_name: "Carlos A.", prize_value: 500, created_at: new Date().toISOString() },
+    { id: 2, winner_name: "Ana P.", prize_value: 50, created_at: new Date().toISOString() },
+    { id: 3, winner_name: "Beto F.", prize_value: 1000, created_at: new Date().toISOString() },
+    { id: 4, winner_name: "Julia M.", prize_value: 200, created_at: new Date().toISOString() },
+    { id: 5, winner_name: "Ricardo S.", prize_value: 2500, created_at: new Date().toISOString() },
   ];
 
   return (
@@ -22,13 +31,13 @@ export function WinnersTicker() {
             animate={{ x: ["100%", "-100%"] }}
             transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
           >
-            {[...mockWinners, ...mockWinners].map((winner, i) => (
+            {[...displayWinners, ...displayWinners].map((winner, i) => (
               <div key={i} className="flex items-center gap-3">
                 <Medal className="size-4 text-accent" />
-                <span className="text-sm font-bold">{winner.name}</span>
-                <span className="text-sm text-primary font-black">R$ {winner.amount},00</span>
+                <span className="text-sm font-bold">{winner.display_name || winner.winner_name}</span>
+                <span className="text-sm text-primary font-black">R$ {winner.amount || winner.prize_value},00</span>
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Clock className="size-3" /> {winner.time}
+                  <Clock className="size-3" /> {new Date(winner.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             ))}
