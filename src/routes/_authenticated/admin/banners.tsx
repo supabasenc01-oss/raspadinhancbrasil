@@ -191,7 +191,14 @@ function AdminBannersPage() {
     try {
       const reader = new FileReader();
       const base64Promise = new Promise<string>((resolve) => {
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onload = () => {
+          const result = reader.result;
+          if (typeof result === 'string') {
+            resolve(result.split(',')[1]);
+          } else {
+            resolve("");
+          }
+        };
         reader.readAsDataURL(file);
       });
       const base64Data = await base64Promise;
