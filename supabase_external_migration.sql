@@ -661,7 +661,10 @@ BEGIN
     (v_card_id, 'Prêmio Máximo', 50.00, 0.001, 10, 10, true),
     (v_card_id, 'Prêmio Prata', 10.00, 0.01, 100, 100, true),
     (v_card_id, 'Prêmio Bronze', 2.00, 0.1, 1000, 1000, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 2. Raspadinha Premium Gold
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
