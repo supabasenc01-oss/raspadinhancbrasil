@@ -8,9 +8,11 @@ import confetti from 'canvas-confetti';
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
   const [finished, setFinished] = useState(false);
+  const { logoUrl, siteName } = useSettings();
 
-  const demoCover = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=800&auto=format&fit=crop";
-  const demoResult = "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?q=80&w=400&auto=format&fit=crop"; // A gold coin/trophy looking image
+  // Use a professional tech/luxury look for the demo
+  const demoCover = "https://images.unsplash.com/photo-1634157703702-3c124b455499?q=80&w=800&auto=format&fit=crop"; // Premium golden texture
+  const demoResult = "https://images.unsplash.com/photo-1553481187-be93c21490a9?q=80&w=400&auto=format&fit=crop"; // Gold coins
 
   const handleComplete = () => {
     setFinished(true);
@@ -18,7 +20,7 @@ export function ScratchDemo() {
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#3B82F6', '#F59E0B', '#10B981']
+      colors: ['#F59E0B', '#10B981', '#ffffff']
     });
   };
 
@@ -28,11 +30,14 @@ export function ScratchDemo() {
   };
 
   return (
-    <section className="py-24 px-4 relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
+    <section className="py-24 px-4 relative overflow-hidden bg-black/40">
+      {/* Dynamic Background Effects */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
       
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
@@ -40,38 +45,39 @@ export function ScratchDemo() {
             viewport={{ once: true }}
             className="space-y-8"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-bold tracking-wider uppercase">
-              <Zap className="size-4" />
-              Experimente Agora
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-black tracking-widest uppercase">
+              <Zap className="size-4 fill-current" />
+              DEMONSTRAÇÃO REAL
             </div>
             
-            <h2 className="text-5xl md:text-6xl font-display font-black leading-[0.9] tracking-tighter uppercase">
-              A EMOÇÃO DE <span className="text-primary">GANHAR</span> <br />
-              NA PALMA DA MÃO
+            <h2 className="text-6xl md:text-7xl font-display font-black leading-[0.85] tracking-tighter uppercase">
+              SINTA A <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-accent animate-gradient-x">ADRENALINA</span> <br />
+              DE GANHAR
             </h2>
             
-            <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-              Sinta a textura, ouça o som e descubra prêmios incríveis instantaneamente. Nossa tecnologia de raspagem digital é a mais realista do mercado.
+            <p className="text-xl text-muted-foreground leading-relaxed max-w-xl font-medium">
+              Experimente agora o motor de raspagem mais tecnológico do Brasil. Rápido, intuitivo e 100% transparente.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-border">
-                <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                  <Trophy className="size-6" />
+            <div className="flex flex-col sm:flex-row gap-6 pt-4">
+              <div className="flex items-center gap-4 p-5 rounded-3xl bg-surface/40 backdrop-blur-md border border-white/5 hover:border-primary/30 transition-colors group">
+                <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <Trophy className="size-7" />
                 </div>
                 <div>
-                  <div className="font-bold">Prêmios Reais</div>
-                  <div className="text-sm text-muted-foreground">PIX, Eletrônicos e muito mais</div>
+                  <div className="font-black text-lg uppercase tracking-tight">Prêmios VIP</div>
+                  <div className="text-sm text-muted-foreground font-medium">PIX e Itens Exclusivos</div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-border">
-                <div className="size-12 rounded-xl bg-success/10 flex items-center justify-center text-success">
-                  <Zap className="size-6" />
+              <div className="flex items-center gap-4 p-5 rounded-3xl bg-surface/40 backdrop-blur-md border border-white/5 hover:border-success/30 transition-colors group">
+                <div className="size-14 rounded-2xl bg-success/10 flex items-center justify-center text-success group-hover:scale-110 transition-transform">
+                  <Zap className="size-7" />
                 </div>
                 <div>
-                  <div className="font-bold">Saque Rápido</div>
-                  <div className="text-sm text-muted-foreground">Receba em minutos no seu PIX</div>
+                  <div className="font-black text-lg uppercase tracking-tight">Pagamento Express</div>
+                  <div className="text-sm text-muted-foreground font-medium">Receba via PIX na hora</div>
                 </div>
               </div>
             </div>
@@ -83,38 +89,59 @@ export function ScratchDemo() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary to-accent opacity-20 blur-2xl rounded-[3rem]" />
-            
-            <div className="relative bg-surface-2 border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
-              <div className="mb-8 text-center">
-                <h3 className="text-2xl font-bold mb-2">RASPE AQUI!</h3>
-                <p className="text-muted-foreground text-sm">Use o mouse ou o dedo para revelar</p>
-              </div>
-
-              <div key={key}>
-                <ScratchArea 
-                  coverImage={demoCover}
-                  resultImage={demoResult}
-                  onComplete={handleComplete}
-                  isWinner={true}
-                />
-              </div>
-
-              <div className="mt-8 flex justify-center">
-                {finished ? (
-                  <Button 
-                    onClick={reset}
-                    size="lg"
-                    className="rounded-full px-8 bg-primary hover:bg-primary/90 text-white font-bold group"
-                  >
-                    <RefreshCw className="mr-2 size-5 group-hover:rotate-180 transition-transform duration-500" />
-                    TENTAR NOVAMENTE
-                  </Button>
-                ) : (
-                  <div className="h-12 flex items-center text-muted-foreground animate-pulse font-medium">
-                    Experimente raspar a área acima...
+            {/* Premium Card Container */}
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-primary opacity-30 blur-xl rounded-[3rem] group-hover:opacity-50 transition-opacity duration-500" />
+              
+              <div className="relative bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] p-6 md:p-10 shadow-2xl overflow-hidden">
+                {/* Branding inside the demo card */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+                
+                <div className="mb-8 flex flex-col items-center">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt={siteName} className="h-12 mb-4 drop-shadow-lg" />
+                  ) : (
+                    <div className="text-2xl font-black tracking-tighter text-primary mb-4 italic uppercase">{siteName}</div>
+                  )}
+                  <div className="px-6 py-1.5 rounded-full bg-white/5 border border-white/10">
+                    <span className="text-sm font-black text-white/70 uppercase tracking-[0.2em]">Raspe para testar</span>
                   </div>
-                )}
+                </div>
+
+                <div key={key} className="relative z-10">
+                  <ScratchArea 
+                    coverImage={demoCover}
+                    resultImage={demoResult}
+                    onComplete={handleComplete}
+                    isWinner={true}
+                  />
+                </div>
+
+                <div className="mt-8 flex justify-center">
+                  {finished ? (
+                    <Button 
+                      onClick={reset}
+                      size="lg"
+                      className="rounded-full px-10 h-14 bg-white text-black hover:bg-white/90 font-black tracking-tighter uppercase group"
+                    >
+                      <RefreshCw className="mr-3 size-5 group-hover:rotate-180 transition-transform duration-700" />
+                      TESTAR NOVAMENTE
+                    </Button>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-1 w-24 bg-primary/20 rounded-full overflow-hidden">
+                        <motion.div 
+                          animate={{ x: [-100, 100] }} 
+                          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                          className="h-full w-12 bg-primary" 
+                        />
+                      </div>
+                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest animate-pulse">
+                        Aguardando raspagem...
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>
