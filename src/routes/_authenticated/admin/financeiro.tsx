@@ -30,9 +30,10 @@ function AdminFinancePage() {
       const newValues: Record<string, string> = {};
       settings.forEach(s => {
         try {
-          newValues[s.key] = JSON.parse(s.value);
+          const parsed = typeof s.value === 'string' ? JSON.parse(s.value) : s.value;
+          newValues[s.key] = String(parsed || '');
         } catch {
-          newValues[s.key] = s.value;
+          newValues[s.key] = String(s.value || '');
         }
       });
       setValues(newValues);
