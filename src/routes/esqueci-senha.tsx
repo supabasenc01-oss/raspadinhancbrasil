@@ -43,7 +43,7 @@ function ForgotPasswordPage() {
       title="Recuperar senha"
       description="Informe seu e-mail e enviaremos um link para criar uma nova senha."
       footer={
-        <Link to="/login" className="text-primary hover:underline">
+        <Link to="/login" search={{ redirect: undefined }} className="text-primary hover:underline">
           Voltar para o login
         </Link>
       }

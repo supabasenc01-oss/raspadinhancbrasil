@@ -242,7 +242,7 @@ export function SiteHeader() {
           ) : (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Link to="/login">Entrar</Link>
+                <Link to="/login" search={{ redirect: undefined }}>Entrar</Link>
               </Button>
               <Button asChild size="sm" className="bg-gradient-brand text-primary-foreground font-bold px-6 shadow-glow">
                 <Link to="/cadastro">CRIAR CONTA</Link>
