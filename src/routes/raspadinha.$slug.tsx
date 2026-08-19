@@ -227,10 +227,17 @@ function ScratchCardDetailPage() {
                   {gameState === "SCRATCHING" && (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button 
-                        variant="outline" 
+                        size="lg"
+                        className="h-14 bg-gradient-brand text-primary-foreground font-black shadow-lg shadow-primary/20"
                         onClick={() => setIsAutoRevealing(true)}
+                        disabled={isAutoRevealing}
                       >
-                        <Sparkles className="size-4 mr-2" /> REVELAR TUDO
+                        {isAutoRevealing ? (
+                          <Loader2 className="size-5 animate-spin mr-2" />
+                        ) : (
+                          <Sparkles className="size-5 mr-2" />
+                        )}
+                        RASPAR AUTOMATICAMENTE
                       </Button>
                     </div>
                   )}
