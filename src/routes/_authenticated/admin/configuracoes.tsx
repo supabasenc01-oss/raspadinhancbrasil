@@ -27,6 +27,7 @@ import { systemSettingsQuery } from "@/lib/queries";
 import { updateSystemSettings } from "@/lib/settings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadPlatformFile } from "@/lib/storage";
+import { uploadPlatformFileFn } from "@/lib/storage.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -95,13 +96,38 @@ function AdminSettingsPage() {
 
     setIsUploading(key);
     try {
-      const { path, error } = await uploadPlatformFile("logos", file);
-      if (error) throw new Error(error);
+      // Convert file to base64 to send to server function
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result;
+          if (typeof result === 'string') {
+            const base64 = result.split(',')[1];
+            resolve(base64 || "");
+          } else {
+            reject(new Error("Falha ao ler o arquivo"));
+          }
+        };
+        reader.onerror = () => reject(new Error("Erro na leitura do arquivo"));
+        reader.readAsDataURL(file);
+      });
+
+      const base64Data = await base64Promise;
       
-      if (path) {
-        // Construct the full URL for internal use (or signed URL will be used in components)
-        // For simplicity in the admin settings, we store the path and resolve it where needed
-        handleChange(key, path);
+      const result = await uploadPlatformFileFn({
+        data: {
+          bucket: "logos",
+          fileName: file.name,
+          fileType: file.type,
+          base64Data,
+          prefix: ""
+        }
+      });
+
+      if (result.error) throw new Error(result.error);
+      
+      if (result.path) {
+        handleChange(key, result.path);
         toast.success("Upload realizado com sucesso!");
       }
     } catch (error: any) {
