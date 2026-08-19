@@ -113,7 +113,7 @@ export function ScratchArea({
           // Draw custom orientation text if set
           if (scratchOverlayText) {
             ctx.globalCompositeOperation = 'source-over';
-            ctx.font = 'bold 24px system-ui';
+            ctx.font = 'bold 24px "SF Pro Display", system-ui';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
             ctx.textAlign = 'center';
             ctx.fillText(scratchOverlayText, canvas.width / 2, y + drawHeight + 40);
@@ -126,7 +126,7 @@ export function ScratchArea({
         // Draw text even without logo if set
         if (scratchOverlayText) {
           ctx.globalCompositeOperation = 'source-over';
-          ctx.font = 'bold 24px system-ui';
+          ctx.font = 'bold 24px "SF Pro Display", system-ui';
           ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
           ctx.textAlign = 'center';
           ctx.fillText(scratchOverlayText, canvas.width / 2, canvas.height / 2);

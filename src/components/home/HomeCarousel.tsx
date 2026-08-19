@@ -36,7 +36,7 @@ const SLIDES = [
 export function HomeCarousel() {
   const { logoUrl: rawLogoUrl, siteName, settings } = useSettings();
   const settingObj = Array.isArray(settings) ? settings.find((s: any) => s.key === 'logo_url') : null;
-  const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
+  const cacheBust = settingObj?.updated_at ? new Date(settingObj.updated_at).getTime().toString() : new Date().getTime().toString();
   const logoUrl = useFileUrl(rawLogoUrl, cacheBust, false);
   const [current, setCurrent] = useState(0);
 
