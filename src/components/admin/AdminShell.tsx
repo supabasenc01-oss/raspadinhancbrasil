@@ -67,7 +67,7 @@ export function AdminShell({
   children: ReactNode;
   actions?: ReactNode;
 }) {
-  const { loading, isStaff, roles, profile, signOut } = useAuth();
+  const { loading, isStaff, roles, profile, user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
