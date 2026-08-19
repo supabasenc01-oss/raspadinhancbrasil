@@ -219,8 +219,8 @@ CREATE TABLE IF NOT EXISTS public.admin_logs (
   ip_address TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_admin_logs_actor ON public.admin_logs (actor_id);
-CREATE INDEX idx_admin_logs_created ON public.admin_logs (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_logs_actor ON public.admin_logs (actor_id);
+CREATE INDEX IF NOT EXISTS idx_admin_logs_created ON public.admin_logs (created_at DESC);
 GRANT SELECT, INSERT ON public.admin_logs TO authenticated;
 GRANT ALL ON public.admin_logs TO service_role;
 ALTER TABLE public.admin_logs ENABLE ROW LEVEL SECURITY;
