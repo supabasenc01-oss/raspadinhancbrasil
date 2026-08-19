@@ -171,9 +171,18 @@ BEGIN
         CREATE TRIGGER trg_scratch_cards_updated BEFORE UPDATE ON public.scratch_cards FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO anon, authenticated USING (status = 'ACTIVE');
-CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_cards' AND policyname = 'scratch_cards_public_read') THEN
+        CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO anon, authenticated USING (status = 'ACTIVE');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_cards' AND policyname = 'scratch_cards_staff_read') THEN
+        CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_cards' AND policyname = 'scratch_cards_staff_write') THEN
+        CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
