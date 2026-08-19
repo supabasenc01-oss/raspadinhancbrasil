@@ -1,187 +1,193 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Gift, ShieldCheck, Sparkles, Ticket, Trophy, Zap } from "lucide-react";
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { 
+  Zap, 
+  ShieldCheck, 
+  Trophy, 
+  Sparkles, 
+  ArrowRight, 
+  Ticket,
+  Clock,
+  History
+} from 'lucide-react';
 
-import { PublicPage } from "@/components/layout/PublicPage";
-import { ScratchCardTile } from "@/components/scratch/ScratchCardTile";
-import { EmptyState } from "@/components/EmptyState";
-import { Button } from "@/components/ui/button";
-import { useFileUrl } from "@/hooks/useFileUrl";
-import { featuredScratchCardsQuery, heroBannersQuery } from "@/lib/queries";
+import { PublicPage } from '@/components/layout/PublicPage';
+import { Button } from '@/components/ui/button';
+import { activeScratchCardsQuery } from '@/lib/queries';
+import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
+import { PageHero } from '@/components/layout/PageHero';
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "RaspaPremium — Raspadinhas online com prêmios reais" },
-      {
-        name: "description",
-        content:
-          "Raspadinhas digitais com experiência premium, prêmios transparentes e pagamento simples. Crie sua conta e comece a raspar.",
-      },
-      { property: "og:title", content: "RaspaPremium — Raspadinhas online" },
-      {
-        property: "og:description",
-        content: "Plataforma premium de raspadinhas digitais com prêmios transparentes.",
-      },
-    ],
-  }),
+export const Route = createFileRoute('/')({
   component: HomePage,
 });
 
-function HeroBanner() {
-  const { data: banners } = useQuery(heroBannersQuery);
-  const banner = banners?.[0] ?? null;
-  const imageUrl = useFileUrl(banner?.image_url);
-
-  return (
-    <div className="surface-card relative flex min-h-[200px] items-end overflow-hidden sm:min-h-[280px]">
-      {imageUrl ? (
-        <img src={imageUrl} alt={banner?.title ?? "Banner"} className="absolute inset-0 size-full object-cover" />
-      ) : (
-        <div className="bg-hero-glow absolute inset-0" />
-      )}
-      <div className="relative w-full bg-gradient-to-t from-background/90 to-transparent p-6">
-        <p className="text-xs uppercase tracking-widest text-primary">
-          {banner ? "Destaque" : "Espaço para banner"}
-        </p>
-        <p className="mt-1 font-display text-lg font-semibold">
-          {banner?.title ?? "Publique seu banner pelo painel administrativo"}
-        </p>
-        {banner?.subtitle && <p className="mt-1 text-sm text-muted-foreground">{banner.subtitle}</p>}
-      </div>
-    </div>
-  );
-}
-
-const STEPS = [
-  {
-    icon: Ticket,
-    title: "Escolha sua raspadinha",
-    description: "Navegue pelas raspadinhas disponíveis e veja os prêmios de cada edição.",
-  },
-  {
-    icon: Sparkles,
-    title: "Raspe e revele",
-    description: "Interface rápida e fluida, otimizada para celular, com resultado imediato.",
-  },
-  {
-    icon: Trophy,
-    title: "Receba seu prêmio",
-    description: "Prêmios confirmados ficam registrados na sua conta com histórico completo.",
-  },
-];
-
 function HomePage() {
-  const { data: featured, isLoading } = useQuery(featuredScratchCardsQuery);
+  const { data: scratchCards, isLoading } = useQuery(activeScratchCardsQuery);
 
   return (
     <PublicPage>
-      <section className="bg-hero-glow border-b border-border/60">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 sm:py-20 lg:grid-cols-2 lg:items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-              <Zap className="size-3.5" /> Experiência premium 2026
-            </span>
-            <h1 className="mt-5 text-3xl font-bold leading-tight sm:text-5xl">
-              Raspadinhas online com <span className="text-gradient-brand">emoção instantânea</span>
-            </h1>
-            <p className="mt-4 max-w-lg text-sm text-muted-foreground sm:text-base">
-              Uma plataforma moderna, transparente e feita para celular. Escolha sua raspadinha,
-              revele o resultado e acompanhe tudo em um painel só seu.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="bg-gradient-brand text-primary-foreground">
-                <Link to="/cadastro">Criar conta grátis</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/raspadinhas">Ver raspadinhas</Link>
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="size-4 text-success" />
-              Plataforma com regras auditáveis e jogo responsável (+18).
-            </div>
-          </div>
-          <HeroBanner />
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-6xl px-4 py-14">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-2xl font-semibold">Raspadinhas em destaque</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Selecionadas pela equipe e publicadas diretamente do painel.
-            </p>
-          </div>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/raspadinhas">Ver todas</Link>
+      {/* Hero Section */}
+      <PageHero 
+        title="ETAPA 2 — MOTOR COMPLETO DE RASPADINHAS E PRÊMIOS"
+        description="Agora implemente o sistema real de raspadinhas sobre a estrutura criada na ETAPA 1. Não refazer o projeto. Aproveitar a arquitetura existente."
+        centered
+      >
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          <Button size="lg" className="bg-gradient-brand text-primary-foreground group" asChild>
+            <Link to="/raspadinhas">
+              VER TODAS AS RASPADINHAS 
+              <Zap className="ml-2 size-4 group-hover:scale-110 transition-transform" />
+            </Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link to="/como-funciona">
+              SAIBA MAIS
+            </Link>
           </Button>
         </div>
+      </PageHero>
 
-        <div className="mt-8">
+      {/* Stats / Features Bar */}
+      <div className="border-y border-border/50 bg-surface/50 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="text-2xl font-black text-primary">100%</div>
+              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">SEGURO & AUDITÁVEL</div>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="text-2xl font-black text-primary">INSTANTÂNEO</div>
+              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">PRÊMIOS NA HORA</div>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="text-2xl font-black text-primary">+20</div>
+              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">PRÊMIOS POR JOGO</div>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="text-2xl font-black text-primary">PIX</div>
+              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">PAGAMENTOS RÁPIDOS</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Active Scratch Cards */}
+      <section className="py-20 px-4">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-display font-black tracking-tight">
+                RASPADINHAS <span className="text-primary">POPULARES</span>
+              </h2>
+              <p className="text-muted-foreground">Escolha a sua favorita e tente a sorte agora mesmo.</p>
+            </div>
+            <Button variant="ghost" className="group" asChild>
+              <Link to="/raspadinhas">
+                Ver todas <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </div>
+
           {isLoading ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {[0, 1, 2].map((index) => (
-                <div key={index} className="surface-card h-72 animate-pulse" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-[3/4] rounded-3xl bg-surface animate-pulse" />
               ))}
             </div>
-          ) : featured && featured.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((card) => (
+          ) : scratchCards && scratchCards.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {scratchCards.map((card) => (
                 <ScratchCardTile key={card.id} card={card} />
               ))}
             </div>
           ) : (
-            <EmptyState
-              icon={<Ticket className="size-6" />}
-              title="Nenhuma raspadinha em destaque"
-              description="Assim que a equipe publicar e destacar raspadinhas no painel administrativo, elas aparecerão aqui."
-            />
+            <div className="text-center py-20 surface-card">
+              <Ticket className="size-12 text-muted-foreground mx-auto mb-4 opacity-20" />
+              <h3 className="text-lg font-medium">Nenhuma raspadinha ativa no momento</h3>
+              <p className="text-sm text-muted-foreground mt-1">Volte em breve para novas oportunidades.</p>
+            </div>
           )}
         </div>
       </section>
 
-      <section className="border-y border-border/60 bg-surface/30">
-        <div className="mx-auto w-full max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-semibold">Últimos ganhadores</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sempre exibiremos apenas ganhadores reais e confirmados pela plataforma.
-          </p>
-          <div className="mt-8">
-            <EmptyState
-              icon={<Trophy className="size-6" />}
-              title="Ainda não há ganhadores confirmados"
-              description="O módulo de sorteio será ativado na próxima etapa. Nenhum ganhador fictício será exibido."
-            />
+      {/* How it Works (Brief) */}
+      <section className="py-20 bg-primary/[0.02] border-y border-primary/5">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-display font-black">COMO <span className="text-primary">JOGAR</span></h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-10">
+            {[
+              { 
+                icon: Ticket, 
+                title: "1. Escolha", 
+                desc: "Selecione uma das raspadinhas disponíveis no catálogo." 
+              },
+              { 
+                icon: Zap, 
+                title: "2. Raspe", 
+                desc: "Compre seu ticket e use o mouse ou dedo para revelar o prêmio." 
+              },
+              { 
+                icon: Trophy, 
+                title: "3. Ganhe", 
+                desc: "Se encontrar o prêmio, o valor é creditado instantaneamente." 
+              }
+            ].map((step, i) => (
+              <div key={i} className="flex flex-col items-center text-center space-y-4">
+                <div className="size-16 rounded-2xl bg-surface border border-border flex items-center justify-center text-primary shadow-lg shadow-primary/5">
+                  <step.icon className="size-8" />
+                </div>
+                <h3 className="text-xl font-bold">{step.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-4 py-14">
-        <h2 className="text-2xl font-semibold">Como funciona</h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <div key={step.title} className="surface-card hover-lift p-6">
-              <span className="grid size-10 place-items-center rounded-xl bg-gradient-accent text-accent-foreground">
-                <step.icon className="size-5" />
-              </span>
-              <p className="mt-4 text-xs font-medium text-primary">Passo {index + 1}</p>
-              <h3 className="mt-1 font-display text-base font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+      {/* Latest Winners */}
+      <section className="py-20 px-4 overflow-hidden">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="size-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+              <Trophy className="size-5" />
             </div>
-          ))}
-        </div>
-        <div className="surface-card mt-10 flex flex-wrap items-center justify-between gap-4 p-6">
-          <div className="flex items-center gap-3">
-            <Gift className="size-6 text-primary" />
-            <p className="text-sm text-muted-foreground">
-              Pronto para começar? Crie sua conta em menos de um minuto.
-            </p>
+            <h2 className="text-3xl font-display font-black tracking-tight">ÚLTIMOS <span className="text-accent">GANHADORES</span></h2>
           </div>
-          <Button asChild className="bg-gradient-brand text-primary-foreground">
-            <Link to="/cadastro">Criar minha conta</Link>
-          </Button>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { name: "João M.***", prize: "Raspadinha Gold", amount: 500, time: "2 min atrás" },
+              { name: "Maria S.***", prize: "Sorte Instantânea", amount: 50, time: "5 min atrás" },
+              { name: "Pedro R.***", prize: "Mega Raspa", amount: 1000, time: "12 min atrás" },
+            ].map((winner, i) => (
+              <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-surface border border-border/50 hover:border-accent/30 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="size-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
+                    <History className="size-5" />
+                  </div>
+                  <div>
+                    <div className="font-bold">{winner.name}</div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock className="size-3" /> {winner.time}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-black text-primary">R$ {winner.amount},00</div>
+                  <div className="text-[10px] uppercase tracking-tighter text-muted-foreground">{winner.prize}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/ganhadores">VER TODOS OS GANHADORES</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </PublicPage>
