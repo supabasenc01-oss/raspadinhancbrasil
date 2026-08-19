@@ -12,7 +12,7 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
       prefix: z.string().optional(),
     }).parse(data)
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<{ path: string | null; error: string | null }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     try {
