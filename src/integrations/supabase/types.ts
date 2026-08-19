@@ -542,6 +542,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      draw_scratch_card: {
+        Args: { _card_id: string; _user_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
