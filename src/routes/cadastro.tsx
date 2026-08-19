@@ -61,19 +61,6 @@ function SignUpPage() {
     navigate({ to: "/dashboard", replace: true });
   }
 
-  if (awaitingConfirmation) {
-    return (
-      <AuthCard
-        title="Confirme seu e-mail"
-        description={`Enviamos um link de confirmação para ${form.email}. Clique nele para ativar sua conta.`}
-      >
-        <Button asChild variant="secondary" className="w-full">
-          <Link to="/login">Ir para o login</Link>
-        </Button>
-      </AuthCard>
-    );
-  }
-
   return (
     <AuthCard
       title="Criar sua conta"

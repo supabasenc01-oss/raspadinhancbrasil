@@ -50,8 +50,8 @@ function ForgotPasswordPage() {
     >
       {sent ? (
         <p className="text-sm text-muted-foreground">
-          Se existir uma conta com <span className="text-foreground">{email}</span>, o link de
-          redefinição já está a caminho. Verifique também a caixa de spam.
+          Enviamos um link de redefinição para <span className="text-foreground">{email}</span>. 
+          Verifique sua caixa de entrada e a pasta de spam.
         </p>
       ) : (
         <form className="space-y-4" onSubmit={handleSubmit}>
