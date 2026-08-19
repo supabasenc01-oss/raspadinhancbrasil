@@ -10,13 +10,15 @@ export function useSettings() {
     if (!setting) return defaultValue;
     
     let val = setting.value;
+    if (val === null || val === undefined) return defaultValue;
+    
     if (typeof val === 'string') {
-      // If it's stored as a string in JSONB, it might be double-quoted
+      // Clean up stringified values
       if (val.startsWith('"') && val.endsWith('"')) {
-        const unquoted = val.slice(1, -1);
-        return unquoted === "null" ? "" : unquoted;
+        val = val.slice(1, -1);
       }
-      return val === "null" ? "" : val;
+      if (val === "null" || val === "") return defaultValue;
+      return val;
     }
     return JSON.stringify(val);
   };
