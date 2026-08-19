@@ -94,7 +94,7 @@ export const updateWithdrawalStatus = createServerFn({ method: "POST" })
       .from('withdrawals')
       .update({ 
         status: data.status,
-        admin_notes: data.admin_notes,
+        admin_notes: data.admin_notes || null,
         updated_at: new Date().toISOString()
       })
       .eq('id', data.id);
