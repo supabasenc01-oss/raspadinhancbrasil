@@ -124,8 +124,8 @@ CREATE TABLE IF NOT EXISTS public.scratch_cards (
   CONSTRAINT scratch_cards_price_positive CHECK (price >= 0),
   CONSTRAINT scratch_cards_period CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at > starts_at)
 );
-CREATE INDEX idx_scratch_cards_status ON public.scratch_cards (status);
-CREATE INDEX idx_scratch_cards_featured ON public.scratch_cards (is_featured);
+CREATE INDEX IF NOT EXISTS idx_scratch_cards_status ON public.scratch_cards (status);
+CREATE INDEX IF NOT EXISTS idx_scratch_cards_featured ON public.scratch_cards (is_featured);
 
 GRANT SELECT ON public.scratch_cards TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_cards TO authenticated;
