@@ -175,9 +175,20 @@ function AdminSettingsPage() {
 
         <TabsContent value="general">
           <Card className="bg-surface border-border/50">
-            <CardHeader>
-              <CardTitle className="text-lg">Informações Básicas</CardTitle>
-              <CardDescription>Nome e identidade visual da plataforma.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-lg">Informações Básicas</CardTitle>
+                <CardDescription>Nome e identidade visual da plataforma.</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleFixBuckets}
+                className="text-xs"
+              >
+                Corrigir Erro de Pastas
+              </Button>
+            </CardHeader>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-2">
