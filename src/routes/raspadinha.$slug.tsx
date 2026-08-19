@@ -217,7 +217,7 @@ function ScratchCardDetailPage() {
                     </div>
                   ) : (
                     <Button asChild size="lg" className="w-full bg-gradient-brand">
-                      <Link to="/login">FAZER LOGIN PARA JOGAR</Link>
+                      <Link to="/login" search={{ redirect: `/raspadinha/${slug}` }}>FAZER LOGIN PARA JOGAR</Link>
                     </Button>
                   )}
                 </div>
