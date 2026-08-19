@@ -1124,6 +1124,7 @@ END $$;
 -- Removendo criação duplicada de withdrawals para evitar conflitos de RLS
 -- CREATE TABLE IF NOT EXISTS public.withdrawals (
 
+/*
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
@@ -1135,6 +1136,7 @@ END $$;
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
+*/
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.withdrawals TO authenticated;
 GRANT ALL ON public.withdrawals TO service_role;
 ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
