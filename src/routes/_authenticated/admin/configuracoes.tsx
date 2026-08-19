@@ -46,7 +46,16 @@ function AdminSettingsPage() {
     if (settings) {
       const initialValues: Record<string, string> = {};
       settings.forEach((s: any) => {
-        initialValues[s.key] = s.value;
+        // Handle JSONB value from database
+        let val = s.value;
+        if (typeof val !== 'string') {
+          val = JSON.stringify(val);
+        }
+        // Remove quotes if it's a simple string stored in JSONB
+        if (val.startsWith('"') && val.endsWith('"')) {
+          val = val.slice(1, -1);
+        }
+        initialValues[s.key] = val;
       });
       setValues(initialValues);
     }
@@ -68,7 +77,11 @@ function AdminSettingsPage() {
   };
 
   const handleSave = () => {
-    const data = Object.entries(values).map(([key, value]) => ({ key, value }));
+    // Stringify simple values for JSONB storage
+    const data = Object.entries(values).map(([key, value]) => ({ 
+      key, 
+      value: JSON.stringify(value) 
+    }));
     mutation.mutate(data);
   };
 
@@ -104,7 +117,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="site_name">Título do Site</Label>
                 <Input 
                   id="site_name" 
-                  value={values.site_name || ""} 
+                  value={values["site_name"] || ""} 
                   onChange={(e) => handleChange("site_name", e.target.value)}
                   placeholder="Ex: RaspaPremium"
                 />
@@ -114,13 +127,13 @@ function AdminSettingsPage() {
                 <div className="flex gap-2">
                   <Input 
                     id="logo_url" 
-                    value={values.logo_url || ""} 
+                    value={values["logo_url"] || ""} 
                     onChange={(e) => handleChange("logo_url", e.target.value)}
                     placeholder="https://exemplo.com/logo.png"
                   />
-                  {values.logo_url && (
+                  {values["logo_url"] && (
                     <div className="size-10 rounded border border-border bg-white p-1 shrink-0">
-                      <img src={values.logo_url} className="w-full h-full object-contain" alt="Preview" />
+                      <img src={values["logo_url"]} className="w-full h-full object-contain" alt="Preview" />
                     </div>
                   )}
                 </div>
@@ -129,7 +142,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="favicon_url">URL do Favicon</Label>
                 <Input 
                   id="favicon_url" 
-                  value={values.favicon_url || ""} 
+                  value={values["favicon_url"] || ""} 
                   onChange={(e) => handleChange("favicon_url", e.target.value)}
                   placeholder="https://exemplo.com/favicon.ico"
                 />
@@ -149,7 +162,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="meta_description">Descrição Meta (SEO)</Label>
                 <Textarea 
                   id="meta_description" 
-                  value={values.meta_description || ""} 
+                  value={values["meta_description"] || ""} 
                   onChange={(e) => handleChange("meta_description", e.target.value)}
                   placeholder="Descrição da plataforma para o Google..."
                 />
@@ -158,7 +171,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="og_image_url">Imagem Social (Facebook/WhatsApp)</Label>
                 <Input 
                   id="og_image_url" 
-                  value={values.og_image_url || ""} 
+                  value={values["og_image_url"] || ""} 
                   onChange={(e) => handleChange("og_image_url", e.target.value)}
                   placeholder="URL da imagem para compartilhamento"
                 />
@@ -169,7 +182,7 @@ function AdminSettingsPage() {
                   <input 
                     type="checkbox" 
                     id="friendly_urls" 
-                    checked={values.friendly_urls === "true"} 
+                    checked={values["friendly_urls"] === "true"} 
                     onChange={(e) => handleChange("friendly_urls", e.target.checked.toString())}
                     className="size-4 accent-primary"
                   />
@@ -191,7 +204,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="google_analytics_id">Google Analytics ID</Label>
                 <Input 
                   id="google_analytics_id" 
-                  value={values.google_analytics_id || ""} 
+                  value={values["google_analytics_id"] || ""} 
                   onChange={(e) => handleChange("google_analytics_id", e.target.value)}
                   placeholder="G-XXXXXXXXXX"
                 />
@@ -200,7 +213,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="facebook_pixel_id">Facebook Pixel ID</Label>
                 <Input 
                   id="facebook_pixel_id" 
-                  value={values.facebook_pixel_id || ""} 
+                  value={values["facebook_pixel_id"] || ""} 
                   onChange={(e) => handleChange("facebook_pixel_id", e.target.value)}
                   placeholder="1234567890"
                 />
@@ -220,7 +233,7 @@ function AdminSettingsPage() {
                 <Label htmlFor="footer_external_link">Link Sistema de Raspadinha (NC Brasil)</Label>
                 <Input 
                   id="footer_external_link" 
-                  value={values.footer_external_link || "https://www.ncbrasil.com.br"} 
+                  value={values["footer_external_link"] || "https://www.ncbrasil.com.br"} 
                   onChange={(e) => handleChange("footer_external_link", e.target.value)}
                   placeholder="https://www.ncbrasil.com.br"
                 />
