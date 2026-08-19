@@ -29,15 +29,27 @@ export async function uploadPlatformFile(
   file: File,
   prefix?: string,
 ): Promise<{ path: string | null; error: string | null }> {
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-  const fileName = `${crypto.randomUUID()}.${extension}`;
-  const objectPath = prefix ? `${prefix}/${fileName}` : fileName;
+  try {
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+    const fileName = `${crypto.randomUUID()}.${extension}`;
+    const objectPath = prefix ? `${prefix}/${fileName}` : fileName;
 
-  const { error } = await supabase.storage.from(bucket).upload(objectPath, file, {
-    cacheControl: "3600",
-    upsert: false,
-  });
+    const { error } = await supabase.storage.from(bucket).upload(objectPath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
 
-  if (error) return { path: null, error: error.message };
-  return { path: `${bucket}/${objectPath}`, error: null };
+    if (error) {
+      console.error("Storage upload error details:", error);
+      return { path: null, error: error.message };
+    }
+    
+    // Construct public URL if the bucket is public (which they should be as per instructions)
+    const { data } = supabase.storage.from(bucket).getPublicUrl(objectPath);
+    
+    return { path: data.publicUrl, error: null };
+  } catch (err: any) {
+    console.error("Upload exception:", err);
+    return { path: null, error: err.message };
+  }
 }
