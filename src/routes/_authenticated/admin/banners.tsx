@@ -209,7 +209,7 @@ function AdminBannersPage() {
 
       if (result.error) throw new Error(result.error);
       if (result.path) {
-        form.setValue("image_url", result.path || "");
+        form.setValue("image_url", result.path);
         if (result.thumbnailPath) {
           form.setValue("thumbnail_url", result.thumbnailPath);
         }
