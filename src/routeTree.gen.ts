@@ -22,6 +22,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RaspadinhasRouteImport } from './routes/raspadinhas'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SuporteRouteImport } from './routes/suporte'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -103,6 +104,11 @@ const RaspadinhasRoute = RaspadinhasRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuporteRoute = SuporteRouteImport.update({
+  id: '/suporte',
+  path: '/suporte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermosRoute = TermosRouteImport.update({
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/raspadinhas'
     | '/reset-password'
+    | '/suporte'
     | '/termos'
     | '/carteira'
     | '/dashboard'
@@ -353,6 +363,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/raspadinhas'
     | '/reset-password'
+    | '/suporte'
     | '/termos'
     | '/carteira'
     | '/dashboard'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/raspadinhas'
     | '/reset-password'
+    | '/suporte'
     | '/termos'
     | '/_authenticated/carteira'
     | '/_authenticated/dashboard'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   PrivacidadeRoute: typeof PrivacidadeRoute
   RaspadinhasRoute: typeof RaspadinhasRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SuporteRoute: typeof SuporteRoute
   TermosRoute: typeof TermosRoute
   RaspadinhaSlugRoute: typeof RaspadinhaSlugRoute
   ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suporte': {
+      id: '/suporte'
+      path: '/suporte'
+      fullPath: '/suporte'
+      preLoaderRoute: typeof SuporteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/termos': {
@@ -713,6 +733,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadeRoute: PrivacidadeRoute,
   RaspadinhasRoute: RaspadinhasRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SuporteRoute: SuporteRoute,
   TermosRoute: TermosRoute,
   RaspadinhaSlugRoute: RaspadinhaSlugRoute,
   ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,
