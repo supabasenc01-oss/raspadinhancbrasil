@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   CONSTRAINT prizes_value_positive CHECK (value >= 0),
   CONSTRAINT prizes_qty CHECK (quantity_total >= 0 AND quantity_remaining >= 0 AND quantity_remaining <= quantity_total),
   CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1),
-  UNIQUE (scratch_card_id, title)
+  CONSTRAINT scratch_card_prizes_unique_title UNIQUE (scratch_card_id, title)
 );
 CREATE INDEX IF NOT EXISTS idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
 GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
@@ -680,7 +680,7 @@ BEGIN
     (v_card_id, 'Prêmio Máximo', 50.00, 0.001, 10, 10, true),
     (v_card_id, 'Prêmio Prata', 10.00, 0.01, 100, 100, true),
     (v_card_id, 'Prêmio Bronze', 2.00, 0.1, 1000, 1000, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
@@ -697,7 +697,7 @@ BEGIN
     (v_card_id, 'Prêmio R$ 500', 500.00, 0.005, 50, 50, true),
     (v_card_id, 'Prêmio R$ 100', 100.00, 0.02, 200, 200, true),
     (v_card_id, 'Prêmio R$ 20', 20.00, 0.1, 1000, 1000, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
@@ -713,7 +713,7 @@ BEGIN
     (v_card_id, 'Turbo Max', 200.00, 0.01, 20, 20, true),
     (v_card_id, 'Turbo Pro', 20.00, 0.05, 200, 200, true),
     (v_card_id, 'Turbo Lite', 5.00, 0.2, 2000, 2000, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
@@ -1084,7 +1084,7 @@ BEGIN
     (v_card_pix, 'PIX R$ 10', 10.00, 0.08, 800, 800, true),
     (v_card_pix, 'PIX R$ 5', 5.00, 0.15, 1500, 1500, true),
     (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
@@ -1107,7 +1107,7 @@ BEGIN
     (v_card_cozinha, 'Torradeira Retro', 120.00, 0.015, 40, 40, true),
     (v_card_cozinha, 'Crédito R$ 50', 50.00, 0.05, 100, 100, true),
     (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
@@ -1130,7 +1130,7 @@ BEGIN
     (v_card_lar, 'Vale Compras R$ 500', 500.00, 0.005, 40, 40, true),
     (v_card_lar, 'Crédito R$ 100', 100.00, 0.02, 100, 100, true),
     (v_card_lar, 'Crédito R$ 50', 50.00, 0.05, 200, 200, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
@@ -1153,7 +1153,7 @@ BEGIN
     (v_card_tech, 'Caixa de Som BT', 500.00, 0.005, 30, 30, true),
     (v_card_tech, 'Crédito R$ 50', 50.00, 0.03, 100, 100, true),
     (v_card_tech, 'Crédito R$ 20', 20.00, 0.08, 200, 200, true)
-    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+    ON CONFLICT ON CONSTRAINT scratch_card_prizes_unique_title DO UPDATE SET 
         value = EXCLUDED.value,
         probability = EXCLUDED.probability,
         quantity_total = EXCLUDED.quantity_total;
