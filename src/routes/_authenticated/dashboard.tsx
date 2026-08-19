@@ -40,7 +40,7 @@ function DashboardPage() {
             title
           )
         `)
-        .eq('user_id', user?.id)
+        .eq('user_id', user?.id || '')
         .order('won_at', { ascending: false });
       
       if (error) throw error;
