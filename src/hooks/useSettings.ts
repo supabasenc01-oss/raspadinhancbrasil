@@ -12,15 +12,26 @@ export function useSettings() {
     let val = setting.value;
     if (val === null || val === undefined) return defaultValue;
     
+    // If it's already a string, we still check if it's a JSON-stringified string (common with JSONB)
     if (typeof val === 'string') {
-      // Remove double quotes if present (common in JSONB text values)
-      const cleanVal = val.trim().replace(/^"|"$/g, '');
-      console.log(`Setting ${key}: raw="${val}", clean="${cleanVal}"`);
+      let cleanVal = val.trim();
+      
+      // If it looks like a JSON string ("..."), try to parse it
+      if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) {
+        try {
+          const parsed = JSON.parse(cleanVal);
+          if (typeof parsed === 'string') cleanVal = parsed;
+        } catch (e) {
+          // Fallback to manual trimming if JSON parse fails
+          cleanVal = cleanVal.replace(/^"|"$/g, '');
+        }
+      }
+      
       if (cleanVal === "null" || cleanVal === "") return defaultValue;
       return cleanVal;
     }
     
-    // Convert all non-string values to string to satisfy return type
+    // For other types (number, boolean, object), convert to string
     return String(val);
   };
 
