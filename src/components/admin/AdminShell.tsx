@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSettings } from "@/hooks/useSettings";
 import { useState, type ReactNode } from "react";
 import {
   BarChart3,
