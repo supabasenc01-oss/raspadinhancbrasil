@@ -9,9 +9,9 @@ export function SiteFooter() {
   return (
     <footer className="mt-24 border-t border-border/70 bg-surface/40">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <BrandLogo />
-          <p className="max-w-xs text-sm text-muted-foreground">
+          <p className="max-w-xs text-sm text-muted-foreground leading-relaxed">
             Plataforma de raspadinhas online com experiência premium, transparência e prêmios
             auditáveis.
           </p>
