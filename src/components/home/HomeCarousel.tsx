@@ -52,7 +52,7 @@ export function HomeCarousel() {
           <div className={`absolute inset-0 bg-gradient-to-t ${SLIDES[current]?.color ?? ""} to-transparent z-10`} />
           <img 
             src={SLIDES[current]?.image ?? ""} 
-            className="w-full h-full object-cover scale-105 animate-slow-zoom" 
+            className="w-full h-full object-cover scale-105 animate-slow-zoom carousel-image" 
             alt="Promo"
           />
           
