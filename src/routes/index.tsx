@@ -21,6 +21,7 @@ import { HomeCarousel } from '@/components/home/HomeCarousel';
 import { WinnersTicker } from '@/components/home/WinnersTicker';
 import { AppDownloadBanner } from '@/components/common/AppDownloadBanner';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
+import { ScratchDemo } from '@/components/home/ScratchDemo';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -47,6 +48,9 @@ function HomePage() {
 
       {/* Winners Ticker */}
       <WinnersTicker winners={winners} />
+
+      {/* Live Scratch Demo */}
+      <ScratchDemo />
 
       {/* Featured & Categories */}
       <section className="py-20 px-4 bg-background">
