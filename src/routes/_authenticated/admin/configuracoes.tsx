@@ -172,14 +172,37 @@ function AdminSettingsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="logo_url" className="text-xs">URL Direta do Logo</Label>
-                      <Input 
-                        id="logo_url" 
-                        value={values["logo_url"] || ""} 
-                        onChange={(e) => handleChange("logo_url", e.target.value)}
-                        placeholder="https://exemplo.com/logo.png"
-                      />
+                    <div className="flex gap-2">
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="logo_url" className="text-xs">URL Direta do Logo</Label>
+                        <Input 
+                          id="logo_url" 
+                          value={values["logo_url"] || ""} 
+                          onChange={(e) => handleChange("logo_url", e.target.value)}
+                          placeholder="https://exemplo.com/logo.png"
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="size-10 relative"
+                          disabled={isUploading === 'logo_url'}
+                        >
+                          {isUploading === 'logo_url' ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <Upload className="size-4" />
+                          )}
+                          <input 
+                            type="file" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'logo_url')}
+                            disabled={isUploading === 'logo_url'}
+                          />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -202,14 +225,37 @@ function AdminSettingsPage() {
                         <ImageIcon className="size-6 text-muted-foreground" />
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="favicon_url" className="text-xs">URL do Favicon</Label>
-                      <Input 
-                        id="favicon_url" 
-                        value={values["favicon_url"] || ""} 
-                        onChange={(e) => handleChange("favicon_url", e.target.value)}
-                        placeholder="https://exemplo.com/favicon.ico"
-                      />
+                    <div className="flex gap-2">
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="favicon_url" className="text-xs">URL do Favicon</Label>
+                        <Input 
+                          id="favicon_url" 
+                          value={values["favicon_url"] || ""} 
+                          onChange={(e) => handleChange("favicon_url", e.target.value)}
+                          placeholder="https://exemplo.com/favicon.ico"
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="size-10 relative"
+                          disabled={isUploading === 'favicon_url'}
+                        >
+                          {isUploading === 'favicon_url' ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <Upload className="size-4" />
+                          )}
+                          <input 
+                            type="file" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'favicon_url')}
+                            disabled={isUploading === 'favicon_url'}
+                          />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
