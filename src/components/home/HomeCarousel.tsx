@@ -7,7 +7,7 @@ import { Link } from "@tanstack/react-router";
 const SLIDES = [
   {
     id: 1,
-    title: "Aqui <span class='text-success'>R$ 1,00</span> pode virar <br/><span class='text-primary'>R$ 2.500</span> em prêmios",
+    title: "Aqui <span class='text-success'>R$ 1,00</span> pode virar <br/><span class='text-primary'>R$ 2.500</span> no PIX",
     description: "Basta uma raspadinha para mudar sua vida!",
     image: "https://images.unsplash.com/photo-1621504450181-5d356f63d3ee?q=80&w=1974&auto=format&fit=crop",
     cta: "JOGAR AGORA",
