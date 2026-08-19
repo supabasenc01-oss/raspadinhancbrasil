@@ -1040,6 +1040,7 @@ BEGIN
     -- 1. MEGA PIX
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
     VALUES ('Mega PIX Instantâneo', 'mega-pix', 'Prêmios em dinheiro direto na sua conta!', 5.00, false, 'ACTIVE', true, '1.0.0')
+    ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
     RETURNING id INTO v_card_pix;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -1053,11 +1054,13 @@ BEGIN
     (v_card_pix, 'PIX R$ 25', 25.00, 0.04, 400, 400, true),
     (v_card_pix, 'PIX R$ 10', 10.00, 0.08, 800, 800, true),
     (v_card_pix, 'PIX R$ 5', 5.00, 0.15, 1500, 1500, true),
-    (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true);
+    (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true)
+    ON CONFLICT DO NOTHING;
 
     -- 2. COZINHA DOS SONHOS
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
     VALUES ('Cozinha dos Sonhos', 'cozinha-sonhos', 'Equipe sua cozinha com os melhores eletrodomésticos.', 15.00, false, 'ACTIVE', true, '1.0.0')
+    ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
     RETURNING id INTO v_card_cozinha;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -1071,11 +1074,13 @@ BEGIN
     (v_card_cozinha, 'Mixer 3 em 1', 150.00, 0.01, 30, 30, true),
     (v_card_cozinha, 'Torradeira Retro', 120.00, 0.015, 40, 40, true),
     (v_card_cozinha, 'Crédito R$ 50', 50.00, 0.05, 100, 100, true),
-    (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true);
+    (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true)
+    ON CONFLICT DO NOTHING;
 
     -- 3. LAR PREMIUM
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
     VALUES ('Lar Premium', 'lar-premium', 'Transforme sua casa com prêmios incríveis!', 25.00, false, 'ACTIVE', true, '1.0.0')
+    ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
     RETURNING id INTO v_card_lar;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -1089,11 +1094,13 @@ BEGIN
     (v_card_lar, 'Soundbar Premium', 1000.00, 0.003, 20, 20, true),
     (v_card_lar, 'Vale Compras R$ 500', 500.00, 0.005, 40, 40, true),
     (v_card_lar, 'Crédito R$ 100', 100.00, 0.02, 100, 100, true),
-    (v_card_lar, 'Crédito R$ 50', 50.00, 0.05, 200, 200, true);
+    (v_card_lar, 'Crédito R$ 50', 50.00, 0.05, 200, 200, true)
+    ON CONFLICT DO NOTHING;
 
     -- 4. SORTE TECH
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
     VALUES ('Sorte Tech', 'sorte-tech', 'O melhor da tecnologia na sua mão.', 10.00, false, 'ACTIVE', true, '1.0.0')
+    ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
     RETURNING id INTO v_card_tech;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
@@ -1107,7 +1114,8 @@ BEGIN
     (v_card_tech, 'Kindle Paperwhite', 800.00, 0.003, 20, 20, true),
     (v_card_tech, 'Caixa de Som BT', 500.00, 0.005, 30, 30, true),
     (v_card_tech, 'Crédito R$ 50', 50.00, 0.03, 100, 100, true),
-    (v_card_tech, 'Crédito R$ 20', 20.00, 0.08, 200, 200, true);
+    (v_card_tech, 'Crédito R$ 20', 20.00, 0.08, 200, 200, true)
+    ON CONFLICT DO NOTHING;
 
 END $$;
 
