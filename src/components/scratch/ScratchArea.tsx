@@ -28,7 +28,7 @@ export function ScratchArea({
   const resultUrl = useFileUrl(resultImage);
 
   const SCRATCH_THRESHOLD = 45; // Slightly lower threshold for better UX
-  const BRUSH_SIZE = 50;
+  const BRUSH_SIZE = 45;
 
   // Initialize Canvas with cover image and premium effects
   useEffect(() => {
