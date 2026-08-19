@@ -37,7 +37,10 @@ function LoginPage() {
     const { error } = await signIn(email.trim(), password);
     setSubmitting(false);
     if (error) {
-      toast.error("Não foi possível entrar", { description: error });
+      const message = error.toLowerCase().includes("invalid login credentials") 
+        ? "E-mail ou senha incorretos." 
+        : error;
+      toast.error("Não foi possível entrar", { description: message });
       return;
     }
     toast.success("Bem-vindo de volta!");
