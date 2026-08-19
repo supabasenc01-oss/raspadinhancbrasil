@@ -1111,7 +1111,10 @@ BEGIN
     (v_card_lar, 'Vale Compras R$ 500', 500.00, 0.005, 40, 40, true),
     (v_card_lar, 'Crédito R$ 100', 100.00, 0.02, 100, 100, true),
     (v_card_lar, 'Crédito R$ 50', 50.00, 0.05, 200, 200, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 4. SORTE TECH
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
