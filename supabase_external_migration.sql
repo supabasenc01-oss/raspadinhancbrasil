@@ -209,9 +209,15 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT prizes_value_positive CHECK (value >= 0),
   CONSTRAINT prizes_qty CHECK (quantity_total >= 0 AND quantity_remaining >= 0 AND quantity_remaining <= quantity_total),
-  CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1),
-  CONSTRAINT scratch_card_prizes_unique_title UNIQUE (scratch_card_id, title)
+  CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1)
 );
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'scratch_card_prizes_unique_title') THEN
+        ALTER TABLE public.scratch_card_prizes ADD CONSTRAINT scratch_card_prizes_unique_title UNIQUE (scratch_card_id, title);
+    END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
 GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_card_prizes TO authenticated;
