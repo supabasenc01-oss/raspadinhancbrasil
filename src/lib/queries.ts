@@ -14,7 +14,7 @@ export const activeScratchCardsQuery = queryOptions({
       .from("scratch_cards")
       .select("*")
       .eq("status", "ACTIVE")
-      .order("featured", { ascending: false })
+      .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data satisfies ScratchCard[];
