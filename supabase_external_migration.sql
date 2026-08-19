@@ -136,7 +136,7 @@ CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO 
 CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
 
-CREATE TABLE public.scratch_card_prizes (
+CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   scratch_card_id UUID NOT NULL REFERENCES public.scratch_cards(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
