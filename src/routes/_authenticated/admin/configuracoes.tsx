@@ -98,11 +98,17 @@ function AdminSettingsPage() {
     try {
       // Convert file to base64 to send to server function
       const reader = new FileReader();
-      const base64Promise = new Promise<string>((resolve) => {
+      const base64Promise = new Promise<string>((resolve, reject) => {
         reader.onload = () => {
-          const base64 = (reader.result as string).split(',')[1];
-          resolve(base64);
+          const result = reader.result as string;
+          if (result) {
+            const base64 = result.split(',')[1];
+            resolve(base64);
+          } else {
+            reject(new Error("Falha ao ler o arquivo"));
+          }
         };
+        reader.onerror = () => reject(new Error("Erro na leitura do arquivo"));
         reader.readAsDataURL(file);
       });
 
@@ -114,7 +120,7 @@ function AdminSettingsPage() {
           fileName: file.name,
           fileType: file.type,
           base64Data,
-          prefix: undefined
+          prefix: ""
         }
       });
 
