@@ -63,7 +63,7 @@ function AdminSettingsPage() {
         }
         
         // Remove quotes if it's a simple string stored in JSONB
-        if (val.startsWith('"') && val.endsWith('"')) {
+        if (typeof val === 'string' && val.startsWith('"') && val.endsWith('"')) {
           try {
             const parsed = JSON.parse(val);
             if (typeof parsed === 'string') val = parsed;
@@ -151,6 +151,7 @@ function AdminSettingsPage() {
         }
       });
 
+      if (!result) throw new Error("O servidor não retornou resposta");
       if (result.error) throw new Error(result.error);
       
       if (result.path) {
