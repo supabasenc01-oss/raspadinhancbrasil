@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "RaspaPremium — Raspadinhas online" },
+      { title: "Carregando..." },
       {
         name: "description",
         content: "Plataforma premium de raspadinhas online com prêmios e experiência mobile first.",
