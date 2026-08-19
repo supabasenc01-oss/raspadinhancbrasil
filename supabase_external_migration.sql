@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   CONSTRAINT prizes_qty CHECK (quantity_total >= 0 AND quantity_remaining >= 0 AND quantity_remaining <= quantity_total),
   CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1)
 );
-CREATE INDEX idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
+CREATE INDEX IF NOT EXISTS idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
 GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_card_prizes TO authenticated;
 GRANT ALL ON public.scratch_card_prizes TO service_role;
