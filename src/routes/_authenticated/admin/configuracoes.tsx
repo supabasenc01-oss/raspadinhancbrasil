@@ -14,10 +14,12 @@ import {
   Code,
   Upload,
   Loader2,
-  Sparkles
+  Sparkles,
+  Palette
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ColorInput } from "@/components/admin/ColorInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -208,7 +210,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="links" className="gap-2"><LinkIcon className="size-4" /> Links Rodapé</TabsTrigger>
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
           <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
-          <TabsTrigger value="colors" className="gap-2"><Sparkles className="size-4" /> Cores & Identidade</TabsTrigger>
+          <TabsTrigger value="colors" className="gap-2"><Palette className="size-4" /> Cores & Identidade</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
