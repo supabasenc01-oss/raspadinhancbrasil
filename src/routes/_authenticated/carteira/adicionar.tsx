@@ -71,12 +71,19 @@ function AddBalancePage() {
 
         {paymentResult.qrCode ? (
           <div className="surface-card p-6 rounded-3xl space-y-6">
-            <div className="aspect-square bg-white rounded-2xl flex items-center justify-center p-4">
-              {/* No mundo real aqui renderizaríamos o QR Code real */}
-              <div className="text-black text-center space-y-2">
-                <QrCode className="size-48 mx-auto" />
-                <p className="text-[10px] font-mono break-all opacity-50 px-4">{paymentResult.qrCode.substring(0, 50)}...</p>
-              </div>
+            <div className="aspect-square bg-white rounded-2xl flex flex-col items-center justify-center p-4 overflow-hidden">
+              {paymentResult.qrCodeBase64 ? (
+                <img 
+                  src={`data:image/png;base64,${paymentResult.qrCodeBase64}`} 
+                  alt="QR Code Pix" 
+                  className="size-64 object-contain"
+                />
+              ) : (
+                <div className="text-black text-center space-y-2">
+                  <QrCode className="size-48 mx-auto" />
+                  <p className="text-[10px] font-mono break-all opacity-50 px-4">{paymentResult.qrCode?.substring(0, 50)}...</p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
