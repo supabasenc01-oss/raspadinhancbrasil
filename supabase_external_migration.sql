@@ -1144,7 +1144,9 @@ ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own withdrawals" ON public.withdrawals FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own withdrawals" ON public.withdrawals FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 */
+/*
 CREATE POLICY "Admins can view all withdrawals" ON public.withdrawals FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ADMIN') OR public.has_role(auth.uid(), 'SUPER_ADMIN'));
+*/
 CREATE POLICY "Admins can update all withdrawals" ON public.withdrawals FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'SUPER_ADMIN'));-- Ensure scratch_image_url exists on scratch_cards
 ALTER TABLE public.scratch_cards ADD COLUMN IF NOT EXISTS scratch_image_url TEXT;
 
