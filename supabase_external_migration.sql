@@ -35,7 +35,7 @@ GRANT ALL ON public.profiles TO service_role;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE TABLE public.roles (
+CREATE TABLE IF NOT EXISTS public.roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key public.app_role NOT NULL UNIQUE,
   name TEXT NOT NULL,
