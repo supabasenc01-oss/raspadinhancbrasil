@@ -5,7 +5,9 @@ import {
   ArrowRight, 
   Ticket,
   Trophy,
-  Filter
+  Filter,
+  History,
+  Clock
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
