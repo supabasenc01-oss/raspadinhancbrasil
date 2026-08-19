@@ -22,20 +22,20 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
         if (error) throw error;
       }
 
-      await supabaseAdmin.from('admin_logs').insert({
+      await (supabaseAdmin.from as any)('admin_logs').insert({
         action: 'UPDATE_SETTINGS',
         entity: 'system_settings',
-        new_data: { keys: data.map(d => d.key) } as any,
+        new_data: { keys: data.map(d => d.key) },
         severity: 'INFO'
       });
 
       return { success: true };
     } catch (error: any) {
-      await supabaseAdmin.from('admin_logs').insert({
+      await (supabaseAdmin.from as any)('admin_logs').insert({
         action: 'UPDATE_SETTINGS_ERROR',
         entity: 'system_settings',
         severity: 'ERROR',
-        new_data: { error: error.message } as any,
+        new_data: { error: error.message },
         stack_trace: error.stack
       });
       throw error;
