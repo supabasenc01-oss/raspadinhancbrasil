@@ -228,7 +228,12 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications (user_
 GRANT SELECT, UPDATE, DELETE ON public.notifications TO authenticated;
 GRANT ALL ON public.notifications TO service_role;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_notifications_updated BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_notifications_updated') THEN
+        CREATE TRIGGER trg_notifications_updated BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "notifications_select_own" ON public.notifications FOR SELECT TO authenticated USING (user_id = auth.uid());
 CREATE POLICY "notifications_update_own" ON public.notifications FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "notifications_delete_own" ON public.notifications FOR DELETE TO authenticated USING (user_id = auth.uid());
