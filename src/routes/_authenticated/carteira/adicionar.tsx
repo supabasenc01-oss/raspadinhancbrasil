@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { 
   ArrowLeft, 
-  Pix, 
   CreditCard, 
   CheckCircle2, 
   Loader2,
   Copy,
-  QrCode
+  QrCode,
+  Zap
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';

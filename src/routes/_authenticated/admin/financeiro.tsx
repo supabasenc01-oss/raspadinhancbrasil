@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ShieldCheck, Database, CreditCard, Lock, Terminal, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Database, CreditCard, Lock, Terminal, CheckCircle2, TrendingUp } from 'lucide-react';
 import { AdminShell } from '@/components/admin/AdminShell';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
