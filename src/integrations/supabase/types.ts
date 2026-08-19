@@ -347,6 +347,7 @@ export type Database = {
           is_free: boolean
           name: string
           price: number
+          scratch_image_url: string | null
           slug: string
           starts_at: string | null
           status: Database["public"]["Enums"]["scratch_card_status"]
@@ -365,6 +366,7 @@ export type Database = {
           is_free?: boolean
           name: string
           price?: number
+          scratch_image_url?: string | null
           slug: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
@@ -383,6 +385,7 @@ export type Database = {
           is_free?: boolean
           name?: string
           price?: number
+          scratch_image_url?: string | null
           slug?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
@@ -574,6 +577,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      withdrawals: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          bank_info: Json | null
+          created_at: string | null
+          id: string
+          method: string
+          pix_key: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          bank_info?: Json | null
+          created_at?: string | null
+          id?: string
+          method: string
+          pix_key?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          bank_info?: Json | null
+          created_at?: string | null
+          id?: string
+          method?: string
+          pix_key?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

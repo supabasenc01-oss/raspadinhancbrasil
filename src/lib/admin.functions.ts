@@ -81,3 +81,24 @@ export const updateScratchCardStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { success: true };
   });
+
+export const updateWithdrawalStatus = createServerFn({ method: "POST" })
+  .validator((data: any) => z.object({
+    id: z.string(),
+    status: z.enum(['PENDING', 'COMPLETED', 'CANCELLED']),
+    admin_notes: z.string().optional()
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from('withdrawals')
+      .update({ 
+        status: data.status,
+        admin_notes: data.admin_notes || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', data.id);
+    
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
