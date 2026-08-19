@@ -193,7 +193,7 @@ function AdminFinancePage() {
                               size="sm" 
                               variant="destructive" 
                               className="h-7 text-[10px]"
-                              onClick={() => updateWithdrawalStatus(row.id, 'CANCELLED')}
+                              onClick={() => handleWithdrawalUpdate(row.id, 'CANCELLED')}
                             >
                               Recusar
                             </Button>
