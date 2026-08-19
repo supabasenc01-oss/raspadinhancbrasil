@@ -45,14 +45,30 @@ const NAV_ITEMS = [
 
 export function BrandLogo({ compact = false }: { compact?: boolean }) {
   const { siteName, logoUrl: rawLogoUrl, settings } = useSettings();
-  // Use the update timestamp or a version string from settings as cache bust
-  const cacheBust = settings?.find((s: any) => s.key === 'logo_url')?.updated_at || new Date().getTime().toString();
+  
+  // Get update timestamp for cache busting
+  const settingObj = Array.isArray(settings) ? settings.find((s: any) => s.key === 'logo_url') : null;
+  const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
+  
   const logoUrl = useFileUrl(rawLogoUrl, cacheBust);
+  
+  // Debug log to trace logo resolution
+  if (rawLogoUrl) {
+    console.log("[BrandLogo] Raw:", rawLogoUrl, "Resolved:", logoUrl);
+  }
   
   return (
     <Link to="/" className="flex items-center gap-2.5">
       {logoUrl ? (
-        <img src={logoUrl} alt={siteName} className="h-9 w-auto object-contain" />
+        <img 
+          src={logoUrl} 
+          alt={siteName} 
+          className="h-9 w-auto object-contain"
+          onError={(e) => {
+            console.error("[BrandLogo] Failed to load image:", logoUrl);
+            e.currentTarget.style.display = 'none';
+          }} 
+        />
       ) : (
         <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
           <Sparkles className="size-5" />
