@@ -1,38 +1,24 @@
-# Plano de Implementação - Etapa 2: Motor de Raspadinhas e Prêmios
+# Plano de Implementação: Criação de 4 Raspadinhas Premium
 
-Este plano detalha a implementação do sistema real de sorteio, controle de estoque e interface de raspagem premium.
+O objetivo é criar 4 novas raspadinhas com 10 prêmios cada, incluindo itens físicos (Batedeira, Microondas, Geladeira) e prêmios em dinheiro (PIX), conforme solicitado.
 
-## Mudanças no Banco de Dados (Supabase)
+## Ações
 
-- **Novas Tabelas:**
-  - `scratch_card_results`: Registra cada jogada, o resultado (ganhou/perdeu), valor do prêmio e versão da configuração.
-  - `scratch_card_sessions`: Gerencia a idempotência das jogadas, evitando cliques duplos ou requisições repetidas.
-  - `winners`: Mural público de ganhadores reais, com nomes anonimizados por segurança.
-- **Segurança e Lógica:**
-  - Função PostgreSQL `draw_scratch_card`: Implementa o motor de sorteio inteiramente no servidor.
-  - Controle de estoque atômico usando `FOR UPDATE` e transações SQL.
-  - Versionamento de configuração (`config_version`) na tabela `scratch_cards`.
+### 1. Banco de Dados (Migração SQL)
+- Criar uma nova migração em `supabase/migrations/` para inserir as 4 raspadinhas:
+    - **Mega PIX**: Focada em prêmios instantâneos via PIX (R$ 50 a R$ 5.000).
+    - **Cozinha dos Sonhos**: Focada em eletrodomésticos (Batedeira, Microondas, Air Fryer).
+    - **Lar Premium**: Focada em prêmios maiores (Geladeira, TV, Lavadora).
+    - **Sorte Tech**: Focada em eletrônicos (Smartphone, Fone, Tablet).
+- Cada raspadinha terá exatamente 10 faixas de premiação com probabilidades realistas.
 
-## Funcionalidades do Motor de Sorteio
+### 2. Assets (Placeholder)
+- Como não temos imagens reais para cada uma agora, usarei URLs de placeholder premium que condizem com a identidade visual (Preto/Dourado/Ciano) ou manterei as referências para que o administrador possa trocar depois.
 
-- **Backend-Only:** O sorteio é processado via RPC no Supabase, garantindo que as probabilidades nunca vazem para o frontend.
-- **Probabilidades Reais:** Soma das probabilidades validada (o restante é "Sem Prêmio").
-- **Estoque Dinâmico:** Prêmios com quantidade zero são ignorados no sorteio.
-- **Anti-Fraude:** Idempotência via tabela de sessões para evitar múltiplas jogadas por clique.
-
-## Frontend e Interface Premium
-
-- **Nova Rota de Jogo (`/raspadinha/$slug`):**
-  - Implementação de Canvas interativo para raspagem manual (Mouse/Touch).
-  - Opção de "Revelar Tudo" com animação automática.
-  - Efeitos visuais de vitória: Confetes (`canvas-confetti`), brilhos e animações de valor.
-- **Wizard Administrativo (`/admin/raspadinhas/novo`):**
-  - Fluxo passo a passo: Informações > Visual > Preço > Prêmios > Revisão.
-  - Interface para configurar até 20 prêmios por raspadinha com validação de probabilidade.
-- **Mural de Ganhadores:**
-  - Página `/ganhadores` agora exibe dados reais do banco de dados.
+### 3. Validação
+- Verificar se as raspadinhas aparecem na Home e na página `/raspadinhas`.
 
 ## Detalhes Técnicos
-
-- **Tecnologias:** TanStack Start (Server Functions), Supabase RPC, Tailwind CSS, Canvas API.
-- **Segurança:** RLS ativado em todas as novas tabelas, garantindo que usuários vejam apenas seus próprios resultados.
+- Utilização de `quantity_total` e `quantity_remaining` para controle de estoque.
+- Probabilidades ajustadas para somar menos de 100%, garantindo a lógica de "Sem prêmio".
+- Inclusão de `slug` único para cada rota.
