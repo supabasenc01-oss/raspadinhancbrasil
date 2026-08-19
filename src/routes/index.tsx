@@ -28,8 +28,8 @@ function HomePage() {
     <PublicPage>
       {/* Hero Section */}
       <PageHero 
-        title="ETAPA 6 — AUDITORIA FINAL, SEGURANÇA E PREPARAÇÃO PARA PRODUÇÃO"
-        description="Auditoria completa da plataforma: segurança, RLS, motor de resultados, pagamentos e conformidade legal."
+        title="RASPA PREMIUM — PADRÃO 2026"
+        description="A plataforma de raspadinhas mais moderna do Brasil. Prêmios instantâneos em PIX, eletrodomésticos e eletrônicos de última geração."
         centered
       >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
