@@ -678,7 +678,10 @@ BEGIN
     (v_card_id, 'Prêmio R$ 500', 500.00, 0.005, 50, 50, true),
     (v_card_id, 'Prêmio R$ 100', 100.00, 0.02, 200, 200, true),
     (v_card_id, 'Prêmio R$ 20', 20.00, 0.1, 1000, 1000, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 3. Raspadinha Turbo Win
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
