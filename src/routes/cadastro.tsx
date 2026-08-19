@@ -41,7 +41,7 @@ function SignUpPage() {
       return;
     }
     setSubmitting(true);
-    const { error, needsConfirmation } = await signUp({
+    const { error } = await signUp({
       email: form.email.trim(),
       password: form.password,
       fullName: form.fullName.trim(),
@@ -53,25 +53,9 @@ function SignUpPage() {
       toast.error("Não foi possível criar a conta", { description: error });
       return;
     }
-    if (needsConfirmation) {
-      setAwaitingConfirmation(true);
-      return;
-    }
+
     toast.success("Conta criada com sucesso!");
     navigate({ to: "/dashboard", replace: true });
-  }
-
-  if (awaitingConfirmation) {
-    return (
-      <AuthCard
-        title="Confirme seu e-mail"
-        description={`Enviamos um link de confirmação para ${form.email}. Clique nele para ativar sua conta.`}
-      >
-        <Button asChild variant="secondary" className="w-full">
-          <Link to="/login">Ir para o login</Link>
-        </Button>
-      </AuthCard>
-    );
   }
 
   return (

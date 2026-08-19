@@ -32,7 +32,7 @@ function ForgotPasswordPage() {
     const { error } = await requestPasswordReset(email.trim());
     setSubmitting(false);
     if (error) {
-      toast.error("Não foi possível enviar o e-mail", { description: error });
+      toast.error("Erro ao enviar link", { description: "Certifique-se de que o e-mail está correto e tente novamente." });
       return;
     }
     setSent(true);
@@ -50,8 +50,8 @@ function ForgotPasswordPage() {
     >
       {sent ? (
         <p className="text-sm text-muted-foreground">
-          Se existir uma conta com <span className="text-foreground">{email}</span>, o link de
-          redefinição já está a caminho. Verifique também a caixa de spam.
+          Enviamos um link de redefinição para <span className="text-foreground">{email}</span>. 
+          Verifique sua caixa de entrada e a pasta de spam.
         </p>
       ) : (
         <form className="space-y-4" onSubmit={handleSubmit}>
