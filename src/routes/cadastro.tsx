@@ -9,6 +9,11 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/cadastro")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => {
+    return {
+      redirect: (search["redirect"] as string) || undefined,
+    };
+  },
   head: () => ({
     meta: [
       { title: "Criar conta — RaspaPremium" },
@@ -58,7 +63,8 @@ function SignUpPage() {
     }
 
     toast.success("Conta criada com sucesso!");
-    navigate({ to: "/dashboard", replace: true });
+    const search = Route.useSearch() as { redirect?: string };
+    navigate({ to: search.redirect || "/dashboard", replace: true });
   }
 
   return (
