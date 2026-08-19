@@ -50,7 +50,7 @@ export const getAdminUsers = createServerFn({ method: "GET" })
     
     let query = supabaseAdmin
       .from('profiles')
-      .select('*, wallets(balance)', { count: 'exact' });
+      .select('*, wallets!wallets_user_id_fkey(balance)', { count: 'exact' });
 
     if (data.search) {
       query = query.or(`full_name.ilike.%${data.search}%,email.ilike.%${data.search}%`);
