@@ -151,7 +151,7 @@ export function AdminShell({
                 </div>
               </SheetContent>
             </Sheet>
-            <span className="font-display text-sm font-semibold sm:text-base">Painel Administrativo - {useSettings().siteName}</span>
+            <span className="font-display text-sm font-semibold sm:text-base">Painel Administrativo</span>
           </div>
           <Button asChild variant="ghost" size="sm">
             <Link to="/">Ver site</Link>
