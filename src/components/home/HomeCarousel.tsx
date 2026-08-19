@@ -119,3 +119,14 @@ export function HomeCarousel() {
   );
 }
 
+function CarouselImage({ src }: { src: string }) {
+  const url = useFileUrl(src);
+  return (
+    <img 
+      src={url || ""} 
+      className="w-full h-full object-cover scale-105 animate-slow-zoom carousel-image" 
+      alt="Promo"
+    />
+  );
+}
+
