@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-
 /**
  * Server function to draw a scratch card result.
  * This ensures the logic is exclusively executed on the backend.
