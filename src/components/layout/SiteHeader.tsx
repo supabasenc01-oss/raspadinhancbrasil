@@ -59,30 +59,37 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
   
   return (
     <Link to="/" className="flex items-center gap-2.5">
-      {logoUrl ? (
-        <img 
-          src={logoUrl} 
-          alt={siteName} 
-          className="h-9 w-auto object-contain"
-          onError={(e) => {
-            console.error("[BrandLogo] Failed to load image:", logoUrl);
-            e.currentTarget.style.display = 'none';
-          }} 
-        />
-      ) : (
-        <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
-          <Sparkles className="size-5" />
-        </span>
-      )}
-      {(!compact && !logoUrl) && (
-        <span className="font-display text-lg font-black tracking-tighter uppercase italic">
-          {siteName.includes("Premium") ? (
-            <>
-              {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
-            </>
-          ) : siteName}
-        </span>
-      )}
+      <div className="flex items-center gap-2.5">
+        {logoUrl ? (
+          <img 
+            src={logoUrl} 
+            alt={siteName} 
+            className="h-9 w-auto object-contain"
+            onError={(e) => {
+              console.error("[BrandLogo] Failed to load image:", logoUrl);
+              e.currentTarget.style.display = 'none';
+              // If image fails, force the fallback span to show by targeting it
+              const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback');
+              if (fallback) fallback.classList.remove('hidden');
+            }} 
+          />
+        ) : (
+          <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
+            <Sparkles className="size-5" />
+          </span>
+        )}
+        
+        {/* Fallback site name - Only visible if logo is not available */}
+        {(!compact && !logoUrl) && (
+          <span className="logo-fallback font-display text-lg font-black tracking-tighter uppercase italic">
+            {siteName.includes("Premium") ? (
+              <>
+                {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
+              </>
+            ) : siteName}
+          </span>
+        )}
+      </div>
     </Link>
   );
 }
