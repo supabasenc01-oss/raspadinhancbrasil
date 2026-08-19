@@ -52,7 +52,7 @@ function ScratchCardDetailPage() {
 
     setIsProcessing(true);
     try {
-      const result = await playScratchCard({ cardId: card.id });
+      const result = await playScratchCard({ data: { cardId: card.id } });
       if (result.success) {
         setGameResult(result);
         setGameState("SCRATCHING");

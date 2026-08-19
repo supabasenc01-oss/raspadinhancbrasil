@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFileUrl } from '@/hooks/useFileUrl';
 
 interface ScratchAreaProps {
-  coverImage?: string;
-  resultImage?: string;
+  coverImage?: string | null;
+  resultImage?: string | null;
   onComplete: () => void;
   isAutoRevealing?: boolean;
 }
