@@ -136,6 +136,7 @@ function AdminDashboard() {
               <SelectItem value="all">Todo o período</SelectItem>
             </SelectContent>
           </Select>
+          </div>
         </div>
       }
     >
