@@ -1172,6 +1172,7 @@ ALTER FUNCTION public.is_staff(uuid) SET search_path = public;
 
 INSERT INTO public.system_settings (key, value, description, is_public)
 VALUES 
+  ('site_name', '"Raspa Premium"'::jsonb, 'Nome do site', true),
   ('logo_url', '"https://raspapremium.com/logo.png"'::jsonb, 'URL do logotipo da plataforma', true),
   ('favicon_url', '"/favicon.ico"'::jsonb, 'URL do favicon', true),
   ('meta_description', '"Plataforma premium de raspadinhas online."'::jsonb, 'Desc', true),
@@ -1179,19 +1180,15 @@ VALUES
   ('google_analytics_id', '""'::jsonb, 'GA', true),
   ('facebook_pixel_id', '""'::jsonb, 'FB', true),
   ('friendly_urls', '"true"'::jsonb, 'Friendly', true),
-  ('footer_external_link', '"https://www.ncbrasil.com.br"'::jsonb, 'Rodape', true)
-ON CONFLICT (key) DO NOTHING;
--- Adicionando configurações de visibilidade da Home na tabela system_settings
-INSERT INTO public.system_settings (key, value, description, is_public)
-VALUES 
-  ('show_hero_banners', 'true', 'Habilitar banners rotativos na Home', true),
-  ('show_winners_ticker', 'true', 'Habilitar ticker de ganhadores ao vivo na Home', true),
-  ('show_scratch_demo', 'true', 'Habilitar demonstração interativa na Home', true),
-  ('show_scratch_cards', 'true', 'Habilitar grade de raspadinhas na Home', true),
-  ('show_how_to_play', 'true', 'Habilitar seção de como jogar na Home', true),
-  ('show_latest_winners', 'true', 'Habilitar lista de últimos ganhadores na Home', true),
-  ('show_testimonials', 'true', 'Habilitar seção de depoimentos na Home', true),
-  ('show_app_download', 'true', 'Habilitar banner de download do app na Home', true)
+  ('footer_external_link', '"https://www.ncbrasil.com.br"'::jsonb, 'Rodape', true),
+  ('show_hero_banners', 'true'::jsonb, 'Habilitar banners rotativos na Home', true),
+  ('show_winners_ticker', 'true'::jsonb, 'Habilitar ticker de ganhadores ao vivo na Home', true),
+  ('show_scratch_demo', 'true'::jsonb, 'Habilitar demonstração interativa na Home', true),
+  ('show_scratch_cards', 'true'::jsonb, 'Habilitar grade de raspadinhas na Home', true),
+  ('show_how_to_play', 'true'::jsonb, 'Habilitar seção de como jogar na Home', true),
+  ('show_latest_winners', 'true'::jsonb, 'Habilitar lista de últimos ganhadores na Home', true),
+  ('show_testimonials', 'true'::jsonb, 'Habilitar seção de depoimentos na Home', true),
+  ('show_app_download', 'true'::jsonb, 'Habilitar banner de download do app na Home', true)
 ON CONFLICT (key) DO UPDATE SET 
   value = EXCLUDED.value,
   description = EXCLUDED.description,
