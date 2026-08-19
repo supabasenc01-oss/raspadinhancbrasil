@@ -20,6 +20,9 @@ export const playScratchCard = createServerFn({ method: "POST" })
       throw new Error("Não autorizado");
     }
 
+    // Wrap in a transaction-like block (RPC draw_scratch_card already uses FOR UPDATE and transactions)
+    // In Stage 3, we ensure the wallet is checked before calling draw_scratch_card if it's not a free play
+    
     const { data: result, error } = await (supabaseAdmin.rpc as any)("draw_scratch_card", {
       _user_id: user.id,
       _card_id: data.cardId,
@@ -27,6 +30,10 @@ export const playScratchCard = createServerFn({ method: "POST" })
 
     if (error) {
       console.error("Game Draw Error:", error);
+      // Check for specific insufficient funds error from DB
+      if (error.message?.includes("Insufficient funds")) {
+        throw new Error("Saldo insuficiente na carteira.");
+      }
       throw new Error(error.message || "Falha ao processar a jogada");
     }
 

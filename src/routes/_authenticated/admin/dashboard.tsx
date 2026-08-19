@@ -78,7 +78,7 @@ function AdminDashboard() {
 
   const quickActions = [
     { label: 'Nova Raspadinha', icon: PlusCircle, href: '/admin/raspadinhas/novo' },
-    { label: 'Configurações', icon: Settings, href: '/admin/settings' },
+    { label: 'Configurações', icon: Settings, href: '/admin/configuracoes' },
     { label: 'Logs do Sistema', icon: FileText, href: '/admin/logs' },
     { label: 'Financeiro', icon: CreditCard, href: '/admin/financeiro' }
   ];
