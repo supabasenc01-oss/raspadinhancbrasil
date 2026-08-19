@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
+import { useSettings } from "@/hooks/useSettings";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -122,15 +123,25 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const { siteName, metaDescription, faviconUrl } = useSettings();
 
   useEffect(() => {
+    // Dynamic Head update for Name, Description and Favicon
+    document.title = `${siteName} — Raspadinhas online`;
+    
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", metaDescription);
+
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon) favicon.setAttribute("href", faviconUrl);
+
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
     return () => data.subscription.unsubscribe();
-  }, [queryClient, router]);
+  }, [queryClient, router, siteName, metaDescription, faviconUrl]);
 
   return (
     <QueryClientProvider client={queryClient}>

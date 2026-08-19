@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSettings } from "@/hooks/useSettings";
 import { useState, type ReactNode } from "react";
 import {
   BarChart3,
@@ -141,7 +142,7 @@ export function AdminShell({
                 </div>
               </SheetContent>
             </Sheet>
-            <span className="font-display text-sm font-semibold sm:text-base">Painel administrativo</span>
+            <span className="font-display text-sm font-semibold sm:text-base">Painel Administrativo - {useSettings().siteName}</span>
           </div>
           <Button asChild variant="ghost" size="sm">
             <Link to="/">Ver site</Link>

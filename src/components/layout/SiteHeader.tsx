@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
+import { useSettings } from "@/hooks/useSettings";
 
 const NAV_ITEMS = [
   { to: "/", label: "Início" },
@@ -17,14 +18,24 @@ const NAV_ITEMS = [
 ] as const;
 
 export function BrandLogo({ compact = false }: { compact?: boolean }) {
+  const { siteName, logoUrl } = useSettings();
+  
   return (
     <Link to="/" className="flex items-center gap-2.5">
-      <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
-        <Sparkles className="size-5" />
-      </span>
+      {logoUrl ? (
+        <img src={logoUrl} alt={siteName} className="h-9 w-auto object-contain" />
+      ) : (
+        <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
+          <Sparkles className="size-5" />
+        </span>
+      )}
       {!compact && (
         <span className="font-display text-lg font-semibold tracking-tight">
-          Raspa<span className="text-gradient-brand">Premium</span>
+          {siteName.includes("Premium") ? (
+            <>
+              {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
+            </>
+          ) : siteName}
         </span>
       )}
     </Link>

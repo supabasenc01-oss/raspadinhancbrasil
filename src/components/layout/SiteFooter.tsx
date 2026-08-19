@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
 import { BrandLogo } from "./SiteHeader";
+import { useSettings } from "@/hooks/useSettings";
 
 export function SiteFooter() {
+  const { siteName } = useSettings();
+
   return (
     <footer className="mt-24 border-t border-border/70 bg-surface/40">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -80,7 +83,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-border/70 px-4 py-6 text-center text-xs text-muted-foreground space-y-2">
-        <div>© {new Date().getFullYear()} RaspaPremium. Todos os direitos reservados.</div>
+        <div>© {new Date().getFullYear()} {siteName}. Todos os direitos reservados.</div>
         <div>
           <a 
             href="https://www.ncbrasil.com.br" 
