@@ -61,18 +61,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, nextSession) => {
       if (!active) return;
+      
+      console.log("Auth event:", event);
       setSession(nextSession);
-      void loadUserData(nextSession?.user?.id, active);
+      
+      if (nextSession?.user?.id) {
+        // Reset state before loading new data to avoid showing old permissions
+        if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+          setLoading(true);
+        }
+        await loadUserData(nextSession.user.id, active);
+        if (active) setLoading(false);
+      } else {
+        setProfile(null);
+        setRoles([]);
+        setLoading(false);
+      }
     });
 
-    void supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       setSession(data.session);
-      void loadUserData(data.session?.user?.id, active).finally(() => {
+      if (data.session?.user?.id) {
+        void loadUserData(data.session.user.id, active).finally(() => {
+          if (active) setLoading(false);
+        });
+      } else {
         if (active) setLoading(false);
-      });
+      }
     });
 
     return () => {
