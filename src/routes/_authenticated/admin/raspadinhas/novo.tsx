@@ -133,6 +133,8 @@ function NewScratchCardWizard() {
           price: values.price,
           is_free: values.is_free,
           status: values.status as any,
+          image_url: values.image_url,
+          scratch_image_url: values.scratch_image_url,
         })
         .select()
         .single();
