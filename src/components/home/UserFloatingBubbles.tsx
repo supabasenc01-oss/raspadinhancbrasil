@@ -8,73 +8,90 @@ import user5 from "@/assets/user5.jpg.asset.json";
 import user6 from "@/assets/user6.jpg.asset.json";
 import user7 from "@/assets/user7.jpg.asset.json";
 import user8 from "@/assets/user8.jpg.asset.json";
+import { useHydrated } from "@/hooks/useHydrated";
+import { Check } from "lucide-react";
 
-const users = [
-  { id: 1, img: user1.url, name: "Hugo", prize: "R$ 500" },
-  { id: 2, img: user2.url, name: "Cecília", prize: "Smartphone" },
-  { id: 3, img: user3.url, name: "Carla", prize: "R$ 1.000" },
-  { id: 4, img: user4.url, name: "Cale", prize: "Micro-ondas" },
-  { id: 5, img: user5.url, name: "Irina", prize: "R$ 250" },
-  { id: 6, img: user6.url, name: "Eder", prize: "Geladeira" },
-  { id: 7, img: user7.url, name: "Cinthia", prize: "R$ 2.000" },
-  { id: 8, img: user8.url, name: "Nico", prize: "Batedeira" },
+interface User {
+  id: number;
+  img: string;
+  name: string;
+  prize: string;
+  time: string;
+}
+
+const users: User[] = [
+  { id: 1, img: user1.url, name: "Hugo", prize: "R$ 500", time: "2 min" },
+  { id: 2, img: user2.url, name: "Cecília", prize: "Smartphone", time: "5 min" },
+  { id: 3, img: user3.url, name: "Carla", prize: "R$ 1.000", time: "12 min" },
+  { id: 4, img: user4.url, name: "Cale", prize: "Micro-ondas", time: "15 min" },
+  { id: 5, img: user5.url, name: "Irina", prize: "R$ 250", time: "22 min" },
+  { id: 6, img: user6.url, name: "Eder", prize: "Geladeira", time: "30 min" },
+  { id: 7, img: user7.url, name: "Cinthia", prize: "R$ 2.000", time: "45 min" },
+  { id: 8, img: user8.url, name: "Nico", prize: "Batedeira", time: "55 min" },
 ];
 
 export function UserFloatingBubbles() {
-  const [activeUsers, setActiveUsers] = useState<typeof users>([]);
+  const isHydrated = useHydrated();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    // Initial batch
-    setActiveUsers(users.slice(0, 3).map(u => ({ ...u, x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 })));
-
+    if (!isHydrated) return;
     const interval = setInterval(() => {
-      setActiveUsers(prev => {
-        const next = [...prev];
-        if (next.length > 5) next.shift();
-        const randomUser = users[Math.floor(Math.random() * users.length)];
-        next.push({ 
-          ...randomUser, 
-          id: Math.random(), // Unique key for animation
-          x: Math.random() * 80 + 10, 
-          y: Math.random() * 80 + 10 
-        } as any);
-        return next;
-      });
-    }, 4000);
-
+      setCurrentIndex((prev) => (prev + 1) % users.length);
+    }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isHydrated]);
+
+  if (!isHydrated) return null;
+
+  const currentUser = users[currentIndex];
+
+  if (!currentUser) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
-      <AnimatePresence>
-        {activeUsers.map((user: any) => (
-          <motion.div
-            key={user.id}
-            initial={{ scale: 0, opacity: 0, y: 100 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0, opacity: 0, y: -100 }}
-            transition={{ duration: 0.8, ease: "backOut" }}
-            className="absolute flex flex-col items-center"
-            style={{ left: `${user.x}%`, top: `${user.y}%` }}
-          >
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-40 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-              <div className="relative size-12 sm:size-16 rounded-full border-2 border-primary/50 overflow-hidden bg-surface shadow-2xl">
-                <img src={user.img} alt={user.name} className="size-full object-cover" />
+    <div className="fixed bottom-6 right-6 z-[100] pointer-events-none sm:bottom-10 sm:right-10">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentUser.id}
+          initial={{ opacity: 0, x: 50, scale: 0.9 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: 20, scale: 0.9 }}
+          transition={{ duration: 0.5, ease: "circOut" }}
+          className="pointer-events-auto"
+        >
+          <div className="relative flex items-center gap-4 bg-black/80 backdrop-blur-xl border border-primary/30 p-2 pr-6 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+            {/* Avatar with Ring */}
+            <div className="relative shrink-0">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-primary via-accent to-primary rounded-full animate-spin-slow opacity-70" />
+              <div className="relative size-12 sm:size-14 rounded-full border-2 border-black overflow-hidden">
+                <img 
+                  src={currentUser.img} 
+                  alt={currentUser.name} 
+                  className="size-full object-cover" 
+                />
               </div>
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 backdrop-blur-md border border-primary/30 px-3 py-1 rounded-full shadow-xl"
-              >
-                <span className="text-[10px] font-black text-primary uppercase tracking-tighter">GANHOU!</span>
-                <p className="text-xs font-bold text-white">{user.prize}</p>
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-2 bg-black/80 rotate-45 border-r border-b border-primary/30" />
-              </motion.div>
+              <div className="absolute -bottom-1 -right-1 size-5 bg-success rounded-full border-2 border-black flex items-center justify-center">
+                <Check className="size-3 text-white" />
+              </div>
             </div>
-          </motion.div>
-        ))}
+
+            {/* Content */}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-primary uppercase tracking-tighter">GANHOU AGORA!</span>
+                <span className="text-[10px] text-muted-foreground font-medium">há {currentUser.time}</span>
+              </div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-bold text-white leading-none">{currentUser.name}</span>
+                <span className="text-xs text-muted-foreground ml-1">levou</span>
+                <span className="text-sm font-black text-success leading-none ml-1">{currentUser.prize}</span>
+              </div>
+            </div>
+
+            {/* Glow effect */}
+            <div className="absolute -inset-2 bg-primary/5 rounded-full blur-2xl -z-10" />
+          </div>
+        </motion.div>
       </AnimatePresence>
     </div>
   );
