@@ -19,6 +19,7 @@ export const Route = createFileRoute('/_authenticated/admin/financeiro')({
 function AdminFinancePage() {
   const queryClient = useQueryClient();
   const updateSettings = useServerFn(updateSystemSettings);
+  const updateWithdrawalStatusFn = useServerFn(updateWithdrawalStatus);
   const { data: settings } = useQuery(systemSettingsQuery);
   
   const [values, setValues] = useState<Record<string, string>>({});
