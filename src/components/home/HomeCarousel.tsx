@@ -34,8 +34,10 @@ const SLIDES = [
 ];
 
 export function HomeCarousel() {
-  const { logoUrl: rawLogoUrl, siteName } = useSettings();
-  const logoUrl = useFileUrl(rawLogoUrl, undefined, true);
+  const { logoUrl: rawLogoUrl, siteName, settings } = useSettings();
+  const settingObj = Array.isArray(settings) ? settings.find((s: any) => s.key === 'logo_url') : null;
+  const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
+  const logoUrl = useFileUrl(rawLogoUrl, cacheBust, true);
   const [current, setCurrent] = useState(0);
 
   const next = () => setCurrent((prev) => (prev + 1) % SLIDES.length);
