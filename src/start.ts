@@ -10,14 +10,16 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
-    console.error(error);
+    // Expanded error logging for the sandbox
     const message = error instanceof Error ? error.message : String(error);
     const stack = (error instanceof Error ? error.stack : "") || "";
+    console.error("CRITICAL SERVER ERROR:", message, stack);
+    
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { 
         "content-type": "text/html; charset=utf-8",
-        "x-debug-error": message.slice(0, 100),
+        "x-debug-error": message.slice(0, 100).replace(/\n/g, ' '),
         "x-debug-stack": stack.slice(0, 500).replace(/\n/g, ' ')
       },
     });

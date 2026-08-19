@@ -137,7 +137,10 @@ function RootComponent() {
 function RootContent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  const { siteName, metaDescription, faviconUrl } = useSettings();
+  
+  // Use useSettings only if queryClient is available in context (it is, because of the provider above)
+  const settings = useSettings();
+  const { siteName, metaDescription, faviconUrl } = settings;
 
   useEffect(() => {
     // Dynamic Head update for Name, Description and Favicon
