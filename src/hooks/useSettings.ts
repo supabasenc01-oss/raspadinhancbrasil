@@ -73,5 +73,8 @@ export function useSettings() {
     showLatestWinners: getSetting("show_latest_winners", "true") === "true",
     showTestimonials: getSetting("show_testimonials", "true") === "true",
     showAppDownload: getSetting("show_app_download", "true") === "true",
+    scratchOverlayLogoUrl: getSetting("scratch_overlay_logo_url", ""),
+    scratchOverlayBgColor: getSetting("scratch_overlay_bg_color", "#0F172A"),
+    scratchOverlayText: getSetting("scratch_overlay_text", ""),
   };
 }

@@ -207,6 +207,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="mercadopago" className="gap-2"><Globe className="size-4" /> Mercado Pago</TabsTrigger>
           <TabsTrigger value="links" className="gap-2"><LinkIcon className="size-4" /> Links Rodapé</TabsTrigger>
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
+          <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
           <TabsTrigger value="colors" className="gap-2"><Sparkles className="size-4" /> Cores & Identidade</TabsTrigger>
         </TabsList>
 
@@ -566,6 +567,91 @@ function AdminSettingsPage() {
                   </div>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="scratch">
+          <Card className="bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Personalização da Raspadinha</CardTitle>
+              <CardDescription>Configure o que o usuário vê antes de raspar.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-4">
+                  <Label>Logotipo de Cobertura</Label>
+                  <div className="flex flex-col gap-4">
+                    <div className="aspect-video w-full rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-4 relative overflow-hidden group">
+                      {values["scratch_overlay_logo_url"] ? (
+                        <LogoPreview url={values["scratch_overlay_logo_url"]} onRemove={() => handleChange("scratch_overlay_logo_url", "")} />
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <ImageIcon className="size-8" />
+                          <span className="text-xs">Usa o logo principal por padrão</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        value={values["scratch_overlay_logo_url"] || ""} 
+                        onChange={(e) => handleChange("scratch_overlay_logo_url", e.target.value)}
+                        placeholder="URL do logo personalizado"
+                        className="flex-1"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="size-10 relative"
+                        disabled={isUploading === 'scratch_overlay_logo_url'}
+                      >
+                        {isUploading === 'scratch_overlay_logo_url' ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <Upload className="size-4" />
+                        )}
+                        <input 
+                          type="file" 
+                          className="absolute inset-0 opacity-0 cursor-pointer" 
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(e, 'scratch_overlay_logo_url')}
+                          disabled={isUploading === 'scratch_overlay_logo_url'}
+                        />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="scratch_overlay_bg_color">Cor de Fundo da Cobertura</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        id="scratch_overlay_bg_color" 
+                        type="text"
+                        value={values["scratch_overlay_bg_color"] || "#0F172A"} 
+                        onChange={(e) => handleChange("scratch_overlay_bg_color", e.target.value)}
+                        placeholder="#0F172A"
+                        className="flex-1"
+                      />
+                      <div 
+                        className="size-10 rounded-lg border border-border" 
+                        style={{ backgroundColor: values["scratch_overlay_bg_color"] || "#0F172A" }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="scratch_overlay_text">Texto de Orientação</Label>
+                    <Input 
+                      id="scratch_overlay_text" 
+                      value={values["scratch_overlay_text"] || ""} 
+                      onChange={(e) => handleChange("scratch_overlay_text", e.target.value)}
+                      placeholder="Ex: Raspe aqui para ganhar!"
+                    />
+                    <p className="text-[10px] text-muted-foreground">Deixe em branco para não exibir texto.</p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
