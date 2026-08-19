@@ -45,8 +45,8 @@ export function ScratchArea({ coverImage, resultImage, onComplete, isAutoReveali
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const clientX = e && 'touches' in e && e.touches[0] ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = e && 'touches' in e && e.touches[0] ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     
     // Calculate scale factor if canvas is resized by CSS
     const scaleX = canvas.width / rect.width;
