@@ -62,6 +62,7 @@ export type Database = {
           sort_order: number
           starts_at: string | null
           subtitle: string | null
+          thumbnail_url: string | null
           title: string
           updated_at: string
         }
@@ -76,6 +77,7 @@ export type Database = {
           sort_order?: number
           starts_at?: string | null
           subtitle?: string | null
+          thumbnail_url?: string | null
           title: string
           updated_at?: string
         }
@@ -90,6 +92,7 @@ export type Database = {
           sort_order?: number
           starts_at?: string | null
           subtitle?: string | null
+          thumbnail_url?: string | null
           title?: string
           updated_at?: string
         }
@@ -351,6 +354,7 @@ export type Database = {
           slug: string
           starts_at: string | null
           status: Database["public"]["Enums"]["scratch_card_status"]
+          thumbnail_url: string | null
           updated_at: string
         }
         Insert: {
@@ -370,6 +374,7 @@ export type Database = {
           slug: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
+          thumbnail_url?: string | null
           updated_at?: string
         }
         Update: {
@@ -389,6 +394,7 @@ export type Database = {
           slug?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
+          thumbnail_url?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -400,6 +406,7 @@ export type Database = {
           id: string
           is_public: boolean
           key: string
+          thumbnail_url: string | null
           updated_at: string
           value: Json
         }
@@ -409,6 +416,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           key: string
+          thumbnail_url?: string | null
           updated_at?: string
           value?: Json
         }
@@ -418,6 +426,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           key?: string
+          thumbnail_url?: string | null
           updated_at?: string
           value?: Json
         }
