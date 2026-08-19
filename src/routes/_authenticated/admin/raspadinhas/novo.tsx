@@ -53,6 +53,7 @@ const formSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "INACTIVE"]).default("DRAFT"),
   featured: z.boolean().default(false),
   image_url: z.string().optional().nullable(),
+  thumbnail_url: z.string().optional().nullable(),
   scratch_image_url: z.string().optional().nullable(),
   prizes: z.array(prizeSchema).min(1, "Adicione pelo menos um prêmio"),
 });
@@ -86,6 +87,7 @@ function NewScratchCardWizard() {
       status: "DRAFT",
       featured: false,
       image_url: "",
+      thumbnail_url: "",
       scratch_image_url: "",
       prizes: [
         { title: "Prêmio 1", value: 10, probability: 0.1, quantity_total: 100, is_active: true }
@@ -115,10 +117,30 @@ function NewScratchCardWizard() {
 
     setIsUploading(fieldName);
     try {
-      const { path, error } = await uploadPlatformFile("scratch-cards", file);
-      if (error) throw new Error(error);
-      if (path) {
-        form.setValue(fieldName, path);
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.readAsDataURL(file);
+      });
+      const base64Data = await base64Promise;
+
+      const { uploadPlatformFileFn } = await import("@/lib/storage.functions");
+      const result = await uploadPlatformFileFn({
+        data: {
+          bucket: "scratch-cards",
+          fileName: file.name,
+          fileType: file.type,
+          base64Data,
+          prefix: ""
+        }
+      });
+
+      if (result.error) throw new Error(result.error);
+      if (result.path) {
+        form.setValue(fieldName, result.path);
+        if (fieldName === "image_url" && result.thumbnailPath) {
+          form.setValue("thumbnail_url", result.thumbnailPath);
+        }
         toast.success("Upload realizado!");
       }
     } catch (error: any) {
@@ -148,6 +170,7 @@ function NewScratchCardWizard() {
           is_free: values.is_free,
           status: values.status as any,
           image_url: values.image_url || null,
+          thumbnail_url: values.thumbnail_url || null,
           scratch_image_url: values.scratch_image_url || null,
         })
         .select()
