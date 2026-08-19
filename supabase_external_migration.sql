@@ -173,7 +173,12 @@ GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_card_prizes TO authenticated;
 GRANT ALL ON public.scratch_card_prizes TO service_role;
 ALTER TABLE public.scratch_card_prizes ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_prizes_updated BEFORE UPDATE ON public.scratch_card_prizes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_prizes_updated') THEN
+        CREATE TRIGGER trg_prizes_updated BEFORE UPDATE ON public.scratch_card_prizes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "prizes_public_read" ON public.scratch_card_prizes FOR SELECT TO anon, authenticated
   USING (is_active AND EXISTS (SELECT 1 FROM public.scratch_cards c WHERE c.id = scratch_card_id AND c.status = 'ACTIVE'));
 CREATE POLICY "prizes_staff_read" ON public.scratch_card_prizes FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
