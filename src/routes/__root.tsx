@@ -158,10 +158,16 @@ function RootContent() {
       if (favicon && faviconUrl) favicon.setAttribute("href", faviconUrl);
     }
 
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED" && event !== "TOKEN_REFRESHED") return;
+      
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      
+      if (event === "SIGNED_OUT") {
+        queryClient.clear();
+      } else {
+        queryClient.invalidateQueries();
+      }
     });
     return () => data.subscription.unsubscribe();
   }, [queryClient, router, siteName, metaDescription, faviconUrl]);
