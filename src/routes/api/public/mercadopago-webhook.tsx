@@ -14,15 +14,31 @@ export const Route = createFileRoute('/api/public/mercadopago-webhook')({
           const body = await request.json();
           console.log("Mercado Pago Webhook Received:", body);
 
+          const eventId = body.id?.toString() || body.resource || 'unknown';
+          const eventType = body.type || body.action || 'unknown';
+
           // 1. Log the received event for auditing and idempotency
+          // We check if the event was already processed before
+          const { data: existingEvent } = await supabase
+            .from('webhook_events')
+            .select('id, processed')
+            .eq('event_id', eventId)
+            .maybeSingle();
+
+          if (existingEvent?.processed) {
+            console.log(`Webhook event ${eventId} already processed, skipping.`);
+            return new Response('OK', { status: 200 });
+          }
+
           const { data: event, error: eventError } = await supabase
             .from('webhook_events')
-            .insert({
+            .upsert({
               provider: 'MERCADOPAGO',
-              event_id: body.id?.toString() || body.resource || 'unknown',
-              event_type: body.type || body.action || 'unknown',
-              payload: body
-            })
+              event_id: eventId,
+              event_type: eventType,
+              payload: body,
+              processed: false
+            }, { onConflict: 'event_id' })
             .select()
             .single();
 
@@ -102,7 +118,7 @@ export const Route = createFileRoute('/api/public/mercadopago-webhook')({
                   processed: true, 
                   processed_at: new Date().toISOString() 
                 })
-                .eq('id', event.id);
+                .eq('event_id', eventId);
             }
           }
 

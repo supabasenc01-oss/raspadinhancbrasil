@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { PublicPage } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';
 import { activeScratchCardsQuery } from '@/lib/queries';
+import { publicWinnersQuery } from '@/lib/winners.queries';
 import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
 import { HomeCarousel } from '@/components/home/HomeCarousel';
 import { WinnersTicker } from '@/components/home/WinnersTicker';
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const { data: scratchCards, isLoading } = useQuery(activeScratchCardsQuery);
+  const { data: winners } = useQuery(publicWinnersQuery);
   const [filter, setFilter] = useState<'ALL' | 'CASH' | 'PRODUCTS'>('ALL');
 
   const filteredCards = scratchCards?.filter(card => {
@@ -43,16 +45,16 @@ function HomePage() {
       <HomeCarousel />
 
       {/* Winners Ticker */}
-      <WinnersTicker />
+      <WinnersTicker winners={winners} />
 
       {/* Featured & Categories */}
       <section className="py-20 px-4 bg-background">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="space-y-4">
-              <h2 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
+              <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
                 EXPLORE AS <span className="text-primary">RASPADINHAS</span>
-              </h2>
+              </h1>
               <div className="flex flex-wrap gap-2">
                 <Button 
                   variant={filter === 'ALL' ? 'default' : 'outline'} 
@@ -166,29 +168,28 @@ function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { name: "Carlos A.", prize: "Raspadinha Gold", amount: 500, time: "2 min atrás" },
-              { name: "Ana P.", prize: "Sorte Instantânea", amount: 50, time: "5 min atrás" },
-              { name: "Beto F.", prize: "Mega Raspa", amount: 1000, time: "12 min atrás" },
-            ].map((winner, i) => (
+            {(winners || []).slice(0, 3).map((winner, i) => (
               <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-surface border border-border/50 hover:border-accent/30 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="size-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
                     <History className="size-5" />
                   </div>
                   <div>
-                    <div className="font-bold">{winner.name}</div>
+                    <div className="font-bold">{winner.display_name || winner.winner_name}</div>
                     <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="size-3" /> {winner.time}
+                      <Clock className="size-3" /> {new Date(winner.created_at).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-black text-primary">R$ {winner.amount},00</div>
-                  <div className="text-[10px] uppercase tracking-tighter text-muted-foreground">{winner.prize}</div>
+                  <div className="text-lg font-black text-primary">R$ {winner.amount || winner.prize_value},00</div>
+                  <div className="text-[10px] uppercase tracking-tighter text-muted-foreground">{winner.prize_title}</div>
                 </div>
               </div>
             ))}
+            {(!winners || winners.length === 0) && (
+               <p className="text-muted-foreground col-span-full text-center py-8">Ainda não há ganhadores registrados.</p>
+            )}
           </div>
 
           <div className="mt-12 text-center">

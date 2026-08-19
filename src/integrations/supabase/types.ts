@@ -593,6 +593,7 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      mask_name: { Args: { name: string }; Returns: string }
       process_wallet_transaction: {
         Args: {
           _amount: number
