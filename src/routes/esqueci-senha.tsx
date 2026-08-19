@@ -32,7 +32,7 @@ function ForgotPasswordPage() {
     const { error } = await requestPasswordReset(email.trim());
     setSubmitting(false);
     if (error) {
-      toast.error("Não foi possível enviar o e-mail", { description: error });
+      toast.error("Erro ao enviar link", { description: "Certifique-se de que o e-mail está correto e tente novamente." });
       return;
     }
     setSent(true);
