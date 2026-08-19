@@ -101,8 +101,8 @@
   --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.45 0.17 265 / 50%);
 
-  --gradient-brand: linear-gradient(135deg, oklch(0.5 0.18 270), oklch(0.4 0.16 260));
-  --gradient-accent: linear-gradient(135deg, oklch(0.65 0.22 45), oklch(0.55 0.2 35));
+  --gradient-brand: linear-gradient(135deg, var(--color-brand-start, oklch(0.45 0.17 265)), var(--color-brand-end, oklch(0.35 0.15 260)));
+  --gradient-accent: linear-gradient(135deg, var(--color-accent-start, oklch(0.65 0.22 45)), var(--color-accent-end, oklch(0.55 0.2 35)));
   --gradient-surface: linear-gradient(160deg, oklch(0.15 0.02 260 / 90%), oklch(0.1 0.015 260 / 95%));
   --gradient-hero: radial-gradient(
       70% 120% at 15% 0%,

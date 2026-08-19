@@ -22,12 +22,27 @@ export function ScratchCardTile({ card }: { card: ScratchCard }) {
     <article className="surface-card hover-lift group flex flex-col overflow-hidden">
       <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={card.name}
-            loading="lazy"
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          />
+          <div className="relative size-full">
+            <img
+              src={imageUrl}
+              alt={card.name}
+              loading="lazy"
+              className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            />
+            {/* Overlay gradiente dinâmico com cores do logotipo */}
+            <div 
+              className="absolute inset-0 opacity-60 transition-opacity group-hover:opacity-80" 
+              style={{
+                background: 'linear-gradient(to top, var(--color-brand-start, #3B54A4) 0%, transparent 70%)'
+              }}
+            />
+            <div 
+              className="absolute inset-0 mix-blend-overlay opacity-30" 
+              style={{
+                background: 'linear-gradient(to bottom right, var(--color-accent-start, #EB6635) 0%, transparent 50%)'
+              }}
+            />
+          </div>
         ) : (
           <div className="bg-hero-glow grid size-full place-items-center text-muted-foreground">
             <Ticket className="size-10" />
