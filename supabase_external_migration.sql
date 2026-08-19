@@ -301,9 +301,14 @@ BEGIN
   RETURN NEW;
 END; $$;
 
-CREATE TRIGGER on_auth_user_created
-AFTER INSERT ON auth.users
-FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created') THEN
+        CREATE TRIGGER on_auth_user_created
+        AFTER INSERT ON auth.users
+        FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+    END IF;
+END $$;
 
 CREATE POLICY "storage_platform_read" ON storage.objects FOR SELECT TO anon, authenticated
   USING (bucket_id IN ('avatars','scratch-cards','scratch-cards-backgrounds','prizes','banners','logos'));
