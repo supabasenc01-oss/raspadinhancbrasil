@@ -40,9 +40,9 @@ export function useSettings() {
     return String(val);
   };
 
-  const siteName = getSetting("site_name", "RaspaPremium");
+  const siteName = getSetting("site_name", "Stock Atacarejo");
   const logoUrl = getSetting("logo_url", "");
-  const faviconUrl = getSetting("favicon_url", "/favicon.png");
+  const faviconUrl = getSetting("favicon_url", "/favicon.ico");
   const metaDescription = getSetting("meta_description", "Plataforma premium de raspadinhas online.");
   const ogImageUrl = getSetting("og_image_url", "");
   const googleAnalyticsId = getSetting("google_analytics_id", "");
@@ -61,10 +61,10 @@ export function useSettings() {
     googleAnalyticsId,
     facebookPixelId,
     footerExternalLink,
-    brandStartColor: getSetting("brand_start_color", "oklch(0.45 0.17 265)"),
-    brandEndColor: getSetting("brand_end_color", "oklch(0.35 0.15 260)"),
-    accentStartColor: getSetting("accent_start_color", "oklch(0.65 0.22 45)"),
-    accentEndColor: getSetting("accent_end_color", "oklch(0.55 0.2 35)"),
+    brandStartColor: getSetting("brand_start_color", "#1E3A8A"),
+    brandEndColor: getSetting("brand_end_color", "#172554"),
+    accentStartColor: getSetting("accent_start_color", "#EA580C"),
+    accentEndColor: getSetting("accent_end_color", "#C2410C"),
     showHeroBanners: getSetting("show_hero_banners", "true") === "true",
     showWinnersTicker: getSetting("show_winners_ticker", "true") === "true",
     showScratchDemo: getSetting("show_scratch_demo", "true") === "true",

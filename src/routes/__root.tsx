@@ -48,29 +48,51 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0F172A] p-4 text-white">
+      <div className="max-w-md space-y-6 text-center">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </div>
+        <h1 className="font-display text-3xl font-bold tracking-tight">
           Não foi possível carregar esta página
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Algo deu errado. Tente novamente ou volte para o início.
+        <p className="text-slate-400">
+          Algo deu errado no processamento da página. Verifique sua conexão ou tente recarregar.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        {process.env['NODE_ENV'] === "development" && (
+          <div className="mt-4 overflow-auto rounded-lg bg-black/40 p-4 text-left text-xs font-mono text-red-400 max-h-[200px]">
+            {error instanceof Error ? error.message : String(error)}
+          </div>
+        )}
+        <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:justify-center">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-gradient-brand px-4 py-2 text-sm font-medium text-primary-foreground"
+            className="inline-flex h-11 items-center justify-center rounded-xl bg-[#3B82F6] px-8 text-sm font-bold transition-transform hover:scale-105 active:scale-95"
           >
-            Tentar novamente
+            Tentar Novamente
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/10"
+            className="inline-flex h-11 items-center justify-center rounded-xl bg-white/5 px-8 text-sm font-bold border border-white/10 hover:bg-white/10 transition-colors"
           >
-            Ir para o início
+            Voltar ao Início
           </a>
         </div>
       </div>
@@ -99,7 +121,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap",
       },
-      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
     ],
   }),
   shellComponent: RootShell,
