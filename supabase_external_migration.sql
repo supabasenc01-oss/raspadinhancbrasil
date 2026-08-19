@@ -314,8 +314,8 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_results (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_scratch_results_user ON public.scratch_card_results (user_id);
-CREATE INDEX idx_scratch_results_card ON public.scratch_card_results (scratch_card_id);
+CREATE INDEX IF NOT EXISTS idx_scratch_results_user ON public.scratch_card_results (user_id);
+CREATE INDEX IF NOT EXISTS idx_scratch_results_card ON public.scratch_card_results (scratch_card_id);
 
 GRANT SELECT ON public.scratch_card_results TO authenticated;
 GRANT ALL ON public.scratch_card_results TO service_role;
