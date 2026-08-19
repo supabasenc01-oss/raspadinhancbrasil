@@ -54,7 +54,8 @@ INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('OPERADOR','Operador','Operação de raspadinhas e prêmios', true),
   ('FINANCEIRO','Financeiro','Acesso a dados financeiros', true),
   ('SUPORTE','Suporte','Atendimento ao usuário', true),
-  ('USER','Usuário','Usuário final da plataforma', false);
+  ('USER','Usuário','Usuário final da plataforma', false)
+ON CONFLICT (key) DO NOTHING;
 
 CREATE TABLE public.user_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
