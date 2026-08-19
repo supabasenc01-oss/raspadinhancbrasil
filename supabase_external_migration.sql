@@ -343,9 +343,18 @@ BEGIN
         CREATE TRIGGER trg_settings_updated BEFORE UPDATE ON public.system_settings FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "settings_public_read" ON public.system_settings FOR SELECT TO anon, authenticated USING (is_public);
-CREATE POLICY "settings_staff_read" ON public.system_settings FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "settings_admin_write" ON public.system_settings FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'system_settings' AND policyname = 'settings_public_read') THEN
+        CREATE POLICY "settings_public_read" ON public.system_settings FOR SELECT TO anon, authenticated USING (is_public);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'system_settings' AND policyname = 'settings_staff_read') THEN
+        CREATE POLICY "settings_staff_read" ON public.system_settings FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'system_settings' AND policyname = 'settings_admin_write') THEN
+        CREATE POLICY "settings_admin_write" ON public.system_settings FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
+    END IF;
+END $$;
 
 INSERT INTO public.system_settings (key, value, description, is_public) VALUES
   ('site_name', '"Raspa Premium"', 'Nome exibido da plataforma', true),
