@@ -32,7 +32,6 @@ function HomePage() {
         centered
       >
 
-      >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           <Button size="lg" className="bg-gradient-brand text-primary-foreground group" asChild>
             <Link to="/raspadinhas">
