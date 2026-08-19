@@ -83,7 +83,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
         
         {/* Site name - Visible as fallback if logo fails OR if there's no logoUrl */}
         {(!compact) && (
-          <span className={`font-display text-lg font-black tracking-tighter uppercase italic ${logoUrl ? 'hidden' : ''}`}>
+          <span className={`font-display text-lg font-black tracking-tighter uppercase italic shrink-0 ${logoUrl ? 'hidden' : ''}`}>
             {siteName.includes("Premium") ? (
               <>
                 {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
