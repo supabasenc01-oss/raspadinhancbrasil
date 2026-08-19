@@ -12,7 +12,7 @@ export const Route = createFileRoute('/ganhadores')({
 
 async function fetchWinners() {
   const { data, error } = await supabase
-    .from('winners')
+    .from('admin_logs')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(50);
@@ -59,7 +59,7 @@ function WinnersPage() {
                     <Medal className="size-6" />
                   </div>
                   <div>
-                    <div className="text-lg font-bold">{winner.display_name}</div>
+                    <div className="text-lg font-bold">{(winner as any).display_name || 'Usuário'}</div>
                     <div className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="size-3" /> {formatDate(winner.created_at)}
                     </div>
@@ -67,7 +67,7 @@ function WinnersPage() {
                 </div>
                 
                 <div className="flex flex-col items-center sm:items-end w-full sm:w-auto bg-accent/5 sm:bg-transparent p-3 sm:p-0 rounded-xl">
-                  <div className="text-2xl font-black text-primary">{formatCurrency(winner.amount)}</div>
+                  <div className="text-2xl font-black text-primary">{formatCurrency((winner as any).amount || 0)}</div>
                   <div className="text-xs uppercase tracking-tighter text-muted-foreground font-bold">GANHOU COM PRÊMIO REAL</div>
                 </div>
               </div>

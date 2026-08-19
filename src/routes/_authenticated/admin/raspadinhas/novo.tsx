@@ -13,11 +13,12 @@ import {
   Plus, 
   Save, 
   Trash2, 
-  Trophy 
+  Trophy,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { AdminShell } from "@/components/layout/AdminShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,7 +37,7 @@ import { slugify } from "@/lib/format";
 
 const prizeSchema = z.object({
   title: z.string().min(2, "Título é obrigatório"),
-  description: z.string().optional(),
+  description: z.string().optional().nullable(),
   value: z.number().min(0),
   probability: z.number().min(0).max(1),
   quantity_total: z.number().min(1),
@@ -45,10 +46,10 @@ const prizeSchema = z.object({
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
-  description: z.string().optional(),
+  description: z.string().optional().nullable(),
   price: z.number().min(0),
   is_free: z.boolean().default(false),
-  status: z.enum(["ACTIVE", "INACTIVE", "DRAFT"]).default("DRAFT"),
+  status: z.enum(["ACTIVE", "DRAFT", "INACTIVE"]).default("DRAFT"),
   featured: z.boolean().default(false),
   prizes: z.array(prizeSchema).min(1, "Adicione pelo menos um prêmio"),
 });
@@ -73,7 +74,7 @@ function NewScratchCardWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: "",
       description: "",
@@ -90,32 +91,28 @@ function NewScratchCardWizard() {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      // 1. Validar probabilidades
       const totalProb = values.prizes.reduce((sum, p) => sum + p.probability, 0);
       if (totalProb > 1) {
         toast.error("A soma das probabilidades não pode ser maior que 100% (1.0)");
-        setCurrentStep(3); // Go to prizes step
+        setCurrentStep(3);
         return;
       }
 
-      // 2. Inserir Scratch Card
       const { data: card, error: cardError } = await supabase
         .from("scratch_cards")
         .insert({
           name: values.name,
           slug: slugify(values.name),
-          description: values.description,
+          description: values.description ?? null,
           price: values.price,
           is_free: values.is_free,
-          status: values.status,
-          featured: values.featured,
+          status: values.status as any,
         })
         .select()
         .single();
 
       if (cardError) throw cardError;
 
-      // 3. Inserir Prêmios
       const prizesToInsert = values.prizes.map(p => ({
         ...p,
         scratch_card_id: card.id,
@@ -124,7 +121,7 @@ function NewScratchCardWizard() {
 
       const { error: prizesError } = await supabase
         .from("scratch_card_prizes")
-        .insert(prizesToInsert);
+        .insert(prizesToInsert as any[]);
 
       if (prizesError) throw prizesError;
 
@@ -138,7 +135,6 @@ function NewScratchCardWizard() {
   };
 
   const nextStep = () => {
-    // Basic validation before moving
     if (currentStep === 0) {
       const name = form.getValues("name");
       if (!name || name.length < 3) {
@@ -152,7 +148,7 @@ function NewScratchCardWizard() {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
   return (
-    <AdminShell>
+    <AdminShell title="Nova Raspadinha">
       <div className="space-y-6 max-w-4xl mx-auto">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/admin/raspadinhas" })}>
@@ -164,7 +160,6 @@ function NewScratchCardWizard() {
           </div>
         </div>
 
-        {/* Stepper */}
         <div className="flex items-center justify-between px-2 py-4 border-b border-border/50">
           {STEPS.map((step, index) => (
             <div key={step} className="flex items-center">
@@ -186,13 +181,11 @@ function NewScratchCardWizard() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-sm">
-            
-            {/* Step 0: Informações */}
+          <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-8 bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-sm">
             {currentStep === 0 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
@@ -205,7 +198,7 @@ function NewScratchCardWizard() {
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
@@ -220,7 +213,6 @@ function NewScratchCardWizard() {
               </div>
             )}
 
-            {/* Step 1: Visual */}
             {currentStep === 1 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -240,12 +232,11 @@ function NewScratchCardWizard() {
               </div>
             )}
 
-            {/* Step 2: Preço e Status */}
             {currentStep === 2 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="price"
                     render={({ field }) => (
                       <FormItem>
@@ -258,7 +249,7 @@ function NewScratchCardWizard() {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="is_free"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border p-4">
@@ -274,7 +265,7 @@ function NewScratchCardWizard() {
                   />
                 </div>
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="featured"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border p-4">
@@ -291,7 +282,6 @@ function NewScratchCardWizard() {
               </div>
             )}
 
-            {/* Step 3: Prêmios */}
             {currentStep === 3 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="flex items-center justify-between">
@@ -316,7 +306,7 @@ function NewScratchCardWizard() {
                     <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10 items-end">
                       <div className="md:col-span-2">
                         <FormField
-                          control={form.control}
+                          control={form.control as any}
                           name={`prizes.${index}.title`}
                           render={({ field }) => (
                             <FormItem>
@@ -328,7 +318,7 @@ function NewScratchCardWizard() {
                       </div>
                       <div>
                         <FormField
-                          control={form.control}
+                          control={form.control as any}
                           name={`prizes.${index}.value`}
                           render={({ field }) => (
                             <FormItem>
@@ -340,7 +330,7 @@ function NewScratchCardWizard() {
                       </div>
                       <div>
                         <FormField
-                          control={form.control}
+                          control={form.control as any}
                           name={`prizes.${index}.probability`}
                           render={({ field }) => (
                             <FormItem>
@@ -379,7 +369,6 @@ function NewScratchCardWizard() {
               </div>
             )}
 
-            {/* Step 4: Revisão */}
             {currentStep === 4 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="surface-card p-6 space-y-4">
@@ -402,7 +391,7 @@ function NewScratchCardWizard() {
                 </div>
 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="status"
                   render={({ field }) => (
                     <FormItem>
@@ -454,8 +443,4 @@ function formatCurrency(value: number) {
     style: "currency",
     currency: "BRL",
   }).format(value);
-}
-
-function Loader2({ className }: { className?: string }) {
-  return <Info className={`animate-spin ${className}`} />;
 }

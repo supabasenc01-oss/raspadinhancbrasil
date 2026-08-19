@@ -11,11 +11,10 @@ import {
   History
 } from 'lucide-react';
 
-import { PublicPage } from '@/components/layout/PublicPage';
+import { PublicPage, PageHero } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';
 import { activeScratchCardsQuery } from '@/lib/queries';
 import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
-import { PageHero } from '@/components/layout/PageHero';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -32,6 +31,7 @@ function HomePage() {
         description="Agora implemente o sistema real de raspadinhas sobre a estrutura criada na ETAPA 1. Não refazer o projeto. Aproveitar a arquitetura existente."
         centered
       >
+
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           <Button size="lg" className="bg-gradient-brand text-primary-foreground group" asChild>
             <Link to="/raspadinhas">
