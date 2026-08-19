@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT profiles_full_name_len CHECK (full_name IS NULL OR char_length(full_name) <= 120)
 );
-CREATE INDEX idx_profiles_email ON public.profiles (email);
-CREATE INDEX idx_profiles_status ON public.profiles (status);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles (email);
+CREATE INDEX IF NOT EXISTS idx_profiles_status ON public.profiles (status);
 GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
 GRANT ALL ON public.profiles TO service_role;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (user_id, role)
 );
-CREATE INDEX idx_user_roles_user ON public.user_roles (user_id);
+CREATE INDEX IF NOT EXISTS idx_user_roles_user ON public.user_roles (user_id);
 GRANT SELECT ON public.user_roles TO authenticated;
 GRANT ALL ON public.user_roles TO service_role;
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
@@ -124,8 +124,8 @@ CREATE TABLE IF NOT EXISTS public.scratch_cards (
   CONSTRAINT scratch_cards_price_positive CHECK (price >= 0),
   CONSTRAINT scratch_cards_period CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at > starts_at)
 );
-CREATE INDEX idx_scratch_cards_status ON public.scratch_cards (status);
-CREATE INDEX idx_scratch_cards_featured ON public.scratch_cards (is_featured);
+CREATE INDEX IF NOT EXISTS idx_scratch_cards_status ON public.scratch_cards (status);
+CREATE INDEX IF NOT EXISTS idx_scratch_cards_featured ON public.scratch_cards (is_featured);
 
 GRANT SELECT ON public.scratch_cards TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_cards TO authenticated;
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   CONSTRAINT prizes_qty CHECK (quantity_total >= 0 AND quantity_remaining >= 0 AND quantity_remaining <= quantity_total),
   CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1)
 );
-CREATE INDEX idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
+CREATE INDEX IF NOT EXISTS idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
 GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_card_prizes TO authenticated;
 GRANT ALL ON public.scratch_card_prizes TO service_role;
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS public.banners (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT banners_period CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at > starts_at)
 );
-CREATE INDEX idx_banners_position ON public.banners (position, sort_order);
+CREATE INDEX IF NOT EXISTS idx_banners_position ON public.banners (position, sort_order);
 GRANT SELECT ON public.banners TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.banners TO authenticated;
 GRANT ALL ON public.banners TO service_role;
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_notifications_user ON public.notifications (user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications (user_id, is_read);
 GRANT SELECT, UPDATE, DELETE ON public.notifications TO authenticated;
 GRANT ALL ON public.notifications TO service_role;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
@@ -219,8 +219,8 @@ CREATE TABLE IF NOT EXISTS public.admin_logs (
   ip_address TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_admin_logs_actor ON public.admin_logs (actor_id);
-CREATE INDEX idx_admin_logs_created ON public.admin_logs (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_logs_actor ON public.admin_logs (actor_id);
+CREATE INDEX IF NOT EXISTS idx_admin_logs_created ON public.admin_logs (created_at DESC);
 GRANT SELECT, INSERT ON public.admin_logs TO authenticated;
 GRANT ALL ON public.admin_logs TO service_role;
 ALTER TABLE public.admin_logs ENABLE ROW LEVEL SECURITY;
@@ -314,8 +314,8 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_results (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_scratch_results_user ON public.scratch_card_results (user_id);
-CREATE INDEX idx_scratch_results_card ON public.scratch_card_results (scratch_card_id);
+CREATE INDEX IF NOT EXISTS idx_scratch_results_user ON public.scratch_card_results (user_id);
+CREATE INDEX IF NOT EXISTS idx_scratch_results_card ON public.scratch_card_results (scratch_card_id);
 
 GRANT SELECT ON public.scratch_card_results TO authenticated;
 GRANT ALL ON public.scratch_card_results TO service_role;
@@ -359,7 +359,7 @@ BEGIN
     END IF;
 END $$;
 
-CREATE INDEX idx_winners_created ON public.winners (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_winners_created ON public.winners (created_at DESC);
 
 GRANT SELECT ON public.winners TO anon, authenticated;
 GRANT ALL ON public.winners TO service_role;
@@ -614,21 +614,33 @@ ALTER TABLE public.payment_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.wallet_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view their own wallet" ON public.wallets
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'wallets' AND policyname = 'Users can view their own wallet') THEN
+        CREATE POLICY "Users can view their own wallet" ON public.wallets
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'deposits' AND policyname = 'Users can view their own deposits') THEN
+        CREATE POLICY "Users can view their own deposits" ON public.deposits
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
 
-CREATE POLICY "Users can view their own deposits" ON public.deposits
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'payment_transactions' AND policyname = 'Users can view their own payment transactions') THEN
+        CREATE POLICY "Users can view their own payment transactions" ON public.payment_transactions
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
 
-CREATE POLICY "Users can view their own payment transactions" ON public.payment_transactions
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'wallet_transactions' AND policyname = 'Users can view their own wallet transactions') THEN
+        CREATE POLICY "Users can view their own wallet transactions" ON public.wallet_transactions
+            FOR SELECT TO authenticated USING (auth.uid() = user_id);
+    END IF;
 
-CREATE POLICY "Users can view their own wallet transactions" ON public.wallet_transactions
-    FOR SELECT TO authenticated USING (auth.uid() = user_id);
-
--- Webhook events são inseridos por sistemas externos ou handlers, leitura restrita a admin
-CREATE POLICY "Admins can view webhook events" ON public.webhook_events
-    FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ADMIN'));
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'webhook_events' AND policyname = 'Admins can view webhook events') THEN
+        CREATE POLICY "Admins can view webhook events" ON public.webhook_events
+            FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
+    END IF;
+END $$;
 
 -- 4. Funções e Triggers
 
@@ -1109,7 +1121,10 @@ BEGIN
         GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO anon;
     END IF;
 END $$;
-CREATE TABLE IF NOT EXISTS public.withdrawals (
+-- Removendo criação duplicada de withdrawals para evitar conflitos de RLS
+-- CREATE TABLE IF NOT EXISTS public.withdrawals (
+
+/*
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
@@ -1121,13 +1136,20 @@ CREATE TABLE IF NOT EXISTS public.withdrawals (
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
+*/
+/*
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.withdrawals TO authenticated;
 GRANT ALL ON public.withdrawals TO service_role;
 ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own withdrawals" ON public.withdrawals FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own withdrawals" ON public.withdrawals FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+*/
+/*
 CREATE POLICY "Admins can view all withdrawals" ON public.withdrawals FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ADMIN') OR public.has_role(auth.uid(), 'SUPER_ADMIN'));
-CREATE POLICY "Admins can update all withdrawals" ON public.withdrawals FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'SUPER_ADMIN'));-- Ensure scratch_image_url exists on scratch_cards
+*/
+/*
+CREATE POLICY "Admins can update all withdrawals" ON public.withdrawals FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'SUPER_ADMIN'));
+*/-- Ensure scratch_image_url exists on scratch_cards
 ALTER TABLE public.scratch_cards ADD COLUMN IF NOT EXISTS scratch_image_url TEXT;
 
 -- Verify/Create withdrawals table if it doesn't exist
