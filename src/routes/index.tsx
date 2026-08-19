@@ -27,8 +27,8 @@ function HomePage() {
     <PublicPage>
       {/* Hero Section */}
       <PageHero 
-        title="RASPA PREMIUM — A SORTE NA SUA MÃO"
-        description="A plataforma de raspadinhas mais moderna e segura do Brasil. Jogue agora e concorra a prêmios instantâneos!"
+        title="ETAPA 4 — PAINEL ADMINISTRATIVO PROFISSIONAL"
+        description="Painel administrativo completo com dashboard, gestão de usuários, raspadinhas, prêmios, banners, logs e financeiro."
         centered
       >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
