@@ -27,8 +27,8 @@ function HomePage() {
     <PublicPage>
       {/* Hero Section */}
       <PageHero 
-        title="ETAPA 4 — PAINEL ADMINISTRATIVO PROFISSIONAL"
-        description="Painel administrativo completo com dashboard, gestão de usuários, raspadinhas, prêmios, banners, logs e financeiro."
+        title="ETAPA 5 — EXPERIÊNCIA VISUAL PREMIUM 2026"
+        description="Aperfeiçoando a experiência visual com animações de ponta, motor de raspagem interativo e design ultra-moderno."
         centered
       >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
