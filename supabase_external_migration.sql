@@ -252,9 +252,18 @@ BEGIN
         CREATE TRIGGER trg_banners_updated BEFORE UPDATE ON public.banners FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
     END IF;
 END $$;
-CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authenticated USING (is_active);
-CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
-CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'banners' AND policyname = 'banners_public_read') THEN
+        CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authenticated USING (is_active);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'banners' AND policyname = 'banners_staff_read') THEN
+        CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'banners' AND policyname = 'banners_staff_write') THEN
+        CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
