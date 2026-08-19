@@ -33,7 +33,12 @@ CREATE INDEX IF NOT EXISTS idx_profiles_status ON public.profiles (status);
 GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
 GRANT ALL ON public.profiles TO service_role;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_profiles_updated') THEN
+        CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -47,7 +52,12 @@ CREATE TABLE IF NOT EXISTS public.roles (
 GRANT SELECT ON public.roles TO authenticated, anon;
 GRANT ALL ON public.roles TO service_role;
 ALTER TABLE public.roles ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_roles_updated BEFORE UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_roles_updated') THEN
+        CREATE TRIGGER trg_roles_updated BEFORE UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('SUPER_ADMIN','Super Administrador','Acesso total ao sistema', true),
   ('ADMIN','Administrador','Gestão da plataforma', true),
@@ -131,7 +141,12 @@ GRANT SELECT ON public.scratch_cards TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_cards TO authenticated;
 GRANT ALL ON public.scratch_cards TO service_role;
 ALTER TABLE public.scratch_cards ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_scratch_cards_updated BEFORE UPDATE ON public.scratch_cards FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_scratch_cards_updated') THEN
+        CREATE TRIGGER trg_scratch_cards_updated BEFORE UPDATE ON public.scratch_cards FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "scratch_cards_public_read" ON public.scratch_cards FOR SELECT TO anon, authenticated USING (status = 'ACTIVE');
 CREATE POLICY "scratch_cards_staff_read" ON public.scratch_cards FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "scratch_cards_staff_write" ON public.scratch_cards FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
@@ -158,7 +173,12 @@ GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.scratch_card_prizes TO authenticated;
 GRANT ALL ON public.scratch_card_prizes TO service_role;
 ALTER TABLE public.scratch_card_prizes ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_prizes_updated BEFORE UPDATE ON public.scratch_card_prizes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_prizes_updated') THEN
+        CREATE TRIGGER trg_prizes_updated BEFORE UPDATE ON public.scratch_card_prizes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "prizes_public_read" ON public.scratch_card_prizes FOR SELECT TO anon, authenticated
   USING (is_active AND EXISTS (SELECT 1 FROM public.scratch_cards c WHERE c.id = scratch_card_id AND c.status = 'ACTIVE'));
 CREATE POLICY "prizes_staff_read" ON public.scratch_card_prizes FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
@@ -184,7 +204,12 @@ GRANT SELECT ON public.banners TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.banners TO authenticated;
 GRANT ALL ON public.banners TO service_role;
 ALTER TABLE public.banners ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_banners_updated BEFORE UPDATE ON public.banners FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_banners_updated') THEN
+        CREATE TRIGGER trg_banners_updated BEFORE UPDATE ON public.banners FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "banners_public_read" ON public.banners FOR SELECT TO anon, authenticated USING (is_active);
 CREATE POLICY "banners_staff_read" ON public.banners FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "banners_staff_write" ON public.banners FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
@@ -203,7 +228,12 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications (user_
 GRANT SELECT, UPDATE, DELETE ON public.notifications TO authenticated;
 GRANT ALL ON public.notifications TO service_role;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_notifications_updated BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_notifications_updated') THEN
+        CREATE TRIGGER trg_notifications_updated BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "notifications_select_own" ON public.notifications FOR SELECT TO authenticated USING (user_id = auth.uid());
 CREATE POLICY "notifications_update_own" ON public.notifications FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "notifications_delete_own" ON public.notifications FOR DELETE TO authenticated USING (user_id = auth.uid());
@@ -240,7 +270,12 @@ GRANT SELECT ON public.system_settings TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.system_settings TO authenticated;
 GRANT ALL ON public.system_settings TO service_role;
 ALTER TABLE public.system_settings ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_settings_updated BEFORE UPDATE ON public.system_settings FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_settings_updated') THEN
+        CREATE TRIGGER trg_settings_updated BEFORE UPDATE ON public.system_settings FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 CREATE POLICY "settings_public_read" ON public.system_settings FOR SELECT TO anon, authenticated USING (is_public);
 CREATE POLICY "settings_staff_read" ON public.system_settings FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "settings_admin_write" ON public.system_settings FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
@@ -266,9 +301,14 @@ BEGIN
   RETURN NEW;
 END; $$;
 
-CREATE TRIGGER on_auth_user_created
-AFTER INSERT ON auth.users
-FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created') THEN
+        CREATE TRIGGER on_auth_user_created
+        AFTER INSERT ON auth.users
+        FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+    END IF;
+END $$;
 
 CREATE POLICY "storage_platform_read" ON storage.objects FOR SELECT TO anon, authenticated
   USING (bucket_id IN ('avatars','scratch-cards','scratch-cards-backgrounds','prizes','banners','logos'));
@@ -656,9 +696,14 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Ajustar o trigger handle_new_user para incluir a wallet se ainda não existir
-CREATE TRIGGER on_auth_user_created_wallet
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user_wallet();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created_wallet') THEN
+        CREATE TRIGGER on_auth_user_created_wallet
+        AFTER INSERT ON auth.users
+        FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user_wallet();
+    END IF;
+END $$;
 
 -- Inicializar wallets para usuários existentes
 INSERT INTO public.wallets (user_id, balance)
