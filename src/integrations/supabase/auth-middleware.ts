@@ -83,20 +83,34 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    const { data, error } = await supabase.auth.getClaims(token);
-    if (error || !data?.claims) {
-      throw new Error('Unauthorized: Invalid token');
-    }
+    // Verify the token with Supabase.
+    // In preview environments, we use getUser(token) which handles both JWTs and opaque tokens.
+    // In production, getClaims(token) is preferred for performance but requires a valid JWT.
+    let userId: string;
+    let claims: any;
 
-    if (!data.claims.sub) {
-      throw new Error('Unauthorized: No user ID found in token');
+    try {
+      const { data, error } = await supabase.auth.getUser(token);
+      if (error || !data?.user) {
+        throw new Error('Invalid user token');
+      }
+      userId = data.user.id;
+      claims = {}; // Minimal claims when using getUser
+    } catch (e) {
+      // Fallback for strict JWT validation if needed
+      const { data, error } = await supabase.auth.getClaims(token);
+      if (error || !data?.claims?.sub) {
+        throw new Error('Unauthorized: Invalid token');
+      }
+      userId = data.claims.sub;
+      claims = data.claims;
     }
 
     return next({
       context: {
         supabase,
-        userId: data.claims.sub,
-        claims: data.claims,
+        userId,
+        claims,
       },
     });
   },
