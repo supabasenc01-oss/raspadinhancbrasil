@@ -87,18 +87,17 @@ export function AdminShell({
     );
   }
 
-  const isOwner = profile?.email === 'ncbrasil02@gmail.com' || user?.email === 'ncbrasil02@gmail.com';
+  const isOwner = user?.email === 'ncbrasil02@gmail.com';
   const hasAccess = isStaff || isOwner;
 
   if (!hasAccess) {
     return (
       <div className="grid min-h-screen place-items-center bg-background px-4">
-        <div className="surface-card max-w-md p-8 text-center">
-          <h1 className="font-display text-xl font-semibold">Acesso restrito</h1>
+        <div className="surface-card max-w-md p-8 text-center border-red-500/50 border">
+          <h1 className="font-display text-xl font-semibold text-red-500">Acesso restrito</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua conta ({profile?.email || user?.email || 'Não identificado'}) não possui permissão administrativa. 
-            Papéis atuais: {roles.length > 0 ? roles.join(", ") : "Nenhum"}.
-            Fale com um administrador da plataforma.
+            Sua conta ({user?.email || 'Não identificado'}) não possui permissão administrativa. 
+            Papéis carregados: {roles.length > 0 ? roles.join(", ") : "Nenhum"}.
           </p>
           <div className="mt-6 flex flex-col gap-2">
             <Button asChild variant="secondary">
