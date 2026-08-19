@@ -35,7 +35,6 @@ export function ScratchArea({
   } = useSettings();
   
   const logoUrl = useFileUrl(rawScratchLogoUrl || rawLogoUrl);
-  const resultUrl = useFileUrl(resultImage);
 
   const SCRATCH_THRESHOLD = 45; 
   const BRUSH_SIZE = 80; 
