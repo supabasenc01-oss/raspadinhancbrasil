@@ -185,7 +185,7 @@ function AdminFinancePage() {
                             <Button 
                               size="sm" 
                               className="h-7 text-[10px] bg-green-600 hover:bg-green-700"
-                              onClick={() => updateWithdrawalStatus(row.id, 'COMPLETED')}
+                              onClick={() => handleWithdrawalUpdate(row.id, 'COMPLETED')}
                             >
                               Aprovar
                             </Button>
