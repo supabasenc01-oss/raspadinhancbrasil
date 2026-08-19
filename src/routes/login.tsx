@@ -28,7 +28,10 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!loading && isAuthenticated) navigate({ to: "/dashboard", replace: true });
+    if (!loading && isAuthenticated) {
+      const search = Route.useSearch() as { redirect?: string };
+      navigate({ to: search.redirect || "/dashboard", replace: true });
+    }
   }, [isAuthenticated, loading, navigate]);
 
   async function handleSubmit(event: React.FormEvent) {
