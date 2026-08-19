@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { systemSettingsQuery } from "@/lib/queries";
 import { updateSystemSettings } from "@/lib/settings.functions";
 import { useServerFn } from "@tanstack/react-start";
+import { uploadPlatformFile } from "@/lib/storage";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
