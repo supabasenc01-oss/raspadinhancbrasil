@@ -24,6 +24,7 @@ export default defineConfig({
   // The resulting server bundle is unused at runtime on static hosting.
   nitro: {
     preset: "static",
+    // @ts-ignore - nitro entry workaround
     entry: "./src/nitro-static-entry.ts",
     // Disable Nitro's own default `prerender.crawlLinks` (the `static` preset otherwise
     // sets it true and crawls from "/"). TanStack Start's `spa.enabled` option already runs
@@ -49,7 +50,7 @@ export default defineConfig({
       // service into dist/server/server.js here (mirroring nitro's internal service dir
       // structure so relative asset imports keep working) satisfies TanStack's lookup
       // without touching node_modules or nitro's own build.
-      compiled(nitro) {
+      compiled(nitro: any) {
         const from = resolve(nitro.options.buildDir, "vite/services/ssr");
         const to = resolve(nitro.options.rootDir, "dist/server");
         if (existsSync(from)) {
