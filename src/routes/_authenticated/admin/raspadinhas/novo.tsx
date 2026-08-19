@@ -99,6 +99,20 @@ function NewScratchCardWizard() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Image validation
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Tipo de arquivo não suportado. Use PNG, JPG, SVG ou WebP.");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error("O arquivo é muito grande. O tamanho máximo permitido é 2MB.");
+      return;
+    }
+
     setIsUploading(fieldName);
     try {
       const { path, error } = await uploadPlatformFile("scratch-cards", file);
