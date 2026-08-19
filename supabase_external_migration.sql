@@ -365,7 +365,12 @@ ALTER TABLE public.winners ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "winners_public_read" ON public.winners FOR SELECT TO anon, authenticated USING (true);
 
 -- 2. Adição de coluna de versão na scratch_cards para rastrear mudanças de probabilidade
-ALTER TABLE public.scratch_cards ADD COLUMN config_version TEXT NOT NULL DEFAULT '1.0.0';
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'scratch_cards' AND column_name = 'config_version') THEN
+        ALTER TABLE public.scratch_cards ADD COLUMN config_version TEXT NOT NULL DEFAULT '1.0.0';
+    END IF;
+END $$;
 
 -- 3. Função de sorteio (Security Definer para rodar no servidor)
 CREATE OR REPLACE FUNCTION public.draw_scratch_card(_user_id UUID, _card_id UUID)
