@@ -98,7 +98,6 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.is_staff(UUID) TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.has_role(UUID, public.app_role) TO authenticated, anon;
-GRANT EXECUTE ON FUNCTION public.is_admin(UUID) TO authenticated, anon;
 
 CREATE OR REPLACE FUNCTION public.is_admin(_user_id UUID)
 RETURNS BOOLEAN LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
@@ -107,6 +106,8 @@ RETURNS BOOLEAN LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
     WHERE user_id = _user_id AND role IN ('SUPER_ADMIN','ADMIN')
   );
 $$;
+
+GRANT EXECUTE ON FUNCTION public.is_admin(UUID) TO authenticated, anon;
 
 DO $$ 
 BEGIN
