@@ -1,6 +1,15 @@
-CREATE TYPE public.app_role AS ENUM ('SUPER_ADMIN','ADMIN','OPERADOR','FINANCEIRO','SUPORTE','USER');
-CREATE TYPE public.profile_status AS ENUM ('ACTIVE','INACTIVE','BLOCKED','PENDING');
-CREATE TYPE public.scratch_card_status AS ENUM ('DRAFT','ACTIVE','PAUSED','FINISHED','ARCHIVED');
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'app_role') THEN
+        CREATE TYPE public.app_role AS ENUM ('SUPER_ADMIN','ADMIN','OPERADOR','FINANCEIRO','SUPORTE','USER');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'profile_status') THEN
+        CREATE TYPE public.profile_status AS ENUM ('ACTIVE','INACTIVE','BLOCKED','PENDING');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'scratch_card_status') THEN
+        CREATE TYPE public.scratch_card_status AS ENUM ('DRAFT','ACTIVE','PAUSED','FINISHED','ARCHIVED');
+    END IF;
+END $$;
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS TRIGGER LANGUAGE plpgsql SET search_path = public AS $$
