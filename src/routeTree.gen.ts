@@ -10,15 +10,40 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as GanhadoresRouteImport } from './routes/ganhadores'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as RaspadinhasRouteImport } from './routes/raspadinhas'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as RaspadinhaSlugRouteImport } from './routes/raspadinha.$slug'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
+import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminFinanceiroRouteImport } from './routes/_authenticated/admin/financeiro'
+import { Route as AuthenticatedAdminGanhadoresRouteImport } from './routes/_authenticated/admin/ganhadores'
+import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authenticated/admin/logs'
+import { Route as AuthenticatedAdminPremiosRouteImport } from './routes/_authenticated/admin/premios'
+import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_authenticated/admin/relatorios'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
+import { Route as AuthenticatedAdminRaspadinhasIndexRouteImport } from './routes/_authenticated/admin/raspadinhas/index'
+import { Route as AuthenticatedAdminRaspadinhasNovoRouteImport } from './routes/_authenticated/admin/raspadinhas/novo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CadastroRoute = CadastroRouteImport.update({
@@ -26,9 +51,24 @@ const CadastroRoute = CadastroRouteImport.update({
   path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
+  id: '/como-funciona',
+  path: '/como-funciona',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
   id: '/esqueci-senha',
   path: '/esqueci-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GanhadoresRoute = GanhadoresRouteImport.update({
+  id: '/ganhadores',
+  path: '/ganhadores',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -41,71 +81,296 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RaspadinhasRoute = RaspadinhasRouteImport.update({
+  id: '/raspadinhas',
+  path: '/raspadinhas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const RaspadinhaSlugRoute = RaspadinhaSlugRouteImport.update({
+  id: '/raspadinha/$slug',
+  path: '/raspadinha/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminBannersRoute =
+  AuthenticatedAdminBannersRouteImport.update({
+    id: '/admin/banners',
+    path: '/admin/banners',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminConfiguracoesRoute =
+  AuthenticatedAdminConfiguracoesRouteImport.update({
+    id: '/admin/configuracoes',
+    path: '/admin/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/admin/dashboard',
+    path: '/admin/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminFinanceiroRoute =
+  AuthenticatedAdminFinanceiroRouteImport.update({
+    id: '/admin/financeiro',
+    path: '/admin/financeiro',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminGanhadoresRoute =
+  AuthenticatedAdminGanhadoresRouteImport.update({
+    id: '/admin/ganhadores',
+    path: '/admin/ganhadores',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminLogsRoute = AuthenticatedAdminLogsRouteImport.update({
+  id: '/admin/logs',
+  path: '/admin/logs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminPremiosRoute =
+  AuthenticatedAdminPremiosRouteImport.update({
+    id: '/admin/premios',
+    path: '/admin/premios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRelatoriosRoute =
+  AuthenticatedAdminRelatoriosRouteImport.update({
+    id: '/admin/relatorios',
+    path: '/admin/relatorios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRaspadinhasIndexRoute =
+  AuthenticatedAdminRaspadinhasIndexRouteImport.update({
+    id: '/admin/raspadinhas/',
+    path: '/admin/raspadinhas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRaspadinhasNovoRoute =
+  AuthenticatedAdminRaspadinhasNovoRouteImport.update({
+    id: '/admin/raspadinhas/novo',
+    path: '/admin/raspadinhas/novo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/faq': typeof FaqRoute
+  '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
+  '/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/admin/premios': typeof AuthenticatedAdminPremiosRoute
+  '/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
+  '/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/faq': typeof FaqRoute
+  '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
+  '/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/admin/premios': typeof AuthenticatedAdminPremiosRoute
+  '/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
+  '/admin/raspadinhas': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
+  '/faq': typeof FaqRoute
+  '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
+  '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
+  '/_authenticated/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
+  '/_authenticated/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/_authenticated/admin/premios': typeof AuthenticatedAdminPremiosRoute
+  '/_authenticated/admin/relatorios': typeof AuthenticatedAdminRelatoriosRoute
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
+  '/_authenticated/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/cadastro'
+    | '/como-funciona'
     | '/esqueci-senha'
+    | '/faq'
+    | '/ganhadores'
     | '/home'
     | '/login'
+    | '/privacidade'
+    | '/raspadinhas'
     | '/reset-password'
+    | '/termos'
+    | '/dashboard'
+    | '/raspadinha/$slug'
+    | '/admin/banners'
+    | '/admin/configuracoes'
+    | '/admin/dashboard'
+    | '/admin/financeiro'
+    | '/admin/ganhadores'
+    | '/admin/logs'
+    | '/admin/premios'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
+    | '/admin/'
+    | '/admin/raspadinhas/novo'
+    | '/admin/raspadinhas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cadastro'
+    | '/como-funciona'
     | '/esqueci-senha'
+    | '/faq'
+    | '/ganhadores'
     | '/home'
     | '/login'
+    | '/privacidade'
+    | '/raspadinhas'
     | '/reset-password'
+    | '/termos'
+    | '/dashboard'
+    | '/raspadinha/$slug'
+    | '/admin/banners'
+    | '/admin/configuracoes'
+    | '/admin/dashboard'
+    | '/admin/financeiro'
+    | '/admin/ganhadores'
+    | '/admin/logs'
+    | '/admin/premios'
+    | '/admin/relatorios'
+    | '/admin/usuarios'
+    | '/admin'
+    | '/admin/raspadinhas/novo'
+    | '/admin/raspadinhas'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/cadastro'
+    | '/como-funciona'
     | '/esqueci-senha'
+    | '/faq'
+    | '/ganhadores'
     | '/home'
     | '/login'
+    | '/privacidade'
+    | '/raspadinhas'
     | '/reset-password'
+    | '/termos'
+    | '/_authenticated/dashboard'
+    | '/raspadinha/$slug'
+    | '/_authenticated/admin/banners'
+    | '/_authenticated/admin/configuracoes'
+    | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/financeiro'
+    | '/_authenticated/admin/ganhadores'
+    | '/_authenticated/admin/logs'
+    | '/_authenticated/admin/premios'
+    | '/_authenticated/admin/relatorios'
+    | '/_authenticated/admin/usuarios'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/raspadinhas/novo'
+    | '/_authenticated/admin/raspadinhas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CadastroRoute: typeof CadastroRoute
+  ComoFuncionaRoute: typeof ComoFuncionaRoute
   EsqueciSenhaRoute: typeof EsqueciSenhaRoute
+  FaqRoute: typeof FaqRoute
+  GanhadoresRoute: typeof GanhadoresRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  RaspadinhasRoute: typeof RaspadinhasRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TermosRoute: typeof TermosRoute
+  RaspadinhaSlugRoute: typeof RaspadinhaSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -117,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cadastro': {
       id: '/cadastro'
       path: '/cadastro'
@@ -124,11 +396,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/como-funciona': {
+      id: '/como-funciona'
+      path: '/como-funciona'
+      fullPath: '/como-funciona'
+      preLoaderRoute: typeof ComoFuncionaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/esqueci-senha': {
       id: '/esqueci-senha'
       path: '/esqueci-senha'
       fullPath: '/esqueci-senha'
       preLoaderRoute: typeof EsqueciSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ganhadores': {
+      id: '/ganhadores'
+      path: '/ganhadores'
+      fullPath: '/ganhadores'
+      preLoaderRoute: typeof GanhadoresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -145,6 +438,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/raspadinhas': {
+      id: '/raspadinhas'
+      path: '/raspadinhas'
+      fullPath: '/raspadinhas'
+      preLoaderRoute: typeof RaspadinhasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -152,16 +459,166 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/raspadinha/$slug': {
+      id: '/raspadinha/$slug'
+      path: '/raspadinha/$slug'
+      fullPath: '/raspadinha/$slug'
+      preLoaderRoute: typeof RaspadinhaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/banners': {
+      id: '/_authenticated/admin/banners'
+      path: '/admin/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AuthenticatedAdminBannersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/configuracoes': {
+      id: '/_authenticated/admin/configuracoes'
+      path: '/admin/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AuthenticatedAdminConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/financeiro': {
+      id: '/_authenticated/admin/financeiro'
+      path: '/admin/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AuthenticatedAdminFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/ganhadores': {
+      id: '/_authenticated/admin/ganhadores'
+      path: '/admin/ganhadores'
+      fullPath: '/admin/ganhadores'
+      preLoaderRoute: typeof AuthenticatedAdminGanhadoresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/logs': {
+      id: '/_authenticated/admin/logs'
+      path: '/admin/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AuthenticatedAdminLogsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/premios': {
+      id: '/_authenticated/admin/premios'
+      path: '/admin/premios'
+      fullPath: '/admin/premios'
+      preLoaderRoute: typeof AuthenticatedAdminPremiosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/relatorios': {
+      id: '/_authenticated/admin/relatorios'
+      path: '/admin/relatorios'
+      fullPath: '/admin/relatorios'
+      preLoaderRoute: typeof AuthenticatedAdminRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/raspadinhas/': {
+      id: '/_authenticated/admin/raspadinhas/'
+      path: '/admin/raspadinhas'
+      fullPath: '/admin/raspadinhas/'
+      preLoaderRoute: typeof AuthenticatedAdminRaspadinhasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/raspadinhas/novo': {
+      id: '/_authenticated/admin/raspadinhas/novo'
+      path: '/admin/raspadinhas/novo'
+      fullPath: '/admin/raspadinhas/novo'
+      preLoaderRoute: typeof AuthenticatedAdminRaspadinhasNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
+  AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminFinanceiroRoute: typeof AuthenticatedAdminFinanceiroRoute
+  AuthenticatedAdminGanhadoresRoute: typeof AuthenticatedAdminGanhadoresRoute
+  AuthenticatedAdminLogsRoute: typeof AuthenticatedAdminLogsRoute
+  AuthenticatedAdminPremiosRoute: typeof AuthenticatedAdminPremiosRoute
+  AuthenticatedAdminRelatoriosRoute: typeof AuthenticatedAdminRelatoriosRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminRaspadinhasNovoRoute: typeof AuthenticatedAdminRaspadinhasNovoRoute
+  AuthenticatedAdminRaspadinhasIndexRoute: typeof AuthenticatedAdminRaspadinhasIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
+  AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminFinanceiroRoute: AuthenticatedAdminFinanceiroRoute,
+  AuthenticatedAdminGanhadoresRoute: AuthenticatedAdminGanhadoresRoute,
+  AuthenticatedAdminLogsRoute: AuthenticatedAdminLogsRoute,
+  AuthenticatedAdminPremiosRoute: AuthenticatedAdminPremiosRoute,
+  AuthenticatedAdminRelatoriosRoute: AuthenticatedAdminRelatoriosRoute,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminRaspadinhasNovoRoute:
+    AuthenticatedAdminRaspadinhasNovoRoute,
+  AuthenticatedAdminRaspadinhasIndexRoute:
+    AuthenticatedAdminRaspadinhasIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CadastroRoute: CadastroRoute,
+  ComoFuncionaRoute: ComoFuncionaRoute,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
+  FaqRoute: FaqRoute,
+  GanhadoresRoute: GanhadoresRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  RaspadinhasRoute: RaspadinhasRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TermosRoute: TermosRoute,
+  RaspadinhaSlugRoute: RaspadinhaSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
