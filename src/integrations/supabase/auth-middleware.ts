@@ -67,10 +67,10 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: No token provided');
     }
 
-    // SKIP JWT validation for local development/preview environments
-    // where Supabase may use opaque or mock tokens that don't follow JWT format.
-    const isDev = process.env['NODE_ENV'] === 'development' || process.env['VITE_DEV'] === 'true';
-    if (!isDev && token.split('.').length !== 3) {
+    // SKIP JWT format validation in non-production environments
+    // where Supabase may use opaque or mock tokens.
+    const isProduction = process.env['NODE_ENV'] === 'production';
+    if (isProduction && token.split('.').length !== 3) {
       throw new Error('Unauthorized: Invalid token');
     }
 
