@@ -86,17 +86,13 @@ function AdminFinancePage() {
     mutation.mutate(data);
   };
 
-  const updateWithdrawalStatus = async (id: string, status: string) => {
-    const { error } = await supabase
-      .from('withdrawals')
-      .update({ status })
-      .eq('id', id);
-
-    if (error) {
-      toast.error("Erro ao atualizar status: " + error.message);
-    } else {
+  const updateWithdrawal = async (id: string, status: 'PENDING' | 'COMPLETED' | 'CANCELLED') => {
+    try {
+      await updateWithdrawalStatusFn({ id, status });
       toast.success("Status atualizado!");
       setWithdrawals(prev => prev.map(w => w.id === id ? { ...w, status } : w));
+    } catch (error: any) {
+      toast.error("Erro ao atualizar status: " + error.message);
     }
   };
 
