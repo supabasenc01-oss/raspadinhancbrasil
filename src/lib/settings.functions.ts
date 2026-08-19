@@ -8,16 +8,36 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
   })).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    for (const setting of data) {
-      const { error } = await supabaseAdmin
-        .from("system_settings")
-        .upsert({ 
-          key: setting.key, 
-          value: JSON.parse(setting.value),
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'key' });
-      
-      if (error) throw error;
+    
+    try {
+      for (const setting of data) {
+        const { error } = await supabaseAdmin
+          .from("system_settings")
+          .upsert({ 
+            key: setting.key, 
+            value: JSON.parse(setting.value),
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'key' });
+        
+        if (error) throw error;
+      }
+
+      await (supabaseAdmin.from as any)('admin_logs').insert({
+        action: 'UPDATE_SETTINGS',
+        entity: 'system_settings',
+        new_data: { keys: data.map(d => d.key) },
+        severity: 'INFO'
+      });
+
+      return { success: true };
+    } catch (error: any) {
+      await (supabaseAdmin.from as any)('admin_logs').insert({
+        action: 'UPDATE_SETTINGS_ERROR',
+        entity: 'system_settings',
+        severity: 'ERROR',
+        new_data: { error: error.message },
+        stack_trace: error.stack
+      });
+      throw error;
     }
-    return { success: true };
   });
