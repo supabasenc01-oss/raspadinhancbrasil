@@ -73,7 +73,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="text-slate-400">
           Algo deu errado no processamento da página. Verifique sua conexão ou tente recarregar.
         </p>
-        {process.env.NODE_ENV === "development" && (
+        {process.env['NODE_ENV'] === "development" && (
           <div className="mt-4 overflow-auto rounded-lg bg-black/40 p-4 text-left text-xs font-mono text-red-400 max-h-[200px]">
             {error instanceof Error ? error.message : String(error)}
           </div>
