@@ -175,6 +175,7 @@ function RootContent() {
 
   return (
     <div 
+      className="min-h-screen bg-background"
       style={{
         // @ts-ignore - custom properties
         '--color-brand-start': brandStartColor,
