@@ -21,7 +21,7 @@ export const getAdminStats = createServerFn({ method: "GET" })
       supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }),
       supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
       supabaseAdmin.from('scratch_cards').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
-      supabaseAdmin.from('scratch_card_sessions').select('*', { count: 'exact', head: true }).gt('created_at', isoDate),
+      (supabaseAdmin.from as any)('scratch_card_sessions').select('*', { count: 'exact', head: true }).gt('created_at', isoDate),
       supabaseAdmin.from('wallet_transactions').select('amount').eq('type', 'SCRATCH_PURCHASE').eq('status', 'COMPLETED').gt('created_at', isoDate),
       supabaseAdmin.from('wallet_transactions').select('amount').eq('type', 'SCRATCH_PRIZE').eq('status', 'COMPLETED').gt('created_at', isoDate),
       supabaseAdmin.from('deposits').select('amount').eq('status', 'PAID').gt('created_at', isoDate)
