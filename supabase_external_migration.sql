@@ -57,7 +57,7 @@ INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('USER','Usuário','Usuário final da plataforma', false)
 ON CONFLICT (key) DO NOTHING;
 
-CREATE TABLE public.user_roles (
+CREATE TABLE IF NOT EXISTS public.user_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role public.app_role NOT NULL,
