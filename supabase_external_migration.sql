@@ -1134,7 +1134,10 @@ BEGIN
     (v_card_tech, 'Caixa de Som BT', 500.00, 0.005, 30, 30, true),
     (v_card_tech, 'Crédito R$ 50', 50.00, 0.03, 100, 100, true),
     (v_card_tech, 'Crédito R$ 20', 20.00, 0.08, 200, 200, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
 END $$;
 
