@@ -493,37 +493,37 @@ function AdminSettingsPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-primary">Gradiente Primário (Azul)</h4>
-                  <div className="space-y-4">
-                    <ColorInput 
-                      id="brand_start_color" 
-                      label="Cor Inicial (Gradiente Azul)"
-                      value={values["brand_start_color"] || "#3B82F6"} 
-                      onChange={(val) => handleChange("brand_start_color", val)}
-                    />
-                    <ColorInput 
-                      id="brand_end_color" 
-                      label="Cor Final (Gradiente Azul)"
-                      value={values["brand_end_color"] || "#1E3A8A"} 
-                      onChange={(val) => handleChange("brand_end_color", val)}
-                    />
-                    <div className="h-10 w-full rounded-lg bg-gradient-brand border border-border" />
-                  </div>
+                  <ColorInput 
+                    id="brand_start_color" 
+                    label="Cor Inicial (Gradiente Azul)"
+                    value={values["brand_start_color"] || "#3B82F6"} 
+                    onChange={(val) => handleChange("brand_start_color", val)}
+                  />
+                  <ColorInput 
+                    id="brand_end_color" 
+                    label="Cor Final (Gradiente Azul)"
+                    value={values["brand_end_color"] || "#1E3A8A"} 
+                    onChange={(val) => handleChange("brand_end_color", val)}
+                  />
+                  <div className="h-10 w-full rounded-lg bg-gradient-brand border border-border" />
+                </div>
 
-                  <div className="space-y-4">
-                    <ColorInput 
-                      id="accent_start_color" 
-                      label="Cor Inicial (Gradiente Laranja)"
-                      value={values["accent_start_color"] || "#F97316"} 
-                      onChange={(val) => handleChange("accent_start_color", val)}
-                    />
-                    <ColorInput 
-                      id="accent_end_color" 
-                      label="Cor Final (Gradiente Laranja)"
-                      value={values["accent_end_color"] || "#EA580C"} 
-                      onChange={(val) => handleChange("accent_end_color", val)}
-                    />
-                    <div className="h-10 w-full rounded-lg bg-gradient-accent border border-border" />
-                  </div>
+                <div className="space-y-4">
+                  <h4 className="text-sm font-semibold text-accent">Gradiente de Destaque (Laranja)</h4>
+                  <ColorInput 
+                    id="accent_start_color" 
+                    label="Cor Inicial (Gradiente Laranja)"
+                    value={values["accent_start_color"] || "#F97316"} 
+                    onChange={(val) => handleChange("accent_start_color", val)}
+                  />
+                  <ColorInput 
+                    id="accent_end_color" 
+                    label="Cor Final (Gradiente Laranja)"
+                    value={values["accent_end_color"] || "#EA580C"} 
+                    onChange={(val) => handleChange("accent_end_color", val)}
+                  />
+                  <div className="h-10 w-full rounded-lg bg-gradient-accent border border-border" />
+                </div>
               </div>
             </CardContent>
           </Card>
