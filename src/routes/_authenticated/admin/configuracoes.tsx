@@ -96,13 +96,32 @@ function AdminSettingsPage() {
 
     setIsUploading(key);
     try {
-      const { path, error } = await uploadPlatformFile("logos", file);
-      if (error) throw new Error(error);
+      // Convert file to base64 to send to server function
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onload = () => {
+          const base64 = (reader.result as string).split(',')[1];
+          resolve(base64);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const base64Data = await base64Promise;
       
-      if (path) {
-        // Construct the full URL for internal use (or signed URL will be used in components)
-        // For simplicity in the admin settings, we store the path and resolve it where needed
-        handleChange(key, path);
+      const result = await uploadPlatformFileFn({
+        data: {
+          bucket: "logos",
+          fileName: file.name,
+          fileType: file.type,
+          base64Data,
+          prefix: undefined
+        }
+      });
+
+      if (result.error) throw new Error(result.error);
+      
+      if (result.path) {
+        handleChange(key, result.path);
         toast.success("Upload realizado com sucesso!");
       }
     } catch (error: any) {
