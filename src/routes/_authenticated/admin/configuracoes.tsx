@@ -44,6 +44,7 @@ function AdminSettingsPage() {
   const updateSettingsFn = useServerFn(updateSystemSettings);
   
   const [values, setValues] = useState<Record<string, string>>({});
+  const [isUploading, setIsUploading] = useState<string | null>(null);
 
   useEffect(() => {
     if (settings) {
