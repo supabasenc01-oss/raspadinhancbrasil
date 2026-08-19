@@ -68,7 +68,7 @@ INSERT INTO public.roles (key, name, description, is_staff) VALUES
 ON CONFLICT (key) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
-  is_staff = EXCLUDED.is_staff
+  is_staff = EXCLUDED.is_staff;
 ON CONFLICT (key) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
