@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-
 export const updateSystemSettings = createServerFn({ method: "POST" })
   .inputValidator((data) => z.array(z.object({
     key: z.string(),
@@ -10,6 +9,7 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     for (const setting of data) {
+      const { error } = await supabaseAdmin
         .from("system_settings")
         .upsert({ 
           key: setting.key, 
