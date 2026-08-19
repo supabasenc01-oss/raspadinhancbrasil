@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { systemSettingsQuery } from '@/lib/queries';
 import { updateSystemSettings } from '@/lib/settings.functions';
+import { updateWithdrawalStatus } from '@/lib/admin.functions';
 import { useServerFn } from '@tanstack/react-start';
 import { supabase } from '@/integrations/supabase/client';
 
