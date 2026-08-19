@@ -696,9 +696,14 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Ajustar o trigger handle_new_user para incluir a wallet se ainda não existir
-CREATE TRIGGER on_auth_user_created_wallet
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user_wallet();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created_wallet') THEN
+        CREATE TRIGGER on_auth_user_created_wallet
+        AFTER INSERT ON auth.users
+        FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user_wallet();
+    END IF;
+END $$;
 
 -- Inicializar wallets para usuários existentes
 INSERT INTO public.wallets (user_id, balance)
