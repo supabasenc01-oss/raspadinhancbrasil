@@ -44,7 +44,7 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
       }
 
       // Record Audit Log
-      await supabaseAdmin.from('admin_logs').insert({
+      await (supabaseAdmin.from('admin_logs').insert as any)({
         action: 'UPDATE_SETTINGS',
         entity: 'system_settings',
         actor_id: userId,
@@ -55,7 +55,7 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
 
       return { success: true };
     } catch (error: any) {
-      await supabaseAdmin.from('admin_logs').insert({
+      await (supabaseAdmin.from('admin_logs').insert as any)({
         action: 'UPDATE_SETTINGS_ERROR',
         entity: 'system_settings',
         actor_id: userId,
@@ -64,4 +64,5 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
       });
       throw error;
     }
+
   });
