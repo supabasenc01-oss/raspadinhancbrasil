@@ -100,8 +100,8 @@ function AdminSettingsPage() {
       const reader = new FileReader();
       const base64Promise = new Promise<string>((resolve, reject) => {
         reader.onload = () => {
-          const result = reader.result as string;
-          if (result) {
+          const result = reader.result;
+          if (typeof result === 'string') {
             const base64 = result.split(',')[1];
             resolve(base64);
           } else {
