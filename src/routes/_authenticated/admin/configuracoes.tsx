@@ -28,6 +28,7 @@ import { updateSystemSettings } from "@/lib/settings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadPlatformFile } from "@/lib/storage";
 import { uploadPlatformFileFn } from "@/lib/storage.functions";
+import { ensureStorageBuckets } from "@/lib/storage-init.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -134,6 +135,19 @@ function AdminSettingsPage() {
       toast.error("Erro no upload: " + error.message);
     } finally {
       setIsUploading(null);
+    }
+  };
+
+  const handleFixBuckets = async () => {
+    try {
+      const result = await ensureStorageBuckets();
+      if (result.success) {
+        toast.success("Pastas de armazenamento verificadas/criadas!");
+      } else {
+        toast.error("Erro ao criar pastas: " + result.error);
+      }
+    } catch (error: any) {
+      toast.error("Erro: " + error.message);
     }
   };
 
