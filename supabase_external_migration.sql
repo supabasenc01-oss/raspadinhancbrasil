@@ -65,7 +65,10 @@ INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('FINANCEIRO','Financeiro','Acesso a dados financeiros', true),
   ('SUPORTE','Suporte','Atendimento ao usuário', true),
   ('USER','Usuário','Usuário final da plataforma', false)
-ON CONFLICT (key) DO NOTHING;
+ON CONFLICT (key) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  is_staff = EXCLUDED.is_staff;
 
 CREATE TABLE IF NOT EXISTS public.user_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
