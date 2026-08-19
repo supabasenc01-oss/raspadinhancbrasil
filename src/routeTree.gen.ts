@@ -29,6 +29,7 @@ import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedIndicacaoRouteImport } from './routes/_authenticated/indicacao'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedTransacoesRouteImport } from './routes/_authenticated/transacoes'
 import { Route as RaspadinhaSlugRouteImport } from './routes/raspadinha.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
@@ -145,6 +146,11 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTransacoesRoute = AuthenticatedTransacoesRouteImport.update({
+  id: '/transacoes',
+  path: '/transacoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const RaspadinhaSlugRoute = RaspadinhaSlugRouteImport.update({
   id: '/raspadinha/$slug',
   path: '/raspadinha/$slug',
@@ -259,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/indicacao': typeof AuthenticatedIndicacaoRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/transacoes': typeof AuthenticatedTransacoesRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/indicacao': typeof AuthenticatedIndicacaoRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/transacoes': typeof AuthenticatedTransacoesRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/indicacao': typeof AuthenticatedIndicacaoRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/transacoes': typeof AuthenticatedTransacoesRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
@@ -374,6 +383,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/indicacao'
     | '/perfil'
+    | '/transacoes'
     | '/raspadinha/$slug'
     | '/admin/banners'
     | '/admin/configuracoes'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/indicacao'
     | '/perfil'
+    | '/transacoes'
     | '/raspadinha/$slug'
     | '/admin/banners'
     | '/admin/configuracoes'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/indicacao'
     | '/_authenticated/perfil'
+    | '/_authenticated/transacoes'
     | '/raspadinha/$slug'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/configuracoes'
@@ -630,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/transacoes': {
+      id: '/_authenticated/transacoes'
+      path: '/transacoes'
+      fullPath: '/transacoes'
+      preLoaderRoute: typeof AuthenticatedTransacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/raspadinha/$slug': {
       id: '/raspadinha/$slug'
       path: '/raspadinha/$slug'
@@ -765,6 +784,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndicacaoRoute: typeof AuthenticatedIndicacaoRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedTransacoesRoute: typeof AuthenticatedTransacoesRoute
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
@@ -784,6 +804,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndicacaoRoute: AuthenticatedIndicacaoRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedTransacoesRoute: AuthenticatedTransacoesRoute,
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
