@@ -31,13 +31,15 @@ export function ScratchArea({
     logoUrl: rawLogoUrl, 
     scratchOverlayLogoUrl: rawScratchLogoUrl,
     scratchOverlayBgColor,
-    scratchOverlayText
+    scratchOverlayText,
+    scratchThreshold
   } = useSettings();
   
   const logoUrl = useFileUrl(rawScratchLogoUrl || rawLogoUrl);
 
-  const SCRATCH_THRESHOLD = 45; 
+  const SCRATCH_THRESHOLD = scratchThreshold || 45; 
   const BRUSH_SIZE = 80; 
+
 
 
 

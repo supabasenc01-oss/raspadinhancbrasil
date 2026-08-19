@@ -76,5 +76,6 @@ export function useSettings() {
     scratchOverlayLogoUrl: getSetting("scratch_overlay_logo_url", ""),
     scratchOverlayBgColor: getSetting("scratch_overlay_bg_color", "#0F172A"),
     scratchOverlayText: getSetting("scratch_overlay_text", ""),
+    scratchThreshold: Number(getSetting("scratch_threshold", "45")),
   };
 }

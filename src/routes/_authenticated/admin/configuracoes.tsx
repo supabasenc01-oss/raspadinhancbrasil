@@ -651,10 +651,35 @@ function AdminSettingsPage() {
                     <p className="text-[10px] text-muted-foreground">Deixe em branco para não exibir texto.</p>
                   </div>
                 </div>
+                
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="scratch_threshold">Limiar de Revelação (%)</Label>
+                    <div className="flex items-center gap-4">
+                      <Input 
+                        id="scratch_threshold" 
+                        type="range"
+                        min="10"
+                        max="90"
+                        step="5"
+                        value={values["scratch_threshold"] || "45"} 
+                        onChange={(e) => handleChange("scratch_threshold", e.target.value)}
+                        className="flex-1 accent-primary"
+                      />
+                      <span className="w-12 text-sm font-bold text-primary">
+                        {values["scratch_threshold"] || "45"}%
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      Porcentagem da área que deve ser raspada para revelar o prêmio automaticamente.
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
+
       </Tabs>
     </AdminShell>
   );
