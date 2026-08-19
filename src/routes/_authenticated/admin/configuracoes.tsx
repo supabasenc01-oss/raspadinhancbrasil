@@ -493,45 +493,37 @@ function AdminSettingsPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-primary">Gradiente Primário (Azul)</h4>
-                  <div className="grid gap-2">
-                    <Label htmlFor="brand_start_color">Cor Inicial (OKLCH ou HEX)</Label>
-                    <Input 
+                  <div className="space-y-4">
+                    <ColorInput 
                       id="brand_start_color" 
-                      value={values["brand_start_color"] || "oklch(0.45 0.17 265)"} 
-                      onChange={(e) => handleChange("brand_start_color", e.target.value)}
+                      label="Cor Inicial (Gradiente Azul)"
+                      value={values["brand_start_color"] || "#3B82F6"} 
+                      onChange={(val) => handleChange("brand_start_color", val)}
                     />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="brand_end_color">Cor Final (OKLCH ou HEX)</Label>
-                    <Input 
+                    <ColorInput 
                       id="brand_end_color" 
-                      value={values["brand_end_color"] || "oklch(0.35 0.15 260)"} 
-                      onChange={(e) => handleChange("brand_end_color", e.target.value)}
+                      label="Cor Final (Gradiente Azul)"
+                      value={values["brand_end_color"] || "#1E3A8A"} 
+                      onChange={(val) => handleChange("brand_end_color", val)}
                     />
+                    <div className="h-10 w-full rounded-lg bg-gradient-brand border border-border" />
                   </div>
-                  <div className="h-10 w-full rounded-lg bg-gradient-brand border border-border" />
-                </div>
 
-                <div className="space-y-4">
-                  <h4 className="text-sm font-semibold text-accent">Gradiente de Destaque (Laranja)</h4>
-                  <div className="grid gap-2">
-                    <Label htmlFor="accent_start_color">Cor Inicial (OKLCH ou HEX)</Label>
-                    <Input 
+                  <div className="space-y-4">
+                    <ColorInput 
                       id="accent_start_color" 
-                      value={values["accent_start_color"] || "oklch(0.65 0.22 45)"} 
-                      onChange={(e) => handleChange("accent_start_color", e.target.value)}
+                      label="Cor Inicial (Gradiente Laranja)"
+                      value={values["accent_start_color"] || "#F97316"} 
+                      onChange={(val) => handleChange("accent_start_color", val)}
                     />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="accent_end_color">Cor Final (OKLCH ou HEX)</Label>
-                    <Input 
+                    <ColorInput 
                       id="accent_end_color" 
-                      value={values["accent_end_color"] || "oklch(0.55 0.2 35)"} 
-                      onChange={(e) => handleChange("accent_end_color", e.target.value)}
+                      label="Cor Final (Gradiente Laranja)"
+                      value={values["accent_end_color"] || "#EA580C"} 
+                      onChange={(val) => handleChange("accent_end_color", val)}
                     />
+                    <div className="h-10 w-full rounded-lg bg-gradient-accent border border-border" />
                   </div>
-                  <div className="h-10 w-full rounded-lg bg-gradient-accent border border-border" />
-                </div>
               </div>
             </CardContent>
           </Card>
