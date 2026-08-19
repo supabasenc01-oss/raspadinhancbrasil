@@ -375,7 +375,7 @@ function WinnersList({ cardId }: { cardId: string }) {
     queryKey: ['card-winners', cardId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('winners')
+        .from('winners' as any)
         .select('*')
         .eq('scratch_card_id', cardId)
         .order('created_at', { ascending: false })
