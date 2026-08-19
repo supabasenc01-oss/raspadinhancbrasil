@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { useSettings } from "@/hooks/useSettings";
+import { useFileUrl } from "@/hooks/useFileUrl";
 import { getWalletBalance } from "@/lib/payments.functions";
 import { formatCurrency } from "@/lib/format";
 
@@ -43,11 +44,12 @@ const NAV_ITEMS = [
 ] as const;
 
 export function BrandLogo({ compact = false }: { compact?: boolean }) {
-  const { siteName, logoUrl } = useSettings();
+  const { siteName, logoUrl: rawLogoUrl } = useSettings();
+  const logoUrl = useFileUrl(rawLogoUrl);
   
   return (
     <Link to="/" className="flex items-center gap-2.5">
-      {logoUrl && logoUrl !== "null" && logoUrl !== "" ? (
+      {logoUrl ? (
         <img src={logoUrl} alt={siteName} className="h-9 w-auto object-contain" />
       ) : (
         <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
