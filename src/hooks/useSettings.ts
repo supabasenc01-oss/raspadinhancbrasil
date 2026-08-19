@@ -16,16 +16,18 @@ export function useSettings() {
     if (typeof val === 'string') {
       let cleanVal = val.trim();
       
-      // If it looks like a JSON string ("..."), try to parse it
+      // Handle escaped quotes from database/JSONB
       if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) {
         try {
           const parsed = JSON.parse(cleanVal);
           if (typeof parsed === 'string') cleanVal = parsed;
         } catch (e) {
-          // Fallback to manual trimming if JSON parse fails
           cleanVal = cleanVal.replace(/^"|"$/g, '');
         }
       }
+      
+      // Double check for cases where JSON.parse might not have caught internal escapes
+      cleanVal = cleanVal.replace(/\\"/g, '"');
       
       if (cleanVal === "null" || cleanVal === "") return defaultValue;
       return cleanVal;

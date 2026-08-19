@@ -34,11 +34,10 @@ export async function resolveFileUrl(value: string | null | undefined, cacheBust
     try {
       const url = new URL(publicUrl);
       // Sempre forçar o domínio direto do Supabase para o Storage se estiver no sandbox Lovable ou em qualquer domínio .lovable.app
-      if (window.location.hostname.includes('lovableproject.com') || window.location.hostname.includes('lovable.app')) {
+      if (true) { // Always force direct URL for better reliability in preview/custom domains
         const supabaseUrl = import.meta.env['VITE_EXTERNAL_SUPABASE_URL'] || import.meta.env['VITE_SUPABASE_URL'];
         if (supabaseUrl) {
           const projectRef = new URL(supabaseUrl).hostname.split('.')[0];
-          // Use direct subdomain to bypass proxy issues in sandbox/custom domains
           publicUrl = `https://${projectRef}.supabase.co/storage/v1/object/public/${bucket}/${path}`;
         }
       }
