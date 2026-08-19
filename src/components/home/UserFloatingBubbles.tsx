@@ -11,7 +11,15 @@ import user8 from "@/assets/user8.jpg.asset.json";
 import { useHydrated } from "@/hooks/useHydrated";
 import { Check } from "lucide-react";
 
-const users = [
+interface User {
+  id: number;
+  img: string;
+  name: string;
+  prize: string;
+  time: string;
+}
+
+const users: User[] = [
   { id: 1, img: user1.url, name: "Hugo", prize: "R$ 500", time: "2 min" },
   { id: 2, img: user2.url, name: "Cecília", prize: "Smartphone", time: "5 min" },
   { id: 3, img: user3.url, name: "Carla", prize: "R$ 1.000", time: "12 min" },
