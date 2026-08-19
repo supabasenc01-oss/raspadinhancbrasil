@@ -189,7 +189,6 @@ function AdminSettingsPage() {
                 Corrigir Erro de Pastas
               </Button>
             </CardHeader>
-            </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-2">
                 <Label htmlFor="site_name">Título do Site</Label>
