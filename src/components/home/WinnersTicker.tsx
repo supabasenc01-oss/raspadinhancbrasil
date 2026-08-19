@@ -12,7 +12,7 @@ interface Winner {
   created_at: string;
 }
 
-export function WinnersTicker({ winners }: { winners?: Winner[] | null }) {
+export function WinnersTicker({ winners }: { winners?: Winner[] | null | undefined }) {
   const isHydrated = useHydrated();
 
   if (!winners || winners.length === 0) return null;
