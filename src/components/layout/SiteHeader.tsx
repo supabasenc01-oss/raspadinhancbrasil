@@ -29,7 +29,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
           <Sparkles className="size-5" />
         </span>
       )}
-      {!compact && (
+      {(!compact && !logoUrl) && (
         <span className="font-display text-lg font-semibold tracking-tight">
           {siteName.includes("Premium") ? (
             <>
