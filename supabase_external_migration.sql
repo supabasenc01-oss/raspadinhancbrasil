@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS public.banners (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT banners_period CHECK (ends_at IS NULL OR starts_at IS NULL OR ends_at > starts_at)
 );
-CREATE INDEX idx_banners_position ON public.banners (position, sort_order);
+CREATE INDEX IF NOT EXISTS idx_banners_position ON public.banners (position, sort_order);
 GRANT SELECT ON public.banners TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.banners TO authenticated;
 GRANT ALL ON public.banners TO service_role;
