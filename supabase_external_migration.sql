@@ -459,8 +459,15 @@ GRANT SELECT ON public.scratch_card_results TO authenticated;
 GRANT ALL ON public.scratch_card_results TO service_role;
 ALTER TABLE public.scratch_card_results ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "results_select_own" ON public.scratch_card_results FOR SELECT TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "results_staff_read" ON public.scratch_card_results FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_results' AND policyname = 'results_select_own') THEN
+        CREATE POLICY "results_select_own" ON public.scratch_card_results FOR SELECT TO authenticated USING (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_results' AND policyname = 'results_staff_read') THEN
+        CREATE POLICY "results_staff_read" ON public.scratch_card_results FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
+    END IF;
+END $$;
 
 -- Tabela de sessões de raspadinhas (Idempotência / Pre-lock)
 CREATE TABLE IF NOT EXISTS public.scratch_card_sessions (
