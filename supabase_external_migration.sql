@@ -889,8 +889,8 @@ BEGIN
     (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true);
 
     -- 3. LAR PREMIUM
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Lar Premium', 'lar-premium', 'Transforme sua casa com prêmios incríveis!', 25.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Lar Premium', 'lar-premium', 'Transforme sua casa com prêmios incríveis!', 25.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_lar;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
