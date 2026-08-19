@@ -13,9 +13,10 @@ export function useSettings() {
     if (typeof val === 'string') {
       // If it's stored as a string in JSONB, it might be double-quoted
       if (val.startsWith('"') && val.endsWith('"')) {
-        return val.slice(1, -1);
+        const unquoted = val.slice(1, -1);
+        return unquoted === "null" ? "" : unquoted;
       }
-      return val;
+      return val === "null" ? "" : val;
     }
     return JSON.stringify(val);
   };

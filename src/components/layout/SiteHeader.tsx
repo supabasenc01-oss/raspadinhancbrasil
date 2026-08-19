@@ -22,7 +22,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
   
   return (
     <Link to="/" className="flex items-center gap-2.5">
-      {logoUrl ? (
+      {logoUrl && logoUrl !== "null" && logoUrl !== "" ? (
         <img src={logoUrl} alt={siteName} className="h-9 w-auto object-contain" />
       ) : (
         <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
