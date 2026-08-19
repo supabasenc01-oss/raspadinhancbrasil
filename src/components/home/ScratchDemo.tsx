@@ -116,8 +116,8 @@ export function ScratchDemo() {
 
                 <div key={key} className="relative z-10">
                   <ScratchArea 
-                    coverImage={demoCover}
-                    resultImage={demoResult}
+                    coverImage={demoCover || ""}
+                    resultImage={demoResult || ""}
                     onComplete={handleComplete}
                     isWinner={true}
                   />
