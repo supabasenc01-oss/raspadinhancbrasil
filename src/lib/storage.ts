@@ -13,7 +13,7 @@ export type PlatformBucket =
  * ("bucket/pasta/arquivo.png") são convertidos em URL assinada.
  * URLs completas (http/https) são retornadas como estão.
  */
-export async function resolveFileUrl(value: string | null | undefined): Promise<string | null> {
+export async function resolveFileUrl(value: string | null | undefined, cacheBust?: string): Promise<string | null> {
   if (!value) return null;
   if (/^(https?:|data:|blob:)/.test(value)) return value;
 
@@ -42,6 +42,11 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
         }
       }
     } catch (e) {}
+  }
+
+  if (publicUrl && cacheBust) {
+    const separator = publicUrl.includes('?') ? '&' : '?';
+    publicUrl = `${publicUrl}${separator}v=${cacheBust}`;
   }
 
   return publicUrl;

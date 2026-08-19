@@ -26,7 +26,7 @@ export function useSettings() {
 
   const siteName = getSetting("site_name", "RaspaPremium");
   const logoUrl = getSetting("logo_url", "");
-  const faviconUrl = getSetting("favicon_url", "/favicon.ico");
+  const faviconUrl = getSetting("favicon_url", "/favicon.png");
   const metaDescription = getSetting("meta_description", "Plataforma premium de raspadinhas online.");
   const ogImageUrl = getSetting("og_image_url", "");
   const googleAnalyticsId = getSetting("google_analytics_id", "");
