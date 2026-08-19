@@ -27,8 +27,8 @@ async function fetchAdminStats() {
   const [users, cards, results, winners] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('scratch_cards').select('*', { count: 'exact', head: true }),
-    supabase.from('scratch_card_results').select('*', { count: 'exact', head: true }),
-    supabase.from('winners').select('amount.sum()')
+    (supabase.from as any)('scratch_card_results').select('*', { count: 'exact', head: true }),
+    (supabase.from as any)('winners').select('amount.sum()')
   ]);
 
   return {
@@ -84,7 +84,7 @@ function AdminDashboard() {
   ];
 
   return (
-    <AdminShell>
+    <AdminShell title="Dashboard">
       <div className="space-y-10">
         <div>
           <h1 className="text-3xl font-display font-black tracking-tight">DASHBOARD <span className="text-primary">ADMIN</span></h1>

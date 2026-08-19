@@ -107,7 +107,7 @@ function NewScratchCardWizard() {
           description: values.description,
           price: values.price,
           is_free: values.is_free,
-          status: values.status,
+          status: values.status as any,
           featured: values.featured,
         })
         .select()
@@ -125,7 +125,7 @@ function NewScratchCardWizard() {
 
       const { error: prizesError } = await supabase
         .from("scratch_card_prizes")
-        .insert(prizesToInsert as any);
+        .insert(prizesToInsert as any[]);
 
       if (prizesError) throw prizesError;
 

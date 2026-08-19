@@ -20,7 +20,7 @@ export const playScratchCard = createServerFn({ method: "POST" })
       throw new Error("Não autorizado");
     }
 
-    const { data: result, error } = await supabaseAdmin.rpc("draw_scratch_card", {
+    const { data: result, error } = await (supabaseAdmin.rpc as any)("draw_scratch_card", {
       _user_id: user.id,
       _card_id: data.cardId,
     });
