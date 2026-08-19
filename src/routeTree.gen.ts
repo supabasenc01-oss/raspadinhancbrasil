@@ -24,6 +24,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as RaspadinhaSlugRouteImport } from './routes/raspadinha.$slug'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminRaspadinhasIndexRouteImport } from './routes/_authenticated/admin/raspadinhas/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -99,6 +102,23 @@ const RaspadinhaSlugRoute = RaspadinhaSlugRouteImport.update({
   path: '/raspadinha/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/admin/dashboard',
+    path: '/admin/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRaspadinhasIndexRoute =
+  AuthenticatedAdminRaspadinhasIndexRouteImport.update({
+    id: '/admin/raspadinhas/',
+    path: '/admin/raspadinhas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,6 +135,9 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,6 +154,9 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -149,6 +175,9 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -167,6 +196,9 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/raspadinha/$slug'
+    | '/admin/dashboard'
+    | '/admin/'
+    | '/admin/raspadinhas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -183,6 +215,9 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/raspadinha/$slug'
+    | '/admin/dashboard'
+    | '/admin'
+    | '/admin/raspadinhas'
   id:
     | '__root__'
     | '/'
@@ -200,6 +235,9 @@ export interface FileRouteTypes {
     | '/termos'
     | '/_authenticated/dashboard'
     | '/raspadinha/$slug'
+    | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/raspadinhas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -326,15 +364,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RaspadinhaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/raspadinhas/': {
+      id: '/_authenticated/admin/raspadinhas/'
+      path: '/admin/raspadinhas'
+      fullPath: '/admin/raspadinhas/'
+      preLoaderRoute: typeof AuthenticatedAdminRaspadinhasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminRaspadinhasIndexRoute: typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminRaspadinhasIndexRoute:
+    AuthenticatedAdminRaspadinhasIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
