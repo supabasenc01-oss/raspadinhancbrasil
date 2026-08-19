@@ -29,6 +29,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { uploadPlatformFile } from "@/lib/storage";
 import { uploadPlatformFileFn } from "@/lib/storage.functions";
 import { ensureStorageBuckets } from "@/lib/storage-init.functions";
+import { useFileUrl } from "@/hooks/useFileUrl";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -206,15 +207,7 @@ function AdminSettingsPage() {
                   <div className="flex flex-col gap-4">
                     <div className="aspect-video w-full rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-4 relative overflow-hidden group">
                       {values["logo_url"] ? (
-                        <>
-                          <img src={values["logo_url"]} className="max-h-full max-w-full object-contain z-10" alt="Logo preview" />
-                          <button 
-                            onClick={() => handleChange("logo_url", "")}
-                            className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
-                          >
-                            Remover Logotipo
-                          </button>
-                        </>
+                        <LogoPreview url={values["logo_url"]} onRemove={() => handleChange("logo_url", "")} />
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
                           <ImageIcon className="size-8" />
@@ -262,15 +255,7 @@ function AdminSettingsPage() {
                   <div className="flex flex-col gap-4">
                     <div className="size-20 rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-2 relative overflow-hidden group mx-auto sm:mx-0">
                       {values["favicon_url"] ? (
-                        <>
-                          <img src={values["favicon_url"]} className="size-10 object-contain z-10" alt="Favicon preview" />
-                          <button 
-                            onClick={() => handleChange("favicon_url", "")}
-                            className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white text-[10px] font-bold"
-                          >
-                            Remover
-                          </button>
-                        </>
+                        <FaviconPreview url={values["favicon_url"]} onRemove={() => handleChange("favicon_url", "")} />
                       ) : (
                         <ImageIcon className="size-6 text-muted-foreground" />
                       )}
@@ -443,5 +428,37 @@ function AdminSettingsPage() {
         </TabsContent>
       </Tabs>
     </AdminShell>
+  );
+}
+
+function LogoPreview({ url, onRemove }: { url: string; onRemove: () => void }) {
+  const fileUrl = useFileUrl(url);
+
+  return (
+    <>
+      {fileUrl && <img src={fileUrl} className="max-h-full max-w-full object-contain z-10" alt="Logo preview" />}
+      <button 
+        onClick={onRemove}
+        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white font-bold"
+      >
+        Substituir Logotipo
+      </button>
+    </>
+  );
+}
+
+function FaviconPreview({ url, onRemove }: { url: string; onRemove: () => void }) {
+  const fileUrl = useFileUrl(url);
+  
+  return (
+    <>
+      {fileUrl && <img src={fileUrl} className="size-10 object-contain z-10" alt="Favicon preview" />}
+      <button 
+        onClick={onRemove}
+        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 text-white text-[10px] font-bold"
+      >
+        Substituir
+      </button>
+    </>
   );
 }

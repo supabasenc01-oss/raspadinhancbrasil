@@ -33,9 +33,8 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
         return { path: null, error: error.message };
       }
       
-      const { data: publicData } = supabaseAdmin.storage.from(data.bucket).getPublicUrl(objectPath);
-      
-      return { path: publicData.publicUrl, error: null };
+      // Store as "bucket/path" format so resolveFileUrl can handle it
+      return { path: `${data.bucket}/${objectPath}`, error: null };
     } catch (err: any) {
       console.error("Admin upload exception:", err);
       return { path: null, error: err.message };
