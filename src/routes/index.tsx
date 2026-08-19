@@ -28,8 +28,8 @@ function HomePage() {
     <PublicPage>
       {/* Hero Section */}
       <PageHero 
-        title="ETAPA 5 — EXPERIÊNCIA VISUAL PREMIUM 2026"
-        description="Aperfeiçoando a experiência visual com animações de ponta, motor de raspagem interativo e design ultra-moderno."
+        title="ETAPA 6 — AUDITORIA FINAL, SEGURANÇA E PREPARAÇÃO PARA PRODUÇÃO"
+        description="Auditoria completa da plataforma: segurança, RLS, motor de resultados, pagamentos e conformidade legal."
         centered
       >
         <div className="flex flex-wrap justify-center gap-4 mt-8">
