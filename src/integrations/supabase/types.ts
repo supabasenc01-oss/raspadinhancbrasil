@@ -95,6 +95,39 @@ export type Database = {
         }
         Relationships: []
       }
+      deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          external_id: string | null
+          id: string
+          payment_provider: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          payment_provider?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          payment_provider?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -127,6 +160,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          deposit_id: string | null
+          external_id: string | null
+          external_reference: string | null
+          id: string
+          payment_method: string | null
+          provider: string
+          raw_response: Json | null
+          status: string
+          status_detail: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          deposit_id?: string | null
+          external_id?: string | null
+          external_reference?: string | null
+          id?: string
+          payment_method?: string | null
+          provider?: string
+          raw_response?: Json | null
+          status: string
+          status_detail?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          deposit_id?: string | null
+          external_id?: string | null
+          external_reference?: string | null
+          id?: string
+          payment_method?: string | null
+          provider?: string
+          raw_response?: Json | null
+          status?: string
+          status_detail?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_deposit_id_fkey"
+            columns: ["deposit_id"]
+            isOneToOne: false
+            referencedRelation: "deposits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -352,6 +441,102 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          status: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          status?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          status?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_events: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          event_type: string | null
+          id: string
+          payload: Json | null
+          processed: boolean | null
+          processed_at: string | null
+          provider: string
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+          processed_at?: string | null
+          provider: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+          processed_at?: string | null
+          provider?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -366,6 +551,16 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      process_wallet_transaction: {
+        Args: {
+          _amount: number
+          _description: string
+          _reference_id: string
+          _type: string
+          _user_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
