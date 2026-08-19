@@ -123,18 +123,36 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RootContent />
+        <UserFloatingBubbles />
+        <Toaster position="top-center" />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
+
+function RootContent() {
+  const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  const { siteName, metaDescription, faviconUrl } = useSettings();
+  
+  // Use useSettings only if queryClient is available in context (it is, because of the provider above)
+  const settings = useSettings();
+  const { siteName, metaDescription, faviconUrl } = settings;
 
   useEffect(() => {
     // Dynamic Head update for Name, Description and Favicon
-    document.title = `${siteName} — Raspadinhas online`;
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute("content", metaDescription);
+    if (typeof document !== "undefined") {
+      document.title = `${siteName} — Raspadinhas online`;
+      
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute("content", metaDescription);
 
-    const favicon = document.querySelector('link[rel="icon"]');
-    if (favicon) favicon.setAttribute("href", faviconUrl);
+      const favicon = document.querySelector('link[rel="icon"]');
+      if (favicon) favicon.setAttribute("href", faviconUrl);
+    }
 
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
@@ -144,14 +162,5 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [queryClient, router, siteName, metaDescription, faviconUrl]);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <UserFloatingBubbles />
-        <Toaster position="top-center" />
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+  return <Outlet />;
 }
