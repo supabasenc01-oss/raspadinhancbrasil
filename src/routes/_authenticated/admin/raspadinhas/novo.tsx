@@ -85,11 +85,34 @@ function NewScratchCardWizard() {
       is_free: false,
       status: "DRAFT",
       featured: false,
+      image_url: "",
+      scratch_image_url: "",
       prizes: [
         { title: "Prêmio 1", value: 10, probability: 0.1, quantity_total: 100, is_active: true }
       ],
     },
   });
+
+  const [isUploading, setIsUploading] = useState<string | null>(null);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fieldName: "image_url" | "scratch_image_url") => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(fieldName);
+    try {
+      const { path, error } = await uploadPlatformFile("scratch-cards", file);
+      if (error) throw new Error(error);
+      if (path) {
+        form.setValue(fieldName, path);
+        toast.success("Upload realizado!");
+      }
+    } catch (error: any) {
+      toast.error("Erro no upload: " + error.message);
+    } finally {
+      setIsUploading(null);
+    }
+  };
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
