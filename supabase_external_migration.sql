@@ -517,7 +517,12 @@ GRANT SELECT ON public.winners TO anon, authenticated;
 GRANT ALL ON public.winners TO service_role;
 ALTER TABLE public.winners ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "winners_public_read" ON public.winners FOR SELECT TO anon, authenticated USING (true);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'winners' AND policyname = 'winners_public_read') THEN
+        CREATE POLICY "winners_public_read" ON public.winners FOR SELECT TO anon, authenticated USING (true);
+    END IF;
+END $$;
 
 -- 2. Adição de coluna de versão na scratch_cards para rastrear mudanças de probabilidade
 DO $$ 
