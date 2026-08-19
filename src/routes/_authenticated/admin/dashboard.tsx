@@ -24,6 +24,8 @@ import { formatCurrency } from '@/lib/format';
 import { getAdminStats } from '@/lib/admin.functions';
 import { useServerFn } from '@tanstack/react-start';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { activateAllScratchCards } from '@/lib/debug.functions';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/admin/dashboard')({
   component: AdminDashboard,
@@ -32,8 +34,9 @@ export const Route = createFileRoute('/_authenticated/admin/dashboard')({
 function AdminDashboard() {
   const [period, setPeriod] = useState<'today' | '7d' | '30d' | '90d' | 'all'>('all');
   const fetchStats = useServerFn(getAdminStats);
+  const activateCardsFn = useServerFn(activateAllScratchCards);
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading, refetch } = useQuery({
     queryKey: ['admin-stats', period],
     queryFn: () => fetchStats({ data: { period } })
   });
@@ -98,7 +101,28 @@ function AdminDashboard() {
     <AdminShell 
       title="Dashboard" 
       actions={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs border-primary/30"
+            onClick={async () => {
+              try {
+                const res = await activateCardsFn({});
+                if (res.success) {
+                  toast.success("Todas as raspadinhas foram ativadas!");
+                  refetch();
+                } else {
+                  toast.error("Erro: " + res.error);
+                }
+              } catch (e: any) {
+                toast.error(e.message);
+              }
+            }}
+          >
+            Ativar Todas Raspadinhas
+          </Button>
+          <div className="flex items-center gap-2">
           <Filter className="size-4 text-muted-foreground" />
           <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
             <SelectTrigger className="w-[180px]">
