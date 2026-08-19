@@ -72,6 +72,7 @@ function AdminSettingsPage() {
     mutationFn: (data: { key: string; value: string }[]) => updateSettingsFn({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "settings"] });
+      queryClient.invalidateQueries({ queryKey: ["system-settings"] });
       queryClient.invalidateQueries({ queryKey: ["file-url"] });
       toast.success("Configurações salvas com sucesso!");
     },

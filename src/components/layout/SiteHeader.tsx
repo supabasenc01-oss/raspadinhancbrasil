@@ -46,7 +46,7 @@ const NAV_ITEMS = [
 export function BrandLogo({ compact = false }: { compact?: boolean }) {
   const { siteName, logoUrl: rawLogoUrl, settings } = useSettings();
   // Use the update timestamp or a version string from settings as cache bust
-  const cacheBust = settings?.find((s: any) => s.key === 'logo_url')?.updated_at || '';
+  const cacheBust = settings?.find((s: any) => s.key === 'logo_url')?.updated_at || new Date().getTime().toString();
   const logoUrl = useFileUrl(rawLogoUrl, cacheBust);
   
   return (
