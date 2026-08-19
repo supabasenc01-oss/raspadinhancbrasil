@@ -50,7 +50,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
   const settingObj = Array.isArray(settings) ? settings.find((s: any) => s.key === 'logo_url') : null;
   const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
   
-  const logoUrl = useFileUrl(rawLogoUrl, cacheBust);
+  const logoUrl = useFileUrl(rawLogoUrl, cacheBust, true);
   
   // Debug log to trace logo resolution
   if (rawLogoUrl) {

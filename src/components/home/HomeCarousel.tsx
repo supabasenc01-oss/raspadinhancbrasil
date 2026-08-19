@@ -35,7 +35,7 @@ const SLIDES = [
 
 export function HomeCarousel() {
   const { logoUrl: rawLogoUrl, siteName } = useSettings();
-  const logoUrl = useFileUrl(rawLogoUrl);
+  const logoUrl = useFileUrl(rawLogoUrl, undefined, true);
   const [current, setCurrent] = useState(0);
 
   const next = () => setCurrent((prev) => (prev + 1) % SLIDES.length);
