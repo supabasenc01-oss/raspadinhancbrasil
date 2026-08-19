@@ -164,7 +164,7 @@ CREATE POLICY "prizes_public_read" ON public.scratch_card_prizes FOR SELECT TO a
 CREATE POLICY "prizes_staff_read" ON public.scratch_card_prizes FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "prizes_staff_write" ON public.scratch_card_prizes FOR ALL TO authenticated USING (public.is_staff(auth.uid())) WITH CHECK (public.is_staff(auth.uid()));
 
-CREATE TABLE public.banners (
+CREATE TABLE IF NOT EXISTS public.banners (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   subtitle TEXT,
