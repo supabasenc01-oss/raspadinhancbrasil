@@ -10,7 +10,7 @@ interface Winner {
   created_at: string;
 }
 
-export function WinnersTicker({ winners }: { winners?: Winner[] }) {
+export function WinnersTicker({ winners }: { winners?: Winner[] | undefined }) {
   const displayWinners = winners && winners.length > 0 ? winners : [
     { id: 1, winner_name: "Carlos A.", prize_value: 500, created_at: new Date().toISOString() },
     { id: 2, winner_name: "Ana P.", prize_value: 50, created_at: new Date().toISOString() },
