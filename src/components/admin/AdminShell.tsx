@@ -93,11 +93,18 @@ export function AdminShell({
         <div className="surface-card max-w-md p-8 text-center">
           <h1 className="font-display text-xl font-semibold">Acesso restrito</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua conta não possui permissão administrativa. Fale com um administrador da plataforma.
+            Sua conta ({profile?.email}) não possui permissão administrativa. 
+            Papéis atuais: {roles.length > 0 ? roles.join(", ") : "Nenhum"}.
+            Fale com um administrador da plataforma.
           </p>
-          <Button asChild className="mt-6" variant="secondary">
-            <Link to="/dashboard">Voltar ao meu painel</Link>
-          </Button>
+          <div className="mt-6 flex flex-col gap-2">
+            <Button asChild variant="secondary">
+              <Link to="/dashboard">Voltar ao meu painel</Link>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              Sair e entrar com outra conta
+            </Button>
+          </div>
         </div>
       </div>
     );
