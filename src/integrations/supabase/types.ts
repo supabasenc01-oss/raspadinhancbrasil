@@ -347,6 +347,7 @@ export type Database = {
           is_free: boolean
           name: string
           price: number
+          scratch_image_url: string | null
           slug: string
           starts_at: string | null
           status: Database["public"]["Enums"]["scratch_card_status"]
@@ -365,6 +366,7 @@ export type Database = {
           is_free?: boolean
           name: string
           price?: number
+          scratch_image_url?: string | null
           slug: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
@@ -383,6 +385,7 @@ export type Database = {
           is_free?: boolean
           name?: string
           price?: number
+          scratch_image_url?: string | null
           slug?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
