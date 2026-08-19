@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Rota de Webhook para o Mercado Pago.
- * Esta rota é pública (/api/public/*) para permitir o recebimento de notificações.
- * A segurança é garantida pela validação do status do pagamento diretamente na API do MP.
+ * Webhook Route for Mercado Pago.
+ * This route is public (/api/public/*) to allow receiving notifications.
+ * Security is guaranteed by validating the payment status directly on the MP API.
  */
 export const Route = createFileRoute('/api/public/mercadopago-webhook')({
   server: {
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/public/mercadopago-webhook')({
           const body = await request.json();
           console.log("Mercado Pago Webhook Received:", body);
 
-          // 1. Registrar o evento recebido para auditoria e prevenção de duplicidade
+          // 1. Log the received event for auditing and idempotency
           const { data: event, error: eventError } = await supabase
             .from('webhook_events')
             .insert({
@@ -31,33 +31,77 @@ export const Route = createFileRoute('/api/public/mercadopago-webhook')({
             return new Response('Error logging event', { status: 500 });
           }
 
-          // 2. Verificar se é uma notificação de pagamento
+          // 2. Check if it's a payment notification
           if (body.type === 'payment' || body.action === 'payment.updated') {
             const paymentId = body.data?.id || body.resource?.split('/').pop();
             
             if (paymentId) {
               console.log(`Processing payment confirmation: ${paymentId}`);
               
-              /**
-               * SEGURANÇA: Aqui deve ser feita uma chamada à API do Mercado Pago (GET /v1/payments/{id})
-               * usando o ACCESS_TOKEN privado no servidor para confirmar se o status é 'approved'.
-               * Nunca confie apenas no payload enviado pelo webhook.
-               * 
-               * Exemplo:
-               * const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-               *   headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}` }
-               * });
-               * const paymentData = await mpResponse.json();
-               * if (paymentData.status === 'approved') { ... credit wallet ... }
-               */
+              const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+              const mpAccessToken = process.env['MERCADOPAGO_ACCESS_TOKEN'];
 
-              // Atualizar evento como processado (lógica de crédito integrada futuramente)
-              await supabase
+              if (!mpAccessToken) {
+                console.warn("MERCADOPAGO_ACCESS_TOKEN not set, skipping backend verification.");
+              } else {
+                // SECURITY: Verify payment status directly with Mercado Pago API
+                try {
+                  const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                    headers: { 
+                      'Authorization': `Bearer ${mpAccessToken}`,
+                      'Content-Type': 'application/json'
+                    }
+                  });
+                  
+                  if (mpResponse.ok) {
+                    const paymentData = await mpResponse.json();
+                    
+                    // 3. If approved, process the credit safely via RPC
+                    if (paymentData.status === 'approved') {
+                      const externalRef = paymentData.external_reference; // This should be our deposit_id
+                      
+                      if (externalRef) {
+                        // Use process_wallet_transaction to credit the user
+                        // We need the user_id associated with the deposit
+                        const { data: deposit } = await supabaseAdmin
+                          .from('deposits')
+                          .select('user_id, amount, status')
+                          .eq('id', externalRef)
+                          .single();
+
+                        if (deposit && deposit.status === 'PENDING') {
+                          await (supabaseAdmin.rpc as any)('process_wallet_transaction', {
+                            _user_id: deposit.user_id,
+                            _amount: deposit.amount,
+                            _type: 'DEPOSIT',
+                            _description: `Depósito via Mercado Pago #${paymentId}`,
+                            _reference_id: externalRef
+                          });
+
+                          await supabaseAdmin
+                            .from('deposits')
+                            .update({ 
+                              status: 'PAID', 
+                              external_id: paymentId,
+                              updated_at: new Date().toISOString()
+                            })
+                            .eq('id', externalRef);
+                        }
+                      }
+                    }
+                  }
+                } catch (verifyError) {
+                  console.error("Error verifying payment with MP:", verifyError);
+                }
+              }
+
+              // Update event as processed
+              await supabaseAdmin
                 .from('webhook_events')
                 .update({ 
                   processed: true, 
                   processed_at: new Date().toISOString() 
-                } as any)
+                })
                 .eq('id', event.id);
             }
           }
