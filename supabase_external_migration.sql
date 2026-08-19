@@ -578,7 +578,7 @@ CREATE TABLE IF NOT EXISTS public.wallet_transactions (
     created_at timestamptz DEFAULT now() NOT NULL
 );
 
-CREATE TABLE public.webhook_events (
+CREATE TABLE IF NOT EXISTS public.webhook_events (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     provider text NOT NULL,
     event_id text,
