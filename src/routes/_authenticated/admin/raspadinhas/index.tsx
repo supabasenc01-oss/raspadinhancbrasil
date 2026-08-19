@@ -1,11 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Ticket } from "lucide-react";
+import { Ticket, MoreVertical, Edit, Copy, Eye, Play, Pause, Square, TrendingUp, DollarSign, Trophy } from "lucide-react";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -16,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { adminScratchCardsQuery } from "@/lib/queries";
+import { updateScratchCardStatus } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/raspadinhas/")({
   head: () => ({
