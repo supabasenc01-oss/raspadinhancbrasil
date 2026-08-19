@@ -359,7 +359,7 @@ BEGIN
     END IF;
 END $$;
 
-CREATE INDEX idx_winners_created ON public.winners (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_winners_created ON public.winners (created_at DESC);
 
 GRANT SELECT ON public.winners TO anon, authenticated;
 GRANT ALL ON public.winners TO service_role;
