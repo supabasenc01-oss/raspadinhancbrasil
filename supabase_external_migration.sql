@@ -871,8 +871,8 @@ BEGIN
     (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true);
 
     -- 2. COZINHA DOS SONHOS
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Cozinha dos Sonhos', 'cozinha-sonhos', 'Equipe sua cozinha com os melhores eletrodomésticos.', 15.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Cozinha dos Sonhos', 'cozinha-sonhos', 'Equipe sua cozinha com os melhores eletrodomésticos.', 15.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_cozinha;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
