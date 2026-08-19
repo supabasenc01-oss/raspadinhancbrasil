@@ -10,6 +10,7 @@ import {
   Clock,
   History
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 import { PublicPage, PageHero } from '@/components/layout/PublicPage';
 import { Button } from '@/components/ui/button';

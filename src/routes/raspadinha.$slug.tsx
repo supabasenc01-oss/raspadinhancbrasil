@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { PublicPage } from "@/components/layout/PublicPage";
 import { Button } from "@/components/ui/button";
@@ -83,14 +84,20 @@ function ScratchCardDetailPage() {
   const handleScratchComplete = () => {
     setGameState("REVEALED");
     if (gameResult?.result_type === "WIN") {
-      triggerConfetti();
+      triggerConfetti(gameResult?.isBigWin);
     }
   };
 
-  const triggerConfetti = () => {
-    const duration = 3 * 1000;
+  const triggerConfetti = (isBigWin = false) => {
+    const duration = (isBigWin ? 6 : 3) * 1000;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    const defaults = { 
+      startVelocity: isBigWin ? 45 : 30, 
+      spread: 360, 
+      ticks: isBigWin ? 100 : 60, 
+      zIndex: 0,
+      colors: isBigWin ? ['#D4AF37', '#FFFFFF', '#00FFFF'] : undefined
+    };
 
     const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
@@ -101,9 +108,13 @@ function ScratchCardDetailPage() {
         return clearInterval(interval);
       }
 
-      const particleCount = 50 * (timeLeft / duration);
+      const particleCount = (isBigWin ? 100 : 50) * (timeLeft / duration);
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      
+      if (isBigWin && Math.random() > 0.5) {
+        confetti({ ...defaults, particleCount: 20, origin: { x: 0.5, y: 0.5 } });
+      }
     }, 250);
   };
 
