@@ -204,6 +204,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="general" className="gap-2"><Layout className="size-4" /> Geral</TabsTrigger>
           <TabsTrigger value="seo" className="gap-2"><Search className="size-4" /> SEO & Meta</TabsTrigger>
           <TabsTrigger value="integrations" className="gap-2"><Code className="size-4" /> Integrações</TabsTrigger>
+          <TabsTrigger value="mercadopago" className="gap-2"><Globe className="size-4" /> Mercado Pago</TabsTrigger>
           <TabsTrigger value="links" className="gap-2"><LinkIcon className="size-4" /> Links Rodapé</TabsTrigger>
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
           <TabsTrigger value="colors" className="gap-2"><Sparkles className="size-4" /> Cores & Identidade</TabsTrigger>
@@ -401,6 +402,59 @@ function AdminSettingsPage() {
                   onChange={(e) => handleChange("facebook_pixel_id", e.target.value)}
                   placeholder="1234567890"
                 />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="mercadopago">
+          <Card className="bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Configurações do Mercado Pago</CardTitle>
+              <CardDescription>Configure suas credenciais para aceitar pagamentos via PIX e Cartão.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="mercadopago_public_key">Public Key (Chave Pública)</Label>
+                <Input 
+                  id="mercadopago_public_key" 
+                  value={values["mercadopago_public_key"] || ""} 
+                  onChange={(e) => handleChange("mercadopago_public_key", e.target.value)}
+                  placeholder="APP_USR-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="mercadopago_access_token">Access Token (Token de Acesso)</Label>
+                <Input 
+                  id="mercadopago_access_token" 
+                  type="password"
+                  value={values["mercadopago_access_token"] || ""} 
+                  onChange={(e) => handleChange("mercadopago_access_token", e.target.value)}
+                  placeholder="APP_USR-XXXXXXXXXXXXXXXX-XXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXX"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Nota: O Access Token é sensível e será armazenado de forma segura no banco de dados.
+                </p>
+              </div>
+              
+              <div className="pt-4 border-t border-border/30">
+                <h4 className="text-sm font-semibold mb-2">Webhook URL</h4>
+                <div className="bg-black/20 p-3 rounded-lg flex items-center justify-between border border-white/5">
+                  <code className="text-xs text-primary">{typeof window !== 'undefined' ? window.location.origin : ''}/api/public/mercadopago-webhook</code>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/api/public/mercadopago-webhook`);
+                      toast.success("URL copiada!");
+                    }}
+                  >
+                    <LinkIcon className="size-3 mr-2" /> Copiar
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  Configure esta URL no painel do Mercado Pago para receber notificações de pagamento.
+                </p>
               </div>
             </CardContent>
           </Card>
