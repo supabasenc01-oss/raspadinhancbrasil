@@ -234,8 +234,9 @@ function AdminBannersPage() {
                     <div className="flex items-center gap-4">
                       {banner.image_url ? (
                         <img 
-                          src={banner.image_url.startsWith('banners/') ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${banner.image_url}` : banner.image_url} 
+                          src={banner.image_url.startsWith('banners/') ? `${import.meta.env['VITE_SUPABASE_URL']}/storage/v1/object/public/${banner.image_url}` : banner.image_url} 
                           alt={banner.title} 
+
                           className="w-20 h-12 object-cover rounded-lg bg-muted border border-border"
                         />
                       ) : (
