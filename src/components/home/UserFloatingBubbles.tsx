@@ -38,6 +38,8 @@ export function UserFloatingBubbles() {
 
   const currentUser = users[currentIndex];
 
+  if (!currentUser) return null;
+
   return (
     <div className="fixed bottom-6 right-6 z-[100] pointer-events-none sm:bottom-10 sm:right-10">
       <AnimatePresence mode="wait">
@@ -73,8 +75,8 @@ export function UserFloatingBubbles() {
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-sm font-bold text-white leading-none">{currentUser.name}</span>
-                <span className="text-xs text-muted-foreground">levou</span>
-                <span className="text-sm font-black text-success leading-none">{currentUser.prize}</span>
+                <span className="text-xs text-muted-foreground ml-1">levou</span>
+                <span className="text-sm font-black text-success leading-none ml-1">{currentUser.prize}</span>
               </div>
             </div>
 
