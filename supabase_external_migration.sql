@@ -484,8 +484,15 @@ GRANT SELECT, INSERT, UPDATE ON public.scratch_card_sessions TO authenticated;
 GRANT ALL ON public.scratch_card_sessions TO service_role;
 ALTER TABLE public.scratch_card_sessions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "sessions_select_own" ON public.scratch_card_sessions FOR SELECT TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "sessions_insert_own" ON public.scratch_card_sessions FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_sessions' AND policyname = 'sessions_select_own') THEN
+        CREATE POLICY "sessions_select_own" ON public.scratch_card_sessions FOR SELECT TO authenticated USING (user_id = auth.uid());
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'scratch_card_sessions' AND policyname = 'sessions_insert_own') THEN
+        CREATE POLICY "sessions_insert_own" ON public.scratch_card_sessions FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+    END IF;
+END $$;
 
 -- Tabela de ganhadores (Visualização pública)
 DO $$ 
