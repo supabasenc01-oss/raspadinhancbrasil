@@ -214,6 +214,16 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
 
 DO $$
 BEGIN
+    -- Limpar duplicatas antes de criar a constraint
+    DELETE FROM public.scratch_card_prizes
+    WHERE id IN (
+        SELECT id FROM (
+            SELECT id, row_number() OVER (PARTITION BY scratch_card_id, title ORDER BY created_at DESC) as rn
+            FROM public.scratch_card_prizes
+        ) t
+        WHERE t.rn > 1
+    );
+
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'scratch_card_prizes_unique_title') THEN
         ALTER TABLE public.scratch_card_prizes ADD CONSTRAINT scratch_card_prizes_unique_title UNIQUE (scratch_card_id, title);
     END IF;
