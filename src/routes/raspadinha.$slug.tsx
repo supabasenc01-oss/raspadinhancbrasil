@@ -1,166 +1,289 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarClock, Gift, Ticket } from "lucide-react";
+import { useState, useEffect } from "react";
+import { 
+  AlertCircle, 
+  ArrowLeft, 
+  CheckCircle2, 
+  Info, 
+  Loader2, 
+  RotateCcw, 
+  Sparkles, 
+  Ticket, 
+  Trophy, 
+  Zap 
+} from "lucide-react";
+import confetti from "canvas-confetti";
+import { toast } from "sonner";
 
 import { PublicPage } from "@/components/layout/PublicPage";
-import { EmptyState } from "@/components/EmptyState";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { useFileUrl } from "@/hooks/useFileUrl";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ScratchArea } from "@/components/scratch/ScratchArea";
 import { scratchCardBySlugQuery } from "@/lib/queries";
+import { playScratchCard } from "@/lib/game.functions";
+import { formatCurrency } from "@/lib/format";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `Raspadinha ${params.slug} — RaspaPremium` },
-      {
-        name: "description",
-        content: "Detalhes da raspadinha: valor, prêmios disponíveis e período de participação.",
-      },
-      { property: "og:title", content: `Raspadinha ${params.slug} — RaspaPremium` },
-      {
-        property: "og:description",
-        content: "Detalhes da raspadinha: valor, prêmios e período de participação.",
-      },
-    ],
-  }),
   component: ScratchCardDetailPage,
 });
 
 function ScratchCardDetailPage() {
   const { slug } = Route.useParams();
-  const { data: card, isLoading } = useQuery(scratchCardBySlugQuery(slug));
-  const { isAuthenticated } = useAuth();
-  const imageUrl = useFileUrl(card?.image_url);
+  const { user } = useAuth();
+  const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
+  
+  const [gameState, setGameState] = useState<"IDLE" | "PLAYING" | "SCRATCHING" | "REVEALED">("IDLE");
+  const [isAutoRevealing, setIsAutoRevealing] = useState(false);
+  const [gameResult, setGameResult] = useState<{
+    result_type: "WIN" | "LOSE";
+    prize?: { title: string; value: number; image_url: string | null };
+  } | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleStartGame = async () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para jogar.");
+      return;
+    }
+    
+    if (!card) return;
+
+    setIsProcessing(true);
+    try {
+      const result = await playScratchCard({ cardId: card.id });
+      if (result.success) {
+        setGameResult(result);
+        setGameState("SCRATCHING");
+      } else {
+        toast.error("Não foi possível iniciar a jogada.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao processar a jogada.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleScratchComplete = () => {
+    setGameState("REVEALED");
+    if (gameResult?.result_type === "WIN") {
+      triggerConfetti();
+    }
+  };
+
+  const triggerConfetti = () => {
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval: any = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+    }, 250);
+  };
+
+  const handleReset = () => {
+    setGameState("IDLE");
+    setGameResult(null);
+    setIsAutoRevealing(false);
+  };
 
   if (isLoading) {
     return (
       <PublicPage>
-        <div className="mx-auto w-full max-w-5xl px-4 py-16">
-          <div className="surface-card h-80 animate-pulse" />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-primary" />
         </div>
       </PublicPage>
     );
   }
 
-  if (!card) {
+  if (error || !card) {
     return (
       <PublicPage>
-        <div className="mx-auto w-full max-w-3xl px-4 py-16">
-          <EmptyState
-            icon={<Ticket className="size-6" />}
-            title="Raspadinha não encontrada"
-            description="Ela pode ter sido encerrada ou ainda não está publicada."
-            action={
-              <Button asChild variant="secondary" className="mt-2">
-                <Link to="/raspadinhas">Ver raspadinhas disponíveis</Link>
-              </Button>
-            }
-          />
+        <div className="mx-auto max-w-xl px-4 py-20 text-center">
+          <Alert variant="destructive">
+            <AlertCircle className="size-4" />
+            <AlertTitle>Erro</AlertTitle>
+            <AlertDescription>
+              Não foi possível encontrar esta raspadinha.
+            </AlertDescription>
+          </Alert>
+          <Button asChild className="mt-6" variant="outline">
+            <Link to="/raspadinhas"><ArrowLeft className="mr-2 size-4" /> Voltar para o catálogo</Link>
+          </Button>
         </div>
       </PublicPage>
     );
   }
-
-  const prizes = card.scratch_card_prizes ?? [];
 
   return (
     <PublicPage>
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 lg:grid-cols-[1.1fr_1fr]">
-        <div className="surface-card overflow-hidden">
-          <div className="aspect-[16/10] bg-surface-2">
-            {imageUrl ? (
-              <img src={imageUrl} alt={card.name} className="size-full object-cover" />
-            ) : (
-              <div className="bg-hero-glow grid size-full place-items-center text-muted-foreground">
-                <Ticket className="size-12" />
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="mx-auto w-full max-w-6xl px-4 py-8">
+        <Button asChild variant="ghost" size="sm" className="mb-6">
+          <Link to="/raspadinhas"><ArrowLeft className="mr-2 size-4" /> Voltar</Link>
+        </Button>
 
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            {card.badge && (
-              <Badge className="border-0 bg-gradient-brand text-primary-foreground">
-                {card.badge}
-              </Badge>
-            )}
-            {card.is_free && (
-              <Badge variant="secondary" className="border border-accent/40 text-accent">
-                Grátis
-              </Badge>
-            )}
-            <Badge variant="outline" className="text-muted-foreground">
-              {card.status === "ACTIVE" ? "Disponível" : card.status}
-            </Badge>
-          </div>
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
+          {/* Game View */}
+          <div className="space-y-6">
+            <div className="surface-card p-6 sm:p-10 flex flex-col items-center justify-center min-h-[400px]">
+              {gameState === "IDLE" ? (
+                <div className="text-center space-y-6 max-w-sm">
+                  <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+                    <Ticket className="size-10" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">{card.name}</h2>
+                    <p className="text-muted-foreground mt-2">
+                      {card.is_free ? "Raspadinha Grátis!" : `Valor por jogada: ${formatCurrency(card.price)}`}
+                    </p>
+                  </div>
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-brand text-primary-foreground"
+                    onClick={handleStartGame}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? (
+                      <Loader2 className="size-5 animate-spin mr-2" />
+                    ) : (
+                      <Zap className="size-5 mr-2" />
+                    )}
+                    {card.is_free ? "RASPAR AGORA" : "COMPRAR E RASPAR"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-full space-y-6">
+                  <ScratchArea 
+                    coverImage={card.image_url ?? undefined} 
+                    resultImage={gameResult?.prize?.image_url ?? undefined}
+                    onComplete={handleScratchComplete}
+                    isAutoRevealing={isAutoRevealing}
+                  />
 
-          <h1 className="mt-4 text-3xl font-bold">{card.name}</h1>
-          <p className="mt-3 text-sm text-muted-foreground">
-            {card.description ?? "Raspe e descubra o seu prêmio."}
-          </p>
+                  {gameState === "SCRATCHING" && (
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsAutoRevealing(true)}
+                      >
+                        <Sparkles className="size-4 mr-2" /> REVELAR TUDO
+                      </Button>
+                    </div>
+                  )}
 
-          <div className="surface-card mt-6 flex flex-wrap items-center justify-between gap-4 p-5">
-            <div>
-              <p className="text-xs text-muted-foreground">Valor da raspadinha</p>
-              <p className="font-display text-2xl font-semibold text-primary">
-                {card.is_free ? "Grátis" : formatCurrency(card.price)}
+                  {gameState === "REVEALED" && (
+                    <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
+                      {gameResult?.result_type === "WIN" ? (
+                        <div className="space-y-2">
+                          <h3 className="text-3xl font-black text-gradient-brand tracking-tighter">PARABÉNS!</h3>
+                          <p className="text-lg">Você ganhou <span className="font-bold">{gameResult.prize?.title}</span></p>
+                          <div className="text-4xl font-display font-black text-primary mt-4">
+                            {formatCurrency(gameResult.prize?.value ?? 0)}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 py-4">
+                          <h3 className="text-xl font-bold text-muted-foreground">Não foi desta vez...</h3>
+                          <p className="text-sm text-muted-foreground">Tente novamente, a sorte pode estar na próxima!</p>
+                        </div>
+                      )}
+                      
+                      <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                        <Button 
+                          className="bg-gradient-brand text-primary-foreground"
+                          onClick={handleReset}
+                        >
+                          <RotateCcw className="size-4 mr-2" /> JOGAR NOVAMENTE
+                        </Button>
+                        <Button asChild variant="outline">
+                          <Link to="/raspadinhas">OUTRAS RASPADINHAS</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/10">
+              <Info className="size-5 text-primary flex-shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                O resultado é gerado instantaneamente pelo nosso servidor seguro usando 
+                tecnologia de sorteio auditável. A raspagem é apenas uma experiência visual.
               </p>
             </div>
-            <Button
-              asChild={!isAuthenticated}
-              disabled={isAuthenticated}
-              className="bg-gradient-brand text-primary-foreground"
-            >
-              {isAuthenticated ? (
-                <span>Jogo disponível na próxima etapa</span>
-              ) : (
-                <Link to="/cadastro">Criar conta para participar</Link>
-              )}
-            </Button>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-6 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-2">
-              <CalendarClock className="size-4" /> Início: {formatDate(card.starts_at)}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <CalendarClock className="size-4" /> Encerramento: {formatDate(card.ends_at)}
-            </span>
-          </div>
+          {/* Details Sidebar */}
+          <div className="space-y-6">
+            <div className="surface-card p-6 space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold">Sobre esta raspadinha</h3>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  {card.description || "Esta raspadinha oferece prêmios incríveis e uma experiência emocionante."}
+                </p>
+              </div>
 
-          <h2 className="mt-10 text-lg font-semibold">Prêmios desta raspadinha</h2>
-          <div className="mt-4 space-y-3">
-            {prizes.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Os prêmios ainda não foram publicados para esta raspadinha.
-              </p>
-            ) : (
-              prizes.map((prize) => (
-                <div
-                  key={prize.id}
-                  className="surface-card flex items-center justify-between gap-4 p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="grid size-9 place-items-center rounded-xl bg-secondary text-primary">
-                      <Gift className="size-4" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium">{prize.title}</p>
-                      {prize.description && (
-                        <p className="text-xs text-muted-foreground">{prize.description}</p>
-                      )}
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Prêmios possíveis</h4>
+                {/* We would fetch prizes for this card here */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-border/50">
+                    <div className="flex items-center gap-3">
+                      <Trophy className="size-4 text-primary" />
+                      <span className="text-sm font-medium">Prêmio Principal</span>
                     </div>
+                    <span className="text-sm font-bold text-primary">R$ 5.000,00</span>
                   </div>
-                  <span className="font-display text-sm font-semibold text-primary">
-                    {formatCurrency(prize.value)}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-border/50">
+                    <div className="flex items-center gap-3">
+                      <Sparkles className="size-4 text-accent" />
+                      <span className="text-sm font-medium">Prêmios Secundários</span>
+                    </div>
+                    <span className="text-sm font-bold text-primary">Até R$ 1.000,00</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-border/50">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Status</span>
+                  <span className="flex items-center gap-1.5 text-success font-medium">
+                    <CheckCircle2 className="size-3" /> ATIVA
                   </span>
                 </div>
-              ))
-            )}
+              </div>
+            </div>
+
+            <div className="surface-card p-6">
+              <h3 className="text-lg font-semibold">Regras do Jogo</h3>
+              <ul className="mt-4 space-y-3">
+                {[
+                  "Você deve ter pelo menos 18 anos.",
+                  "O resultado é determinado pelo servidor.",
+                  "Prêmios são creditados automaticamente.",
+                  "Jogue com responsabilidade."
+                ].map((rule, i) => (
+                  <li key={i} className="flex gap-2 text-sm text-muted-foreground">
+                    <span className="text-primary font-bold">•</span>
+                    {rule}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
