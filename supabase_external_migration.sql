@@ -693,7 +693,11 @@ BEGIN
     VALUES 
     (v_card_id, 'Turbo Max', 200.00, 0.01, 20, 20, true),
     (v_card_id, 'Turbo Pro', 20.00, 0.05, 200, 200, true),
-    (v_card_id, 'Turbo Lite', 5.00, 0.2, 2000, 2000, true);
+    (v_card_id, 'Turbo Lite', 5.00, 0.2, 2000, 2000, true)
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 END $$;
 -- Migração Etapa 3: Sistema Financeiro e Mercado Pago
 
