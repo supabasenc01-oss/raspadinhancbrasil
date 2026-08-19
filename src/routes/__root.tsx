@@ -166,5 +166,24 @@ function RootContent() {
     return () => data.subscription.unsubscribe();
   }, [queryClient, router, siteName, metaDescription, faviconUrl]);
 
-  return <Outlet />;
+  const {
+    brandStartColor,
+    brandEndColor,
+    accentStartColor,
+    accentEndColor
+  } = settings;
+
+  return (
+    <div 
+      style={{
+        // @ts-ignore - custom properties
+        '--color-brand-start': brandStartColor,
+        '--color-brand-end': brandEndColor,
+        '--color-accent-start': accentStartColor,
+        '--color-accent-end': accentEndColor,
+      }}
+    >
+      <Outlet />
+    </div>
+  );
 }

@@ -13,7 +13,8 @@ import {
   Search,
   Code,
   Upload,
-  Loader2
+  Loader2,
+  Sparkles
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
