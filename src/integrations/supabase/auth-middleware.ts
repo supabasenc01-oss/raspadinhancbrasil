@@ -4,8 +4,6 @@ import { getRequest } from '@tanstack/react-start/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './types'
 
-
-
 function isNewSupabaseApiKey(value: string): boolean {
   return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_');
 }
@@ -67,10 +65,6 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: No token provided');
     }
 
-    // The JWT format check (splitting by '.') is bypassed to support
-    // preview/development tokens which might be opaque or mock tokens.
-    // The actual token validity is verified below via supabase.auth.getClaims(token).
-
     const supabase = createClient<Database>(
       SUPABASE_URL!,
       SUPABASE_PUBLISHABLE_KEY!,
@@ -89,20 +83,29 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    const { data, error } = await supabase.auth.getClaims(token);
-    if (error || !data?.claims) {
-      throw new Error('Unauthorized: Invalid token');
-    }
-
-    if (!data.claims.sub) {
-      throw new Error('Unauthorized: No user ID found in token');
+    // Verify the token with Supabase - getUser() is more robust for different token types
+    const { data, error } = await supabase.auth.getUser(token);
+    
+    if (error || !data?.user) {
+      // Fallback for some environments where getClaims might be needed
+      const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+      if (claimsError || !claimsData?.claims?.sub) {
+        throw new Error('Unauthorized: Invalid token');
+      }
+      return next({
+        context: {
+          supabase,
+          userId: claimsData.claims.sub,
+          claims: claimsData.claims,
+        },
+      });
     }
 
     return next({
       context: {
         supabase,
-        userId: data.claims.sub,
-        claims: data.claims,
+        userId: data.user.id,
+        claims: {},
       },
     });
   },
