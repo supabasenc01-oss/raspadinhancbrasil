@@ -118,13 +118,14 @@ function NewScratchCardWizard() {
       // 3. Inserir Prêmios
       const prizesToInsert = values.prizes.map(p => ({
         ...p,
+        description: p.description ?? null,
         scratch_card_id: card.id,
         quantity_remaining: p.quantity_total
       }));
 
       const { error: prizesError } = await supabase
         .from("scratch_card_prizes")
-        .insert(prizesToInsert);
+        .insert(prizesToInsert as any);
 
       if (prizesError) throw prizesError;
 
@@ -153,7 +154,7 @@ function NewScratchCardWizard() {
 
   return (
     <AdminShell>
-      <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="space-y-6 max-w-4xl mx-auto" title="Nova Raspadinha">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/admin/raspadinhas" })}>
             <ArrowLeft className="size-4" />
@@ -186,13 +187,13 @@ function NewScratchCardWizard() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-sm">
+          <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-8 bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-sm">
             
             {/* Step 0: Informações */}
             {currentStep === 0 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="name"
                   render={({ field }) => (
                     <FormItem>

@@ -10,10 +10,12 @@ import {
   FileText, 
   CreditCard, 
   PlusCircle,
-  AlertCircle
+  AlertCircle,
+  Zap
 } from 'lucide-react';
 
-import { AdminShell } from '@/components/layout/AdminShell';
+import { AdminShell } from '@/components/admin/AdminShell';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/format';
 
@@ -33,7 +35,7 @@ async function fetchAdminStats() {
     usersCount: users.count || 0,
     cardsCount: cards.count || 0,
     resultsCount: results.count || 0,
-    totalPrizes: winners.data?.[0]?.sum || 0
+    totalPrizes: (winners.data as any)?.[0]?.sum || 0
   };
 }
 
