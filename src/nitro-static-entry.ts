@@ -12,6 +12,7 @@
 // actually used at runtime on static hosting (Hostinger has no Node.js) —
 // only .output/public is uploaded — but Nitro needs a valid JS entry to
 // complete the build.
+// @ts-ignore - nitro virtual import
 import "#nitro/virtual/polyfills";
 import { useNitroApp } from "nitro/app";
 
