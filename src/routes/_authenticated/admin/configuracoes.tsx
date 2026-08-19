@@ -28,6 +28,7 @@ import { updateSystemSettings } from "@/lib/settings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadPlatformFile } from "@/lib/storage";
 import { uploadPlatformFileFn } from "@/lib/storage.functions";
+import { ensureStorageBuckets } from "@/lib/storage-init.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -137,6 +138,19 @@ function AdminSettingsPage() {
     }
   };
 
+  const handleFixBuckets = async () => {
+    try {
+      const result = await ensureStorageBuckets();
+      if (result.success) {
+        toast.success("Pastas de armazenamento verificadas/criadas!");
+      } else {
+        toast.error("Erro ao criar pastas: " + result.error);
+      }
+    } catch (error: any) {
+      toast.error("Erro: " + error.message);
+    }
+  };
+
   if (isLoading) return <AdminShell title="Configurações"><div className="animate-pulse space-y-4"><div className="h-8 bg-surface w-1/4 rounded"></div><div className="h-64 bg-surface w-full rounded"></div></div></AdminShell>;
 
   return (
@@ -161,9 +175,19 @@ function AdminSettingsPage() {
 
         <TabsContent value="general">
           <Card className="bg-surface border-border/50">
-            <CardHeader>
-              <CardTitle className="text-lg">Informações Básicas</CardTitle>
-              <CardDescription>Nome e identidade visual da plataforma.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-lg">Informações Básicas</CardTitle>
+                <CardDescription>Nome e identidade visual da plataforma.</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleFixBuckets}
+                className="text-xs"
+              >
+                Corrigir Erro de Pastas
+              </Button>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-2">
