@@ -13,7 +13,7 @@ export const updateSystemSettings = createServerFn({ method: "POST" })
         .from("system_settings")
         .upsert({ 
           key: setting.key, 
-          value: setting.value,
+          value: JSON.parse(setting.value),
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
       
