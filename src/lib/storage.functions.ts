@@ -20,7 +20,7 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
 
       // Decode base64 to buffer
       const buffer = Buffer.from(data.base64Data, 'base64');
-      const extension = data.fileName.split(".").pop()?.toLowerCase() ?? "bin";
+      const extension = data.fileName?.includes(".") ? data.fileName.split(".").pop()?.toLowerCase() : "bin";
       const uuid = crypto.randomUUID();
       const finalFileName = `${uuid}.${extension}`;
       const objectPath = data.prefix ? `${data.prefix}/${finalFileName}` : finalFileName;

@@ -63,7 +63,7 @@ function AdminSettingsPage() {
         }
         
         // Remove quotes if it's a simple string stored in JSONB
-        if (val.startsWith('"') && val.endsWith('"')) {
+        if (typeof val === 'string' && val.startsWith('"') && val.endsWith('"')) {
           try {
             const parsed = JSON.parse(val);
             if (typeof parsed === 'string') val = parsed;
