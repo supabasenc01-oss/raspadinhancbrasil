@@ -16,7 +16,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export function ScratchCardTile({ card }: { card: ScratchCard }) {
-  const imageUrl = useFileUrl(card.image_url);
+  const imageUrl = useFileUrl(card.thumbnail_url || card.image_url, undefined, !card.thumbnail_url);
 
   return (
     <article className="surface-card hover-lift group flex flex-col overflow-hidden">

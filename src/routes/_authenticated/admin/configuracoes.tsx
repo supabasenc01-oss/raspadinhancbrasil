@@ -155,6 +155,13 @@ function AdminSettingsPage() {
       
       if (result.path) {
         handleChange(key, result.path);
+        // If it's a logo or banner, we might want to store the thumbnail too
+        // For simple settings we store the main path, but useFileUrl can be updated to prefer thumbnail
+        if (result.thumbnailPath) {
+          // Check if there's a corresponding thumbnail key
+          const thumbKey = key.replace('_url', '_thumbnail_url');
+          handleChange(thumbKey, result.thumbnailPath);
+        }
         toast.success("Upload realizado com sucesso!");
       }
     } catch (error: any) {

@@ -42,13 +42,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { uploadPlatformFile } from "@/lib/storage";
 
 const bannerSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, "Título é obrigatório"),
   subtitle: z.string().optional(),
   image_url: z.string().min(1, "Imagem é obrigatória"),
+  thumbnail_url: z.string().optional().nullable(),
   link_url: z.string().optional(),
   position: z.string(),
   sort_order: z.number(),
@@ -86,6 +86,7 @@ function AdminBannersPage() {
       title: "",
       subtitle: "",
       image_url: "",
+      thumbnail_url: "",
       link_url: "",
       position: "HOME_HERO",
       sort_order: 0,
@@ -128,6 +129,7 @@ function AdminBannersPage() {
       title: banner.title,
       subtitle: banner.subtitle || "",
       image_url: banner.image_url,
+      thumbnail_url: banner.thumbnail_url || "",
       link_url: banner.link_url || "",
       position: banner.position,
       sort_order: banner.sort_order,
@@ -146,6 +148,7 @@ function AdminBannersPage() {
       title: "",
       subtitle: "",
       image_url: "",
+      thumbnail_url: "",
       link_url: "",
       position: "HOME_HERO",
       sort_order: 0,
@@ -186,10 +189,37 @@ function AdminBannersPage() {
 
     setIsUploading(true);
     try {
-      const { path, error } = await uploadPlatformFile("banners", file);
-      if (error) throw new Error(error);
-      if (path) {
-        form.setValue("image_url", path);
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onload = () => {
+          const result = reader.result;
+          if (typeof result === 'string') {
+            resolve(result.split(',')[1] || "");
+          } else {
+            resolve("");
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      const base64Data = await base64Promise;
+
+      const { uploadPlatformFileFn } = await import("@/lib/storage.functions");
+      const result = await uploadPlatformFileFn({
+        data: {
+          bucket: "banners",
+          fileName: file.name,
+          fileType: file.type,
+          base64Data,
+          prefix: ""
+        }
+      });
+
+      if (result.error) throw new Error(result.error);
+      if (result.path) {
+        form.setValue("image_url", result.path);
+        if (result.thumbnailPath) {
+          form.setValue("thumbnail_url", result.thumbnailPath);
+        }
         toast.success("Upload realizado!");
       }
     } catch (error: any) {
@@ -236,7 +266,6 @@ function AdminBannersPage() {
                         <img 
                           src={banner.image_url.startsWith('banners/') ? `${import.meta.env['VITE_SUPABASE_URL']}/storage/v1/object/public/${banner.image_url}` : banner.image_url} 
                           alt={banner.title} 
-
                           className="w-20 h-12 object-cover rounded-lg bg-muted border border-border"
                         />
                       ) : (
@@ -362,7 +391,6 @@ function AdminBannersPage() {
                               <img 
                                 src={field.value.startsWith('banners/') ? `${import.meta.env['VITE_SUPABASE_URL']}/storage/v1/object/public/${field.value}` : field.value} 
                                 className="absolute inset-0 w-full h-full object-cover" 
-
                                 alt="Preview" 
                               />
                               <Button 
@@ -384,7 +412,7 @@ function AdminBannersPage() {
                         </div>
                         <div className="flex gap-2">
                           <FormControl className="flex-1">
-                            <Input placeholder="URL da imagem ou faça upload" {...field} />
+                            <Input placeholder="URL da imagem ou faça upload" {...field} value={field.value || ""} />
                           </FormControl>
                           <Button 
                             type="button" 
@@ -419,7 +447,7 @@ function AdminBannersPage() {
                     <FormItem>
                       <FormLabel>URL de Destino (Opcional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: /raspadinhas" {...field} />
+                        <Input placeholder="Ex: /raspadinhas" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -449,13 +477,13 @@ function AdminBannersPage() {
                 />
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="sort_order"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ordem</FormLabel>
+                      <FormLabel>Ordem de Exibição</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
                       </FormControl>
@@ -466,10 +494,28 @@ function AdminBannersPage() {
 
                 <FormField
                   control={form.control}
+                  name="is_active"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3 mt-8">
+                      <div className="space-y-0.5">
+                        <FormLabel>Ativo</FormLabel>
+                        <FormDescription>Visível no site</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
                   name="starts_at"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Início (Opcional)</FormLabel>
+                      <FormLabel>Data de Início (Opcional)</FormLabel>
                       <FormControl>
                         <Input type="datetime-local" {...field} value={field.value || ""} />
                       </FormControl>
@@ -483,7 +529,7 @@ function AdminBannersPage() {
                   name="ends_at"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Fim (Opcional)</FormLabel>
+                      <FormLabel>Data de Término (Opcional)</FormLabel>
                       <FormControl>
                         <Input type="datetime-local" {...field} value={field.value || ""} />
                       </FormControl>
@@ -493,34 +539,9 @@ function AdminBannersPage() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="is_active"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                      <FormLabel>Status Ativo</FormLabel>
-                      <FormDescription>
-                        Define se o banner está visível para os usuários.
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
               <DialogFooter>
-                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" className="bg-gradient-brand" disabled={upsertMutation.isPending}>
-                  {upsertMutation.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-                  {editingBanner ? "Salvar Alterações" : "Criar Banner"}
+                <Button type="submit" disabled={upsertMutation.isPending} className="bg-gradient-brand">
+                  {upsertMutation.isPending ? "Salvando..." : "Salvar Banner"}
                 </Button>
               </DialogFooter>
             </form>
