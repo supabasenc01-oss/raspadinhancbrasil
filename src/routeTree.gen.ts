@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
+import { Route as ComoJogarRouteImport } from './routes/como-jogar'
 import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GanhadoresRouteImport } from './routes/ganhadores'
@@ -59,6 +60,11 @@ const CadastroRoute = CadastroRouteImport.update({
 const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
   id: '/como-funciona',
   path: '/como-funciona',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComoJogarRoute = ComoJogarRouteImport.update({
+  id: '/como-jogar',
+  path: '/como-jogar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/como-jogar': typeof ComoJogarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/como-jogar': typeof ComoJogarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/como-jogar': typeof ComoJogarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cadastro'
     | '/como-funciona'
+    | '/como-jogar'
     | '/esqueci-senha'
     | '/faq'
     | '/ganhadores'
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cadastro'
     | '/como-funciona'
+    | '/como-jogar'
     | '/esqueci-senha'
     | '/faq'
     | '/ganhadores'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/cadastro'
     | '/como-funciona'
+    | '/como-jogar'
     | '/esqueci-senha'
     | '/faq'
     | '/ganhadores'
@@ -423,6 +435,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
+  ComoJogarRoute: typeof ComoJogarRoute
   EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   FaqRoute: typeof FaqRoute
   GanhadoresRoute: typeof GanhadoresRoute
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       path: '/como-funciona'
       fullPath: '/como-funciona'
       preLoaderRoute: typeof ComoFuncionaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/como-jogar': {
+      id: '/como-jogar'
+      path: '/como-jogar'
+      fullPath: '/como-jogar'
+      preLoaderRoute: typeof ComoJogarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/esqueci-senha': {
@@ -724,6 +744,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CadastroRoute: CadastroRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
+  ComoJogarRoute: ComoJogarRoute,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
   FaqRoute: FaqRoute,
   GanhadoresRoute: GanhadoresRoute,
