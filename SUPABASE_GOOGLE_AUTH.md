@@ -9,15 +9,15 @@ Este guia detalha os passos necessários para configurar o login social com Goog
 3. Vá em **APIs e Serviços > Tela de permissão OAuth**:
    - Escolha "Externo" e preencha os dados do seu site.
    - Adicione o domínio `lovable.app` e o domínio da sua aplicação (`raspadinhancbrasil.lovable.app`) aos domínios autorizados.
-4. Vá em **Credenciais > Criar Credenciais > ID do cliente OAuth**:
+4. Vá em **APIs e Serviços > Credenciais > Criar Credenciais > ID do cliente OAuth**:
    - Tipo de aplicativo: **Aplicativo da Web**.
    - Nome: `RaspaPremium - Supabase`.
    - **Origens JavaScript autorizadas**: 
-     - `https://id-preview--48d97f4d-3bf7-465c-93e4-0de3c898b181.lovable.app` (Preview)
-     - `https://raspadinhancbrasil.lovable.app` (Produção)
-     - `http://localhost:8080` (Desenvolvimento local)
-   - **URIs de redirecionamento autorizados**: Você precisará da URL de Callback do seu Supabase Externo.
-     - Ela tem o formato: `https://[SEU-PROJECT-REF].supabase.co/auth/v1/callback`
+     - `https://id-preview--48d97f4d-3bf7-465c-93e4-0de3c898b181.lovable.app`
+     - `https://raspadinhancbrasil.lovable.app`
+     - `http://localhost:8080`
+   - **URIs de redirecionamento autorizados**:
+     - `https://endmonqujwhbprzprwjh.supabase.co/auth/v1/callback`
 5. Salve e copie o **Client ID** e o **Client Secret**.
 
 ## 2. Painel do Supabase Externo
@@ -26,8 +26,9 @@ Este guia detalha os passos necessários para configurar o login social com Goog
 2. Ative o provider ("Enable Google Enabled").
 3. Cole o **Client ID** e o **Client Secret** obtidos no Google Cloud.
 4. Clique em **Save**.
-5. Copie a "Redirect URL" que aparece nesta tela e cole de volta no Google Cloud Console (se ainda não o fez).
+5. Verifique se a "Redirect URL" no Supabase é exatamente `https://endmonqujwhbprzprwjh.supabase.co/auth/v1/callback`.
 
-## 3. Configuração no Código da Plataforma
+## 3. Considerações Adicionais
 
-O sistema já está preparado para usar a autenticação do seu banco de dados externo. Para garantir que o Google apareça na tela de login, siga os passos de implementação abaixo.
+- O sistema já possui o botão "Google" nas telas de login e cadastro.
+- O redirecionamento após o login será feito automaticamente para o seu painel.

@@ -28,6 +28,7 @@ type AuthContextValue = {
     fullName: string;
     phone?: string;
   }) => Promise<{ error: string | null; needsConfirmation: boolean }>;
+  signInWithGoogle: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<{ error: string | null }>;
 };
@@ -148,6 +149,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           error: error?.message ?? null,
           needsConfirmation: !error && !data.session,
         };
+      },
+      signInWithGoogle: async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+        return { error: error?.message ?? null };
       },
       signOut: async () => {
         await supabase.auth.signOut();
