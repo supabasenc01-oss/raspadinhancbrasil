@@ -63,9 +63,13 @@ export function HomeCarousel() {
               <motion.img 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
+                key={logoUrl}
                 src={logoUrl} 
                 alt={siteName} 
                 className="h-12 w-auto object-contain self-start mb-2"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
             <motion.h1 
