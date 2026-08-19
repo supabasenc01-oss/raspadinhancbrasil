@@ -103,7 +103,7 @@ CREATE POLICY "user_roles_select_own" ON public.user_roles FOR SELECT TO authent
 CREATE POLICY "user_roles_select_staff" ON public.user_roles FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 CREATE POLICY "user_roles_admin_write" ON public.user_roles FOR ALL TO authenticated USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
 
-CREATE TABLE public.scratch_cards (
+CREATE TABLE IF NOT EXISTS public.scratch_cards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
