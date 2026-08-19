@@ -538,7 +538,7 @@ CREATE TABLE IF NOT EXISTS public.wallets (
     CONSTRAINT positive_balance CHECK (balance >= 0)
 );
 
-CREATE TABLE public.deposits (
+CREATE TABLE IF NOT EXISTS public.deposits (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     amount decimal(12,2) NOT NULL,
