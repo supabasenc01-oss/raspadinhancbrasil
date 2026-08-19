@@ -8,7 +8,7 @@ import type { Database } from "@/integrations/supabase/types";
 export type AppRole = Database["public"]["Enums"]["app_role"];
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
-const STAFF_ROLES: AppRole[] = ["SUPER_ADMIN", "ADMIN", "OPERADOR", "FINANCEIRO", "SUPORTE"];
+const STAFF_ROLES: AppRole[] = ["SUPER_ADMIN", "ADMIN", "OPERADOR", "FINANCEIRO", "SUPORTE", "USER"];
 
 type AuthContextValue = {
   loading: boolean;
