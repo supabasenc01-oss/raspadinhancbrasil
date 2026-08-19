@@ -325,7 +325,7 @@ CREATE POLICY "results_select_own" ON public.scratch_card_results FOR SELECT TO 
 CREATE POLICY "results_staff_read" ON public.scratch_card_results FOR SELECT TO authenticated USING (public.is_staff(auth.uid()));
 
 -- Tabela de sessões de raspadinhas (Idempotência / Pre-lock)
-CREATE TABLE public.scratch_card_sessions (
+CREATE TABLE IF NOT EXISTS public.scratch_card_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     scratch_card_id UUID NOT NULL REFERENCES public.scratch_cards(id) ON DELETE CASCADE,
