@@ -20,6 +20,7 @@ import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
 import { HomeCarousel } from '@/components/home/HomeCarousel';
 import { WinnersTicker } from '@/components/home/WinnersTicker';
 import { AppDownloadBanner } from '@/components/common/AppDownloadBanner';
+import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -199,6 +200,9 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
     </PublicPage>
   );
 }
