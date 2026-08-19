@@ -363,7 +363,10 @@ INSERT INTO public.system_settings (key, value, description, is_public) VALUES
   ('site_name', '"Raspa Premium"'::jsonb, 'Nome exibido da plataforma', true),
   ('support_email', '"suporte@exemplo.com"'::jsonb, 'E-mail de suporte', true),
   ('maintenance_mode', 'false'::jsonb, 'Modo manutencao', true)
-ON CONFLICT (key) DO NOTHING;
+ON CONFLICT (key) DO UPDATE SET 
+  value = EXCLUDED.value,
+  description = EXCLUDED.description,
+  is_public = EXCLUDED.is_public;
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
