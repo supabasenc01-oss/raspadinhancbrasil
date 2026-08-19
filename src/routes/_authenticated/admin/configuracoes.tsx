@@ -458,6 +458,7 @@ function AdminSettingsPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
         <TabsContent value="links">
           <Card className="bg-surface border-border/50">
