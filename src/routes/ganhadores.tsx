@@ -12,7 +12,7 @@ export const Route = createFileRoute('/ganhadores')({
 
 async function fetchWinners() {
   const { data, error } = await supabase
-    .from('winners')
+    .from('winners' as any)
     .select(`
       id,
       amount,

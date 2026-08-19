@@ -2,13 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 export const getAdminStats = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({
+  .validator((data: any) => z.object({
     period: z.enum(['today', '7d', '30d', '90d', 'all']).default('all')
   }).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
-    // Period filter logic (simplified for now, using created_at)
     let dateFilter = new Date();
     if (data.period === 'today') dateFilter.setHours(0,0,0,0);
     else if (data.period === '7d') dateFilter.setDate(dateFilter.getDate() - 7);
@@ -23,25 +22,27 @@ export const getAdminStats = createServerFn({ method: "GET" })
       supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
       supabaseAdmin.from('scratch_cards').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
       (supabaseAdmin.from as any)('scratch_card_results').select('*', { count: 'exact', head: true }).gt('created_at', isoDate),
-      supabaseAdmin.from('wallet_transactions').select('amount.sum()').eq('type', 'SCRATCH_PURCHASE').eq('status', 'COMPLETED').gt('created_at', isoDate),
-      supabaseAdmin.from('wallet_transactions').select('amount.sum()').eq('type', 'SCRATCH_PRIZE').eq('status', 'COMPLETED').gt('created_at', isoDate),
-      supabaseAdmin.from('deposits').select('amount.sum()').eq('status', 'PAID').gt('created_at', isoDate)
+      supabaseAdmin.from('wallet_transactions').select('amount').eq('type', 'SCRATCH_PURCHASE').eq('status', 'COMPLETED').gt('created_at', isoDate),
+      supabaseAdmin.from('wallet_transactions').select('amount').eq('type', 'SCRATCH_PRIZE').eq('status', 'COMPLETED').gt('created_at', isoDate),
+      supabaseAdmin.from('deposits').select('amount').eq('status', 'PAID').gt('created_at', isoDate)
     ]);
+
+    const sum = (data: any[] | null) => (data || []).reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
     return {
       totalUsers: users.count || 0,
       activeUsers: activeUsers.count || 0,
       activeCards: cards.count || 0,
       totalPlays: results.count || 0,
-      totalRevenue: (revenue.data as any)?.[0]?.sum || 0,
-      totalPrizes: (prizes.data as any)?.[0]?.sum || 0,
-      totalDeposited: (deposits.data as any)?.[0]?.sum || 0,
-      balanceMovement: ((deposits.data as any)?.[0]?.sum || 0) - ((prizes.data as any)?.[0]?.sum || 0)
+      totalRevenue: sum(revenue.data),
+      totalPrizes: sum(prizes.data),
+      totalDeposited: sum(deposits.data),
+      balanceMovement: sum(deposits.data) - sum(prizes.data)
     };
   });
 
 export const getAdminUsers = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({
+  .validator((data: any) => z.object({
     page: z.number().default(1),
     search: z.string().optional()
   }).parse(data))
@@ -66,7 +67,7 @@ export const getAdminUsers = createServerFn({ method: "GET" })
   });
 
 export const updateScratchCardStatus = createServerFn({ method: "POST" })
-  .inputValidator((data) => z.object({
+  .validator((data: any) => z.object({
     id: z.string(),
     status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'FINISHED', 'ARCHIVED'])
   }).parse(data))
