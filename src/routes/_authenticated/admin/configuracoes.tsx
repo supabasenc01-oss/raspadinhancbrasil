@@ -14,10 +14,12 @@ import {
   Code,
   Upload,
   Loader2,
-  Sparkles
+  Sparkles,
+  Palette
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ColorInput } from "@/components/admin/ColorInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -205,7 +207,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="links" className="gap-2"><LinkIcon className="size-4" /> Links Rodapé</TabsTrigger>
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
           <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
-          <TabsTrigger value="colors" className="gap-2"><Sparkles className="size-4" /> Cores & Identidade</TabsTrigger>
+          <TabsTrigger value="colors" className="gap-2"><Palette className="size-4" /> Cores & Identidade</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -488,43 +490,35 @@ function AdminSettingsPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-primary">Gradiente Primário (Azul)</h4>
-                  <div className="grid gap-2">
-                    <Label htmlFor="brand_start_color">Cor Inicial (OKLCH ou HEX)</Label>
-                    <Input 
-                      id="brand_start_color" 
-                      value={values["brand_start_color"] || "oklch(0.45 0.17 265)"} 
-                      onChange={(e) => handleChange("brand_start_color", e.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="brand_end_color">Cor Final (OKLCH ou HEX)</Label>
-                    <Input 
-                      id="brand_end_color" 
-                      value={values["brand_end_color"] || "oklch(0.35 0.15 260)"} 
-                      onChange={(e) => handleChange("brand_end_color", e.target.value)}
-                    />
-                  </div>
+                  <ColorInput 
+                    id="brand_start_color" 
+                    label="Cor Inicial (Gradiente Azul)"
+                    value={values["brand_start_color"] || "#3B82F6"} 
+                    onChange={(val) => handleChange("brand_start_color", val)}
+                  />
+                  <ColorInput 
+                    id="brand_end_color" 
+                    label="Cor Final (Gradiente Azul)"
+                    value={values["brand_end_color"] || "#1E3A8A"} 
+                    onChange={(val) => handleChange("brand_end_color", val)}
+                  />
                   <div className="h-10 w-full rounded-lg bg-gradient-brand border border-border" />
                 </div>
 
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-accent">Gradiente de Destaque (Laranja)</h4>
-                  <div className="grid gap-2">
-                    <Label htmlFor="accent_start_color">Cor Inicial (OKLCH ou HEX)</Label>
-                    <Input 
-                      id="accent_start_color" 
-                      value={values["accent_start_color"] || "oklch(0.65 0.22 45)"} 
-                      onChange={(e) => handleChange("accent_start_color", e.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="accent_end_color">Cor Final (OKLCH ou HEX)</Label>
-                    <Input 
-                      id="accent_end_color" 
-                      value={values["accent_end_color"] || "oklch(0.55 0.2 35)"} 
-                      onChange={(e) => handleChange("accent_end_color", e.target.value)}
-                    />
-                  </div>
+                  <ColorInput 
+                    id="accent_start_color" 
+                    label="Cor Inicial (Gradiente Laranja)"
+                    value={values["accent_start_color"] || "#F97316"} 
+                    onChange={(val) => handleChange("accent_start_color", val)}
+                  />
+                  <ColorInput 
+                    id="accent_end_color" 
+                    label="Cor Final (Gradiente Laranja)"
+                    value={values["accent_end_color"] || "#EA580C"} 
+                    onChange={(val) => handleChange("accent_end_color", val)}
+                  />
                   <div className="h-10 w-full rounded-lg bg-gradient-accent border border-border" />
                 </div>
               </div>
@@ -619,23 +613,12 @@ function AdminSettingsPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="scratch_overlay_bg_color">Cor de Fundo da Cobertura</Label>
-                    <div className="flex gap-2">
-                      <Input 
-                        id="scratch_overlay_bg_color" 
-                        type="text"
-                        value={values["scratch_overlay_bg_color"] || "#0F172A"} 
-                        onChange={(e) => handleChange("scratch_overlay_bg_color", e.target.value)}
-                        placeholder="#0F172A"
-                        className="flex-1"
-                      />
-                      <div 
-                        className="size-10 rounded-lg border border-border" 
-                        style={{ backgroundColor: values["scratch_overlay_bg_color"] || "#0F172A" }}
-                      />
-                    </div>
-                  </div>
+                  <ColorInput 
+                    id="scratch_overlay_bg_color" 
+                    label="Cor de Fundo da Cobertura"
+                    value={values["scratch_overlay_bg_color"] || "#0F172A"} 
+                    onChange={(val) => handleChange("scratch_overlay_bg_color", val)}
+                  />
 
                   <div className="grid gap-2">
                     <Label htmlFor="scratch_overlay_text">Texto de Orientação</Label>

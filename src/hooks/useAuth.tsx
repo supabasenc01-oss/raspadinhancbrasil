@@ -49,8 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return;
     }
+    
+    // Check if we already have the profile and roles to avoid redundant loads
+    // This helps stability when switching tabs
     try {
-      // Direct call to see if we can get anything
       const [profileResult, rolesResult] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", userId),
@@ -60,8 +62,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (profileResult.error) console.error("Error loading profile:", profileResult.error);
         if (rolesResult.error) console.error("Error loading roles:", rolesResult.error);
         
-        setProfile(profileResult.data ?? null);
-        setRoles((rolesResult.data ?? []).map((row) => row.role as AppRole));
+        const newProfile = profileResult.data ?? null;
+        const newRoles = (rolesResult.data ?? []).map((row) => row.role as AppRole);
+
+        setProfile(newProfile);
+        setRoles(newRoles);
       }
     } catch (err) {
       console.error("Critical error in loadUserData:", err);

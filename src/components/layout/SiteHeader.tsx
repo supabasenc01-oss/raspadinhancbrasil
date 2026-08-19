@@ -78,7 +78,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
         
         {/* Site name - Only visible if there is NO logoUrl and image fails */}
         {(!compact) && (
-          <span className={`font-display text-lg font-black tracking-tighter uppercase italic shrink-0 ${logoUrl ? 'hidden' : ''}`}>
+          <span className={`font-display text-lg font-black tracking-tighter uppercase italic shrink-0 ${rawLogoUrl ? 'hidden' : ''}`}>
             {siteName.includes("Premium") ? (
               <>
                 {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
@@ -240,10 +240,10 @@ export function SiteHeader() {
           ) : (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Link to="/login">Entrar</Link>
+                <Link to="/login" search={{ redirect: undefined }}>Entrar</Link>
               </Button>
               <Button asChild size="sm" className="bg-gradient-brand text-primary-foreground font-bold px-6 shadow-glow">
-                <Link to="/cadastro">CRIAR CONTA</Link>
+                <Link to="/cadastro" search={{ redirect: undefined }}>CRIAR CONTA</Link>
               </Button>
             </div>
           )}
@@ -274,12 +274,12 @@ export function SiteHeader() {
               {!isAuthenticated && (
                 <div className="mt-auto pt-6 border-t border-border/50 flex flex-col gap-3">
                   <Button asChild className="bg-gradient-brand text-primary-foreground h-12 text-base font-bold">
-                    <Link to="/cadastro" onClick={() => setOpen(false)}>
+                    <Link to="/cadastro" search={{ redirect: undefined }} onClick={() => setOpen(false)}>
                       CRIAR MINHA CONTA
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="h-12 text-base">
-                    <Link to="/login" onClick={() => setOpen(false)}>
+                    <Link to="/login" search={{ redirect: undefined }} onClick={() => setOpen(false)}>
                       ENTRAR
                     </Link>
                   </Button>
