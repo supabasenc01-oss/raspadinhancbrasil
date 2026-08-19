@@ -13,7 +13,6 @@ export function useSettings() {
     if (val === null || val === undefined) return defaultValue;
     
     if (typeof val === 'string') {
-      // Remove double quotes if present (common in JSONB string storage)
       if (val.startsWith('"') && val.endsWith('"')) {
         val = val.slice(1, -1);
       }
@@ -21,9 +20,8 @@ export function useSettings() {
       return val;
     }
     
-    // If it's a boolean or other type, return as is or stringify
-    if (typeof val === 'boolean') return val;
-    return val;
+    // Convert all non-string values to string to satisfy return type
+    return String(val);
   };
 
   const siteName = getSetting("site_name", "RaspaPremium");

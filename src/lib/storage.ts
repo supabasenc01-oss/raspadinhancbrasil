@@ -18,10 +18,12 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
   if (/^(https?:|data:|blob:)/.test(value)) return value;
 
   const parts = value.split("/");
-  if (parts.length < 2) return value; // Se for apenas o nome do arquivo, retorna como está
+  if (parts.length < 2) return value; 
 
   const bucket = parts[0];
   const path = parts.slice(1).join("/");
+
+  if (!bucket || !path) return value;
 
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data?.publicUrl ?? null;
