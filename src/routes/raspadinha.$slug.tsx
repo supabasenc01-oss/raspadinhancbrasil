@@ -374,16 +374,15 @@ function WinnersList({ cardId }: { cardId: string }) {
   const { data: winners, isLoading } = useQuery({
     queryKey: ['card-winners', cardId],
     queryFn: async () => {
-      const { data, error } = await supabase
-      const { data, error } = await (supabase
+      const { data: winnersData, error: winnersError } = await (supabase
         .from('winners' as any)
         .select('*')
         .eq('scratch_card_id', cardId)
         .order('created_at', { ascending: false })
         .limit(5) as any);
       
-      if (error) throw error;
-      return data as any[];
+      if (winnersError) throw winnersError;
+      return winnersData as any[];
     },
   });
 
