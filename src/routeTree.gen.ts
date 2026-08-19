@@ -13,14 +13,17 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
+import { Route as ComoJogarRouteImport } from './routes/como-jogar'
 import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GanhadoresRouteImport } from './routes/ganhadores'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as JogoResponsavelRouteImport } from './routes/jogo-responsavel'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RaspadinhasRouteImport } from './routes/raspadinhas'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SuporteRouteImport } from './routes/suporte'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -59,6 +62,11 @@ const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
   path: '/como-funciona',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComoJogarRoute = ComoJogarRouteImport.update({
+  id: '/como-jogar',
+  path: '/como-jogar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
   id: '/esqueci-senha',
   path: '/esqueci-senha',
@@ -79,6 +87,11 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JogoResponsavelRoute = JogoResponsavelRouteImport.update({
+  id: '/jogo-responsavel',
+  path: '/jogo-responsavel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -97,6 +110,11 @@ const RaspadinhasRoute = RaspadinhasRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuporteRoute = SuporteRouteImport.update({
+  id: '/suporte',
+  path: '/suporte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermosRoute = TermosRouteImport.update({
@@ -206,14 +224,17 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/como-jogar': typeof ComoJogarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
+  '/jogo-responsavel': typeof JogoResponsavelRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -237,14 +258,17 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/como-jogar': typeof ComoJogarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
+  '/jogo-responsavel': typeof JogoResponsavelRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -270,14 +294,17 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/como-jogar': typeof ComoJogarRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/faq': typeof FaqRoute
   '/ganhadores': typeof GanhadoresRoute
   '/home': typeof HomeRoute
+  '/jogo-responsavel': typeof JogoResponsavelRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
   '/raspadinhas': typeof RaspadinhasRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -303,14 +330,17 @@ export interface FileRouteTypes {
     | '/'
     | '/cadastro'
     | '/como-funciona'
+    | '/como-jogar'
     | '/esqueci-senha'
     | '/faq'
     | '/ganhadores'
     | '/home'
+    | '/jogo-responsavel'
     | '/login'
     | '/privacidade'
     | '/raspadinhas'
     | '/reset-password'
+    | '/suporte'
     | '/termos'
     | '/carteira'
     | '/dashboard'
@@ -334,14 +364,17 @@ export interface FileRouteTypes {
     | '/'
     | '/cadastro'
     | '/como-funciona'
+    | '/como-jogar'
     | '/esqueci-senha'
     | '/faq'
     | '/ganhadores'
     | '/home'
+    | '/jogo-responsavel'
     | '/login'
     | '/privacidade'
     | '/raspadinhas'
     | '/reset-password'
+    | '/suporte'
     | '/termos'
     | '/carteira'
     | '/dashboard'
@@ -366,14 +399,17 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/cadastro'
     | '/como-funciona'
+    | '/como-jogar'
     | '/esqueci-senha'
     | '/faq'
     | '/ganhadores'
     | '/home'
+    | '/jogo-responsavel'
     | '/login'
     | '/privacidade'
     | '/raspadinhas'
     | '/reset-password'
+    | '/suporte'
     | '/termos'
     | '/_authenticated/carteira'
     | '/_authenticated/dashboard'
@@ -399,14 +435,17 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
+  ComoJogarRoute: typeof ComoJogarRoute
   EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   FaqRoute: typeof FaqRoute
   GanhadoresRoute: typeof GanhadoresRoute
   HomeRoute: typeof HomeRoute
+  JogoResponsavelRoute: typeof JogoResponsavelRoute
   LoginRoute: typeof LoginRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   RaspadinhasRoute: typeof RaspadinhasRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SuporteRoute: typeof SuporteRoute
   TermosRoute: typeof TermosRoute
   RaspadinhaSlugRoute: typeof RaspadinhaSlugRoute
   ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
@@ -442,6 +481,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComoFuncionaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/como-jogar': {
+      id: '/como-jogar'
+      path: '/como-jogar'
+      fullPath: '/como-jogar'
+      preLoaderRoute: typeof ComoJogarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/esqueci-senha': {
       id: '/esqueci-senha'
       path: '/esqueci-senha'
@@ -470,6 +516,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/jogo-responsavel': {
+      id: '/jogo-responsavel'
+      path: '/jogo-responsavel'
+      fullPath: '/jogo-responsavel'
+      preLoaderRoute: typeof JogoResponsavelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -496,6 +549,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suporte': {
+      id: '/suporte'
+      path: '/suporte'
+      fullPath: '/suporte'
+      preLoaderRoute: typeof SuporteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/termos': {
@@ -684,14 +744,17 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CadastroRoute: CadastroRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
+  ComoJogarRoute: ComoJogarRoute,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
   FaqRoute: FaqRoute,
   GanhadoresRoute: GanhadoresRoute,
   HomeRoute: HomeRoute,
+  JogoResponsavelRoute: JogoResponsavelRoute,
   LoginRoute: LoginRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   RaspadinhasRoute: RaspadinhasRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SuporteRoute: SuporteRoute,
   TermosRoute: TermosRoute,
   RaspadinhaSlugRoute: RaspadinhaSlugRoute,
   ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,

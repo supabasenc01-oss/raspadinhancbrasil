@@ -44,6 +44,16 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/suporte" className="transition-colors hover:text-foreground">
+                Suporte Técnico
+              </Link>
+            </li>
+            <li>
+              <Link to="/como-jogar" className="transition-colors hover:text-foreground">
+                Como Jogar
+              </Link>
+            </li>
+            <li>
               <Link to="/termos" className="transition-colors hover:text-foreground">
                 Termos de uso
               </Link>
@@ -51,6 +61,11 @@ export function SiteFooter() {
             <li>
               <Link to="/privacidade" className="transition-colors hover:text-foreground">
                 Privacidade
+              </Link>
+            </li>
+            <li>
+              <Link to="/jogo-responsavel" className="transition-colors hover:text-foreground">
+                Jogo Responsável
               </Link>
             </li>
           </ul>

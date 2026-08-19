@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: "/ganhadores", label: "Ganhadores" },
   { to: "/como-funciona", label: "Como funciona" },
   { to: "/faq", label: "Ajuda" },
+  { to: "/suporte", label: "Suporte" },
 ] as const;
 
 export function BrandLogo({ compact = false }: { compact?: boolean }) {
