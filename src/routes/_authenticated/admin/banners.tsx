@@ -360,8 +360,9 @@ function AdminBannersPage() {
                           {field.value ? (
                             <>
                               <img 
-                                src={field.value.startsWith('banners/') ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${field.value}` : field.value} 
+                                src={field.value.startsWith('banners/') ? `${import.meta.env['VITE_SUPABASE_URL']}/storage/v1/object/public/${field.value}` : field.value} 
                                 className="absolute inset-0 w-full h-full object-cover" 
+
                                 alt="Preview" 
                               />
                               <Button 
