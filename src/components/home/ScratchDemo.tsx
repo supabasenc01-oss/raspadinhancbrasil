@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Zap, Trophy, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useSettings } from '@/hooks/useSettings';
+import { useFileUrl } from '@/hooks/useFileUrl';
 
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
   const [finished, setFinished] = useState(false);
-  const { logoUrl, siteName } = useSettings();
+  const { logoUrl: rawLogoUrl, siteName } = useSettings();
+  const logoUrl = useFileUrl(rawLogoUrl);
 
   // Use a professional tech/luxury look for the demo
   const demoCover = "https://images.unsplash.com/photo-1634157703702-3c124b455499?q=80&w=800&auto=format&fit=crop"; // Premium golden texture

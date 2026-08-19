@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
-import { Trophy, Clock, Medal } from "lucide-react";
+import { Trophy, Clock, Medal, Sparkles } from "lucide-react";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useSettings } from "@/hooks/useSettings";
+import { useFileUrl } from "@/hooks/useFileUrl";
 
 interface Winner {
   id: string;
@@ -14,6 +16,8 @@ interface Winner {
 
 export function WinnersTicker({ winners }: { winners?: Winner[] | null | undefined }) {
   const isHydrated = useHydrated();
+  const { logoUrl: rawLogoUrl, siteName } = useSettings();
+  const logoUrl = useFileUrl(rawLogoUrl);
 
   if (!winners || winners.length === 0) return null;
 
@@ -24,8 +28,12 @@ export function WinnersTicker({ winners }: { winners?: Winner[] | null | undefin
     <div className="w-full bg-surface/50 border-y border-border/50 py-3 overflow-hidden backdrop-blur-sm relative z-10">
       <div className="mx-auto max-w-[2000px] flex items-center">
         <div className="shrink-0 px-6 flex items-center gap-2 border-r border-border/50 mr-6 bg-surface/50 relative z-20">
-          <Trophy className="size-4 text-primary animate-pulse" />
-          <span className="text-[10px] font-black tracking-widest text-primary uppercase italic">LIVE WINNERS</span>
+          {logoUrl ? (
+            <img src={logoUrl} alt={siteName} className="h-5 w-auto object-contain" />
+          ) : (
+            <Trophy className="size-4 text-primary animate-pulse" />
+          )}
+          <span className="text-[10px] font-black tracking-widest text-primary uppercase italic">GANHADORES AO VIVO</span>
         </div>
         
         <div className="flex-1 overflow-hidden relative">

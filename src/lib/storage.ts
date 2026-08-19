@@ -17,11 +17,16 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
   if (!value) return null;
   if (/^(https?:|data:|blob:)/.test(value)) return value;
 
-  const [bucket, ...rest] = value.split("/");
-  if (!bucket || rest.length === 0) return null;
+  const parts = value.split("/");
+  if (parts.length < 2) return value; 
 
-  const { data } = await supabase.storage.from(bucket).createSignedUrl(rest.join("/"), 60 * 60);
-  return data?.signedUrl ?? null;
+  const bucket = parts[0];
+  const path = parts.slice(1).join("/");
+
+  if (!bucket || !path) return value;
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data?.publicUrl ?? null;
 }
 
 export async function uploadPlatformFile(

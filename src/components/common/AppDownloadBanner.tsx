@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { X, Smartphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSettings } from "@/hooks/useSettings";
+import { useFileUrl } from "@/hooks/useFileUrl";
 
 export function AppDownloadBanner() {
   const [isVisible, setIsVisible] = useState(true);
+  const { logoUrl: rawLogoUrl, siteName } = useSettings();
+  const logoUrl = useFileUrl(rawLogoUrl);
 
   return (
     <AnimatePresence>
@@ -15,8 +19,12 @@ export function AppDownloadBanner() {
           className="bg-success py-2 px-4 flex items-center justify-between text-success-foreground relative z-[60]"
         >
           <div className="flex items-center gap-2 mx-auto text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-            <Smartphone className="size-3 sm:size-4" />
-            Baixe nosso app e ganhe muitos pontos!
+            {logoUrl ? (
+              <img src={logoUrl} alt={siteName} className="h-5 w-auto object-contain mr-2" />
+            ) : (
+              <Smartphone className="size-3 sm:size-4" />
+            )}
+            Baixe o app oficial da {siteName}!
             <button className="bg-white text-success px-3 py-1 rounded-full text-[9px] sm:text-xs hover:bg-white/90 transition-colors ml-2">
               Baixar
             </button>

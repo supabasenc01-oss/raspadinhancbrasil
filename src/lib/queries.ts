@@ -13,7 +13,6 @@ export const activeScratchCardsQuery = queryOptions({
     const { data, error } = await supabase
       .from("scratch_cards")
       .select("*")
-      .eq("status", "ACTIVE")
       .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false });
     if (error) throw error;
@@ -27,7 +26,6 @@ export const featuredScratchCardsQuery = queryOptions({
     const { data, error } = await supabase
       .from("scratch_cards")
       .select("*")
-      .eq("status", "ACTIVE")
       .eq("is_featured", true)
       .order("created_at", { ascending: false })
       .limit(6);

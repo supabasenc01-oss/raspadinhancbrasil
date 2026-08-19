@@ -10,15 +10,18 @@ export function useSettings() {
     if (!setting) return defaultValue;
     
     let val = setting.value;
+    if (val === null || val === undefined) return defaultValue;
+    
     if (typeof val === 'string') {
-      // If it's stored as a string in JSONB, it might be double-quoted
       if (val.startsWith('"') && val.endsWith('"')) {
-        const unquoted = val.slice(1, -1);
-        return unquoted === "null" ? "" : unquoted;
+        val = val.slice(1, -1);
       }
-      return val === "null" ? "" : val;
+      if (val === "null" || val === "") return defaultValue;
+      return val;
     }
-    return JSON.stringify(val);
+    
+    // Convert all non-string values to string to satisfy return type
+    return String(val);
   };
 
   const siteName = getSetting("site_name", "RaspaPremium");
