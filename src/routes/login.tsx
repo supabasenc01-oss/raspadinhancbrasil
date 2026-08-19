@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
     return {
       redirect: (search.redirect as string) || undefined,
     };
