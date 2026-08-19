@@ -27,6 +27,7 @@ import { systemSettingsQuery } from "@/lib/queries";
 import { updateSystemSettings } from "@/lib/settings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadPlatformFile } from "@/lib/storage";
+import { uploadPlatformFileFn } from "@/lib/storage.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
