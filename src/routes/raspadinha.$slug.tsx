@@ -46,6 +46,8 @@ function ScratchCardDetailPage() {
     queryKey: ['wallet-balance', user?.id],
     queryFn: () => fetchBalance({}),
     enabled: !!user?.id,
+    staleTime: 1000 * 30, // 30 seconds
+    gcTime: 1000 * 60 * 5, // 5 minutes
   });
   
   const [gameState, setGameState] = useState<"IDLE" | "PLAYING" | "SCRATCHING" | "REVEALED">("IDLE");
