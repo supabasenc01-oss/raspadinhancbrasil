@@ -50,14 +50,15 @@ const bannerSchema = z.object({
   subtitle: z.string().optional(),
   image_url: z.string().min(1, "Imagem é obrigatória"),
   link_url: z.string().optional(),
-  position: z.string().default("HOME_HERO"),
-  sort_order: z.number().default(0),
-  is_active: z.boolean().default(true),
+  position: z.string(),
+  sort_order: z.number(),
+  is_active: z.boolean(),
   starts_at: z.string().nullable().optional(),
   ends_at: z.string().nullable().optional(),
 });
 
 type BannerFormValues = z.infer<typeof bannerSchema>;
+
 
 export const Route = createFileRoute("/_authenticated/admin/banners")({
   head: () => ({
