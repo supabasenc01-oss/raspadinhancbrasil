@@ -227,7 +227,7 @@ ALTER TABLE public.admin_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_logs_admin_read" ON public.admin_logs FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
 CREATE POLICY "admin_logs_staff_insert" ON public.admin_logs FOR INSERT TO authenticated WITH CHECK (public.is_staff(auth.uid()) AND actor_id = auth.uid());
 
-CREATE TABLE public.system_settings (
+CREATE TABLE IF NOT EXISTS public.system_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key TEXT NOT NULL UNIQUE,
   value JSONB NOT NULL DEFAULT '{}'::jsonb,
