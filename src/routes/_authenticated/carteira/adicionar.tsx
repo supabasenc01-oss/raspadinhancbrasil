@@ -98,7 +98,7 @@ function AddBalancePage() {
           </div>
         )}
 
-        <Button variant="ghost" className="w-full" onClick={() => navigate({ to: '/_authenticated/carteira' })}>
+        <Button variant="ghost" className="w-full" onClick={() => navigate({ to: '/carteira' })}>
           VOLTAR PARA CARTEIRA
         </Button>
       </div>
@@ -108,7 +108,7 @@ function AddBalancePage() {
   return (
     <div className="container max-w-2xl mx-auto py-8 px-4 space-y-10">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/_authenticated/carteira' })}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/carteira' })}>
           <ArrowLeft className="size-6" />
         </Button>
         <h1 className="text-3xl font-black font-display">ADICIONAR <span className="text-primary">SALDO</span></h1>

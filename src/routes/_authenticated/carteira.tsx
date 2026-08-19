@@ -69,11 +69,11 @@ function WalletPage() {
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" className="bg-gradient-brand text-primary-foreground shadow-lg shadow-primary/20" asChild>
-              <Link to="/_authenticated/carteira/adicionar">
-                <Plus className="mr-2 size-5" /> ADICIONAR SALDO
-              </Link>
-            </Button>
+          <Button size="lg" className="bg-gradient-brand text-primary-foreground shadow-lg shadow-primary/20" asChild>
+            <Link to="/carteira/adicionar">
+              <Plus className="mr-2 size-5" /> ADICIONAR SALDO
+            </Link>
+          </Button>
             <Button size="lg" variant="outline">
               <History className="mr-2 size-5" /> VER EXTRATO COMPLETO
             </Button>
