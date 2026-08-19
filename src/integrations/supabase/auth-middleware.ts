@@ -67,12 +67,9 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: No token provided');
     }
 
-    // SKIP JWT format validation in non-production environments
-    // where Supabase may use opaque or mock tokens.
-    const isProduction = process.env['NODE_ENV'] === 'production';
-    if (isProduction && token.split('.').length !== 3) {
-      throw new Error('Unauthorized: Invalid token');
-    }
+    // The JWT format check (splitting by '.') is bypassed to support
+    // preview/development tokens which might be opaque or mock tokens.
+    // The actual token validity is verified below via supabase.auth.getClaims(token).
 
     const supabase = createClient<Database>(
       SUPABASE_URL!,
