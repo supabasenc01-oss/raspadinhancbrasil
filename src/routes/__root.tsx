@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useSettings } from "@/hooks/useSettings";
 import { Toaster } from "@/components/ui/sonner";
+import { UserFloatingBubbles } from "@/components/home/UserFloatingBubbles";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -148,6 +149,7 @@ function RootComponent() {
       <AuthProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <UserFloatingBubbles />
         <Toaster position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
