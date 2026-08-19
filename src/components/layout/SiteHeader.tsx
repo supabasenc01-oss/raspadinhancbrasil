@@ -51,12 +51,8 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
   const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
   
   // Use the database URL if available, fallback to the direct file pointer
-  const logoUrl = useFileUrl(rawLogoUrl || "/logo.png", cacheBust, true);
-  
-  // Debug log to trace logo resolution
-  if (rawLogoUrl) {
-    console.log("[BrandLogo] Raw:", rawLogoUrl, "Resolved:", logoUrl);
-  }
+  // We avoid thumbnails for the logo to ensure high quality and avoid potential broken thumb paths
+  const logoUrl = useFileUrl(rawLogoUrl || "/logo.png", cacheBust, false);
   
   return (
     <Link to="/" className="flex items-center gap-2.5">
@@ -65,7 +61,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
           <img 
             src={logoUrl} 
             alt={siteName} 
-            className="h-9 w-auto object-contain"
+            className="h-9 w-auto object-contain block"
             key={logoUrl} // Force re-render on URL change
             onError={(e) => {
               console.error("[BrandLogo] Failed to load image:", logoUrl);
@@ -83,7 +79,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
         
         {/* Site name - Visible as fallback if logo fails OR if there's no logoUrl */}
         {(!compact) && (
-          <span className={`font-display text-lg font-black tracking-tighter uppercase italic ${logoUrl ? 'hidden' : ''}`}>
+          <span className={`font-display text-lg font-black tracking-tighter uppercase italic shrink-0 ${logoUrl ? 'hidden' : ''}`}>
             {siteName.includes("Premium") ? (
               <>
                 {siteName.replace("Premium", "")}<span className="text-gradient-brand">Premium</span>
@@ -121,9 +117,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <BrandLogo />
-          <nav className="hidden items-center gap-1 md:flex ml-4">
+          <nav className="hidden items-center gap-1 lg:flex">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
