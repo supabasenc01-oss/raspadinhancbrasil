@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (user_id, role)
 );
-CREATE INDEX idx_user_roles_user ON public.user_roles (user_id);
+CREATE INDEX IF NOT EXISTS idx_user_roles_user ON public.user_roles (user_id);
 GRANT SELECT ON public.user_roles TO authenticated;
 GRANT ALL ON public.user_roles TO service_role;
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
