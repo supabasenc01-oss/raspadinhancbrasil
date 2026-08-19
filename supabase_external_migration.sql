@@ -1088,7 +1088,10 @@ BEGIN
     (v_card_cozinha, 'Torradeira Retro', 120.00, 0.015, 40, 40, true),
     (v_card_cozinha, 'Crédito R$ 50', 50.00, 0.05, 100, 100, true),
     (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 3. LAR PREMIUM
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
