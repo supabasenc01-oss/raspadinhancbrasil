@@ -27,8 +27,8 @@ function HomePage() {
     <PublicPage>
       {/* Hero Section */}
       <PageHero 
-        title="ETAPA 2 — MOTOR COMPLETO DE RASPADINHAS E PRÊMIOS"
-        description="Agora implemente o sistema real de raspadinhas sobre a estrutura criada na ETAPA 1. Não refazer o projeto. Aproveitar a arquitetura existente."
+        title="ETAPA 3 — CARTEIRA FINANCEIRA + MERCADO PAGO CHECKOUT TRANSPARENTE"
+        description="Agora implementar o sistema financeiro da plataforma."
         centered
       >
 
