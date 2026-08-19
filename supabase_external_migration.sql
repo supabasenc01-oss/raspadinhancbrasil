@@ -853,8 +853,8 @@ DECLARE
     v_card_tech UUID;
 BEGIN
     -- 1. MEGA PIX
-    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured)
-    VALUES ('Mega PIX Instantâneo', 'mega-pix', 'Prêmios em dinheiro direto na sua conta!', 5.00, false, 'ACTIVE', true)
+    INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
+    VALUES ('Mega PIX Instantâneo', 'mega-pix', 'Prêmios em dinheiro direto na sua conta!', 5.00, false, 'ACTIVE', true, '1.0.0')
     RETURNING id INTO v_card_pix;
 
     INSERT INTO public.scratch_card_prizes (scratch_card_id, title, value, probability, quantity_total, quantity_remaining, is_active)
