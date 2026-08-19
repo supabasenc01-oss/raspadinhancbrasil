@@ -145,16 +145,20 @@ export function ScratchArea({
 
       // Sample every 4th pixel for performance
       for (let i = 0; i < pixels.length; i += 16) {
-        if (pixels[i + 3] === 0) transparentCount++;
-      }
+          if (pixels[i + 3] === 0) transparentCount++;
+        }
 
-      const totalSamples = pixels.length / 16;
-      const percentage = (transparentCount / totalSamples) * 100;
-      setScratchedPercentage(percentage);
+        const totalSamples = pixels.length / 16;
+        const percentage = (transparentCount / totalSamples) * 100;
+        
+        // Only trigger check if we have actually started scratching
+        if (percentage > 2) {
+          setScratchedPercentage(percentage);
+        }
 
-      if (percentage > SCRATCH_THRESHOLD && !isFinished) {
-        revealAll();
-      }
+        if (percentage > SCRATCH_THRESHOLD && !isFinished) {
+          revealAll();
+        }
     }, 200),
     [isFinished]
   );
