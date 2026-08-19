@@ -34,8 +34,10 @@ const SLIDES = [
 ];
 
 export function HomeCarousel() {
-  const { logoUrl: rawLogoUrl, siteName } = useSettings();
-  const logoUrl = useFileUrl(rawLogoUrl, undefined, true);
+  const { logoUrl: rawLogoUrl, siteName, settings } = useSettings();
+  const settingObj = Array.isArray(settings) ? settings.find((s: any) => s.key === 'logo_url') : null;
+  const cacheBust = settingObj?.updated_at || new Date().getTime().toString();
+  const logoUrl = useFileUrl(rawLogoUrl, cacheBust, true);
   const [current, setCurrent] = useState(0);
 
   const next = () => setCurrent((prev) => (prev + 1) % SLIDES.length);
@@ -61,9 +63,13 @@ export function HomeCarousel() {
               <motion.img 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
+                key={logoUrl}
                 src={logoUrl} 
                 alt={siteName} 
                 className="h-12 w-auto object-contain self-start mb-2"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
             <motion.h1 
