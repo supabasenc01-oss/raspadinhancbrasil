@@ -11,7 +11,7 @@ const SLIDES = [
     id: 1,
     title: "Aqui <span class='text-success'>R$ 1,00</span> pode virar <br/><span class='text-primary'>R$ 2.500</span> no PIX",
     description: "Basta uma raspadinha para mudar sua vida!",
-    image: "banners/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png",
+    image: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200&auto=format&fit=crop",
     cta: "JOGAR AGORA",
     color: "from-primary/20"
   },
@@ -19,7 +19,7 @@ const SLIDES = [
     id: 2,
     title: "Cozinha <span class='text-accent'>Premium</span> <br/>e Tech de Ponta",
     description: "Concorra a geladeiras, microondas e batedeiras elétricas.",
-    image: "banners/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png",
+    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop",
     cta: "VER PRÊMIOS",
     color: "from-accent/20"
   },
@@ -27,7 +27,7 @@ const SLIDES = [
     id: 3,
     title: "Mega PIX <br/><span class='text-success'>Instantâneo</span>",
     description: "O prêmio cai na sua conta em segundos após raspar.",
-    image: "banners/3bcce1ac-aa9d-4d46-a39f-0ba8439df938.png",
+    image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=1200&auto=format&fit=crop",
     cta: "QUERO GANHAR",
     color: "from-success/20"
   }

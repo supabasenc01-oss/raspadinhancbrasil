@@ -30,10 +30,11 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
 
   // Garantir que a URL aponta para o domínio direto do Supabase se estivermos no ambiente do Lovable
   // Isso resolve problemas de resolução de proxy no sandbox
-  if (publicUrl && typeof window !== 'undefined' && window.location.hostname.includes('lovableproject.com')) {
+  if (publicUrl && typeof window !== 'undefined') {
     try {
       const url = new URL(publicUrl);
-      if (!url.hostname.includes('supabase.co')) {
+      // Sempre forçar o domínio direto do Supabase para o Storage se estiver no sandbox Lovable ou em qualquer domínio .lovable.app
+      if (window.location.hostname.includes('lovableproject.com') || window.location.hostname.includes('lovable.app')) {
         const supabaseUrl = import.meta.env['VITE_EXTERNAL_SUPABASE_URL'] || import.meta.env['VITE_SUPABASE_URL'];
         if (supabaseUrl) {
           const projectRef = new URL(supabaseUrl).hostname.split('.')[0];
