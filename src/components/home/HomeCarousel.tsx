@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
+import { useSettings } from "@/hooks/useSettings";
+import { useFileUrl } from "@/hooks/useFileUrl";
 
 const SLIDES = [
   {
@@ -32,6 +34,8 @@ const SLIDES = [
 ];
 
 export function HomeCarousel() {
+  const { logoUrl: rawLogoUrl, siteName } = useSettings();
+  const logoUrl = useFileUrl(rawLogoUrl);
   const [current, setCurrent] = useState(0);
 
   const next = () => setCurrent((prev) => (prev + 1) % SLIDES.length);
@@ -57,6 +61,15 @@ export function HomeCarousel() {
           />
           
           <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 sm:px-20 max-w-4xl space-y-6">
+            {logoUrl && (
+              <motion.img 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                src={logoUrl} 
+                alt={siteName} 
+                className="h-12 w-auto object-contain self-start mb-2"
+              />
+            )}
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}

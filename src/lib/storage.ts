@@ -18,10 +18,14 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
   if (/^(https?:|data:|blob:)/.test(value)) return value;
 
   const [bucket, ...rest] = value.split("/");
-  if (!bucket || rest.length === 0) return null;
+  if (!bucket || rest.length === 0) {
+    // Se for apenas o nome do arquivo, assume que está no bucket de logos ou scratch-cards se não tiver barra
+    // Mas o comportamento padrão deve ser tratar caminhos relativos como públicos se o bucket for público
+    return value;
+  }
 
-  const { data } = await supabase.storage.from(bucket).createSignedUrl(rest.join("/"), 60 * 60);
-  return data?.signedUrl ?? null;
+  const { data } = supabase.storage.from(bucket).getPublicUrl(rest.join("/"));
+  return data?.publicUrl ?? null;
 }
 
 export async function uploadPlatformFile(
