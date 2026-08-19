@@ -12,11 +12,10 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
       prefix: z.string().optional(),
     }).parse(data)
   )
-  .handler(async ({ data }): Promise<{ path: string | null; thumbnailPath?: string | null; error: string | null }> => {
+  .handler(async ({ data }): Promise<{ path: string | null; thumbnailPath: string | null; error: string | null }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     try {
-      // Import sharp dynamically to avoid bundling issues in browser if this file were accidentally imported
       const sharp = (await import('sharp')).default;
 
       // Decode base64 to buffer
@@ -30,17 +29,14 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
       let processedBuffer = buffer;
       let contentType = data.fileType;
 
-      // Only process if it's a common image type and not SVG
       const isProcessableImage = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(data.fileType.toLowerCase());
 
       if (isProcessableImage) {
-        // 1. Optimize main image (resize if too large, e.g., max 1920px width)
         processedBuffer = await sharp(buffer)
           .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
           .webp({ quality: 85 })
           .toBuffer();
         
-        // We convert to webp for better compression
         contentType = 'image/webp';
       }
 
@@ -55,12 +51,11 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
 
       if (error) {
         console.error("Storage admin upload error details:", error);
-        return { path: null, error: error.message };
+        return { path: null, thumbnailPath: null, error: error.message };
       }
 
-      let thumbnailPath = null;
+      let thumbnailPath: string | null = null;
       
-      // 2. Generate Thumbnail (e.g., max 400px width)
       if (isProcessableImage) {
         try {
           const thumbBuffer = await sharp(buffer)
@@ -82,11 +77,9 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
           }
         } catch (thumbErr) {
           console.error("Thumbnail generation error:", thumbErr);
-          // Don't fail the main upload if thumbnail fails
         }
       }
       
-      // Store as "bucket/path" format so resolveFileUrl can handle it
       return { 
         path: `${data.bucket}/${finalPath}`, 
         thumbnailPath,
@@ -94,6 +87,6 @@ export const uploadPlatformFileFn = createServerFn({ method: "POST" })
       };
     } catch (err: any) {
       console.error("Admin upload exception:", err);
-      return { path: null, error: err.message };
+      return { path: null, thumbnailPath: null, error: err.message };
     }
   });
