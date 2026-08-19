@@ -13,14 +13,17 @@ export function useSettings() {
     if (val === null || val === undefined) return defaultValue;
     
     if (typeof val === 'string') {
-      // Clean up stringified values
+      // Remove double quotes if present (common in JSONB string storage)
       if (val.startsWith('"') && val.endsWith('"')) {
         val = val.slice(1, -1);
       }
       if (val === "null" || val === "") return defaultValue;
       return val;
     }
-    return JSON.stringify(val);
+    
+    // If it's a boolean or other type, return as is or stringify
+    if (typeof val === 'boolean') return val;
+    return val;
   };
 
   const siteName = getSetting("site_name", "RaspaPremium");

@@ -17,14 +17,13 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
   if (!value) return null;
   if (/^(https?:|data:|blob:)/.test(value)) return value;
 
-  const [bucket, ...rest] = value.split("/");
-  if (!bucket || rest.length === 0) {
-    // Se for apenas o nome do arquivo, assume que está no bucket de logos ou scratch-cards se não tiver barra
-    // Mas o comportamento padrão deve ser tratar caminhos relativos como públicos se o bucket for público
-    return value;
-  }
+  const parts = value.split("/");
+  if (parts.length < 2) return value; // Se for apenas o nome do arquivo, retorna como está
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(rest.join("/"));
+  const bucket = parts[0];
+  const path = parts.slice(1).join("/");
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data?.publicUrl ?? null;
 }
 
