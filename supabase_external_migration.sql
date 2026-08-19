@@ -528,7 +528,7 @@ END $$;
 
 -- 1. Tabelas Base Financeiras
 
-CREATE TABLE public.wallets (
+CREATE TABLE IF NOT EXISTS public.wallets (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     balance decimal(12,2) NOT NULL DEFAULT 0.00,
