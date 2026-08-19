@@ -1065,7 +1065,10 @@ BEGIN
     (v_card_pix, 'PIX R$ 10', 10.00, 0.08, 800, 800, true),
     (v_card_pix, 'PIX R$ 5', 5.00, 0.15, 1500, 1500, true),
     (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 2. COZINHA DOS SONHOS
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
