@@ -1147,7 +1147,9 @@ CREATE POLICY "Users can insert their own withdrawals" ON public.withdrawals FOR
 /*
 CREATE POLICY "Admins can view all withdrawals" ON public.withdrawals FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ADMIN') OR public.has_role(auth.uid(), 'SUPER_ADMIN'));
 */
-CREATE POLICY "Admins can update all withdrawals" ON public.withdrawals FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'SUPER_ADMIN'));-- Ensure scratch_image_url exists on scratch_cards
+/*
+CREATE POLICY "Admins can update all withdrawals" ON public.withdrawals FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'SUPER_ADMIN'));
+*/-- Ensure scratch_image_url exists on scratch_cards
 ALTER TABLE public.scratch_cards ADD COLUMN IF NOT EXISTS scratch_image_url TEXT;
 
 -- Verify/Create withdrawals table if it doesn't exist
