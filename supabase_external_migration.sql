@@ -565,7 +565,7 @@ CREATE TABLE IF NOT EXISTS public.payment_transactions (
     updated_at timestamptz DEFAULT now() NOT NULL
 );
 
-CREATE TABLE public.wallet_transactions (
+CREATE TABLE IF NOT EXISTS public.wallet_transactions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     type text NOT NULL CHECK (type IN ('DEPOSIT', 'PURCHASE', 'PRIZE', 'REFUND', 'ADJUSTMENT')),
