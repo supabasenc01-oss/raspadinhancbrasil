@@ -167,8 +167,8 @@ function ScratchCardDetailPage() {
               ) : (
                 <div className="w-full space-y-6">
                   <ScratchArea 
-                    coverImage={card.image_url ?? undefined} 
-                    resultImage={gameResult?.prize?.image_url ?? undefined}
+                    coverImage={card.image_url ?? null} 
+                    resultImage={gameResult?.prize?.image_url ?? null}
                     onComplete={handleScratchComplete}
                     isAutoRevealing={isAutoRevealing}
                   />

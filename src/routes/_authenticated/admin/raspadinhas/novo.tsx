@@ -103,7 +103,7 @@ function NewScratchCardWizard() {
         .insert({
           name: values.name,
           slug: slugify(values.name),
-          description: values.description,
+          description: values.description ?? null,
           price: values.price,
           is_free: values.is_free,
           status: values.status as any,

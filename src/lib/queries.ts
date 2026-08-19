@@ -7,14 +7,14 @@ export type ScratchCard = Database["public"]["Tables"]["scratch_cards"]["Row"];
 export type ScratchCardPrize = Database["public"]["Tables"]["scratch_card_prizes"]["Row"];
 export type Banner = Database["public"]["Tables"]["banners"]["Row"];
 
-export const publicScratchCardsQuery = queryOptions({
-  queryKey: ["scratch-cards", "public"],
+export const activeScratchCardsQuery = queryOptions({
+  queryKey: ["scratch-cards", "active"],
   queryFn: async () => {
     const { data, error } = await supabase
       .from("scratch_cards")
       .select("*")
       .eq("status", "ACTIVE")
-      .order("is_featured", { ascending: false })
+      .order("featured", { ascending: false })
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data satisfies ScratchCard[];
