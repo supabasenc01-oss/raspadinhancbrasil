@@ -65,7 +65,10 @@ INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('FINANCEIRO','Financeiro','Acesso a dados financeiros', true),
   ('SUPORTE','Suporte','Atendimento ao usuário', true),
   ('USER','Usuário','Usuário final da plataforma', false)
-ON CONFLICT (key) DO NOTHING;
+ON CONFLICT (key) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  is_staff = EXCLUDED.is_staff;
 
 CREATE TABLE IF NOT EXISTS public.user_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -199,7 +202,8 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT prizes_value_positive CHECK (value >= 0),
   CONSTRAINT prizes_qty CHECK (quantity_total >= 0 AND quantity_remaining >= 0 AND quantity_remaining <= quantity_total),
-  CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1)
+  CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1),
+  UNIQUE (scratch_card_id, title)
 );
 CREATE INDEX IF NOT EXISTS idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
 GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
@@ -362,7 +366,10 @@ INSERT INTO public.system_settings (key, value, description, is_public) VALUES
   ('site_name', '"Raspa Premium"'::jsonb, 'Nome exibido da plataforma', true),
   ('support_email', '"suporte@exemplo.com"'::jsonb, 'E-mail de suporte', true),
   ('maintenance_mode', 'false'::jsonb, 'Modo manutencao', true)
-ON CONFLICT (key) DO NOTHING;
+ON CONFLICT (key) DO UPDATE SET 
+  value = EXCLUDED.value,
+  description = EXCLUDED.description,
+  is_public = EXCLUDED.is_public;
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
@@ -374,7 +381,10 @@ BEGIN
     NEW.email,
     NULLIF(NEW.raw_user_meta_data ->> 'phone', '')
   )
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE SET
+    email = EXCLUDED.email,
+    full_name = COALESCE(EXCLUDED.full_name, profiles.full_name),
+    phone = COALESCE(EXCLUDED.phone, profiles.phone);
   INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'USER')
   ON CONFLICT (user_id, role) DO NOTHING;
   RETURN NEW;
@@ -661,7 +671,10 @@ BEGIN
     (v_card_id, 'Prêmio Máximo', 50.00, 0.001, 10, 10, true),
     (v_card_id, 'Prêmio Prata', 10.00, 0.01, 100, 100, true),
     (v_card_id, 'Prêmio Bronze', 2.00, 0.1, 1000, 1000, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 2. Raspadinha Premium Gold
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
@@ -675,7 +688,10 @@ BEGIN
     (v_card_id, 'Prêmio R$ 500', 500.00, 0.005, 50, 50, true),
     (v_card_id, 'Prêmio R$ 100', 100.00, 0.02, 200, 200, true),
     (v_card_id, 'Prêmio R$ 20', 20.00, 0.1, 1000, 1000, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 3. Raspadinha Turbo Win
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
@@ -687,7 +703,11 @@ BEGIN
     VALUES 
     (v_card_id, 'Turbo Max', 200.00, 0.01, 20, 20, true),
     (v_card_id, 'Turbo Pro', 20.00, 0.05, 200, 200, true),
-    (v_card_id, 'Turbo Lite', 5.00, 0.2, 2000, 2000, true);
+    (v_card_id, 'Turbo Lite', 5.00, 0.2, 2000, 2000, true)
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 END $$;
 -- Migração Etapa 3: Sistema Financeiro e Mercado Pago
 
@@ -1055,7 +1075,10 @@ BEGIN
     (v_card_pix, 'PIX R$ 10', 10.00, 0.08, 800, 800, true),
     (v_card_pix, 'PIX R$ 5', 5.00, 0.15, 1500, 1500, true),
     (v_card_pix, 'Bônus R$ 2', 2.00, 0.2, 2000, 2000, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 2. COZINHA DOS SONHOS
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
@@ -1075,7 +1098,10 @@ BEGIN
     (v_card_cozinha, 'Torradeira Retro', 120.00, 0.015, 40, 40, true),
     (v_card_cozinha, 'Crédito R$ 50', 50.00, 0.05, 100, 100, true),
     (v_card_cozinha, 'Crédito R$ 20', 20.00, 0.1, 200, 200, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 3. LAR PREMIUM
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
@@ -1095,7 +1121,10 @@ BEGIN
     (v_card_lar, 'Vale Compras R$ 500', 500.00, 0.005, 40, 40, true),
     (v_card_lar, 'Crédito R$ 100', 100.00, 0.02, 100, 100, true),
     (v_card_lar, 'Crédito R$ 50', 50.00, 0.05, 200, 200, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
     -- 4. SORTE TECH
     INSERT INTO public.scratch_cards (name, slug, description, price, is_free, status, is_featured, config_version)
@@ -1115,7 +1144,10 @@ BEGIN
     (v_card_tech, 'Caixa de Som BT', 500.00, 0.005, 30, 30, true),
     (v_card_tech, 'Crédito R$ 50', 50.00, 0.03, 100, 100, true),
     (v_card_tech, 'Crédito R$ 20', 20.00, 0.08, 200, 200, true)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (scratch_card_id, title) DO UPDATE SET 
+        value = EXCLUDED.value,
+        probability = EXCLUDED.probability,
+        quantity_total = EXCLUDED.quantity_total;
 
 END $$;
 
@@ -1230,7 +1262,8 @@ BEGIN
     DELETE FROM public.user_roles WHERE user_id = target_user_id;
     
     INSERT INTO public.user_roles (user_id, role)
-    VALUES (target_user_id, 'ADMIN');
+    VALUES (target_user_id, 'ADMIN')
+    ON CONFLICT (user_id, role) DO NOTHING;
   END IF;
 END $$;
 
@@ -1246,7 +1279,8 @@ BEGIN
         DELETE FROM public.user_roles WHERE user_id = target_user_id;
         
         INSERT INTO public.user_roles (user_id, role)
-        VALUES (target_user_id, 'SUPER_ADMIN');
+        VALUES (target_user_id, 'SUPER_ADMIN')
+        ON CONFLICT (user_id, role) DO NOTHING;
         
         UPDATE public.profiles SET status = 'ACTIVE' WHERE id = target_user_id;
     END IF;
