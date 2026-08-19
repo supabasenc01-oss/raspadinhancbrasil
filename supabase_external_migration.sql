@@ -314,8 +314,15 @@ CREATE INDEX IF NOT EXISTS idx_admin_logs_created ON public.admin_logs (created_
 GRANT SELECT, INSERT ON public.admin_logs TO authenticated;
 GRANT ALL ON public.admin_logs TO service_role;
 ALTER TABLE public.admin_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "admin_logs_admin_read" ON public.admin_logs FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
-CREATE POLICY "admin_logs_staff_insert" ON public.admin_logs FOR INSERT TO authenticated WITH CHECK (public.is_staff(auth.uid()) AND actor_id = auth.uid());
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'admin_logs' AND policyname = 'admin_logs_admin_read') THEN
+        CREATE POLICY "admin_logs_admin_read" ON public.admin_logs FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'admin_logs' AND policyname = 'admin_logs_staff_insert') THEN
+        CREATE POLICY "admin_logs_staff_insert" ON public.admin_logs FOR INSERT TO authenticated WITH CHECK (public.is_staff(auth.uid()) AND actor_id = auth.uid());
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.system_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
