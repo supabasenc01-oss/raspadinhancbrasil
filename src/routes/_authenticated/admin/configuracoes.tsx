@@ -11,7 +11,9 @@ import {
   Image as ImageIcon,
   Link as LinkIcon,
   Search,
-  Code
+  Code,
+  Upload,
+  Loader2
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
