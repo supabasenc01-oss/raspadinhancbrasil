@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS public.scratch_card_prizes (
   CONSTRAINT prizes_value_positive CHECK (value >= 0),
   CONSTRAINT prizes_qty CHECK (quantity_total >= 0 AND quantity_remaining >= 0 AND quantity_remaining <= quantity_total),
   CONSTRAINT prizes_probability_range CHECK (probability >= 0 AND probability <= 1),
-  UNIQUE (scratch_card_id, title)
+  CONSTRAINT scratch_card_prizes_unique_title UNIQUE (scratch_card_id, title)
 );
 CREATE INDEX IF NOT EXISTS idx_prizes_card ON public.scratch_card_prizes (scratch_card_id);
 GRANT SELECT ON public.scratch_card_prizes TO anon, authenticated;
