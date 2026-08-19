@@ -50,7 +50,10 @@ function SignUpPage() {
     setSubmitting(false);
 
     if (error) {
-      toast.error("Não foi possível criar a conta", { description: error });
+      const message = error.toLowerCase().includes("user already registered")
+        ? "Este e-mail já está cadastrado."
+        : error;
+      toast.error("Não foi possível criar a conta", { description: message });
       return;
     }
 
