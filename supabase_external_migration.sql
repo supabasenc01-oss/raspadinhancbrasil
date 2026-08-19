@@ -356,6 +356,8 @@ BEGIN
     END IF;
 END $$;
 
+-- Initial settings inserted with ON CONFLICT DO NOTHING
+-- Final settings at the end of the script use DO UPDATE to ensure latest values
 INSERT INTO public.system_settings (key, value, description, is_public) VALUES
   ('site_name', '"Raspa Premium"'::jsonb, 'Nome exibido da plataforma', true),
   ('support_email', '"suporte@exemplo.com"'::jsonb, 'E-mail de suporte', true),
