@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Sparkles, ShieldCheck, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, Sparkles, ShieldCheck, LogOut, LayoutDashboard, Wallet } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -66,6 +66,11 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 md:flex">
           {isAuthenticated ? (
             <>
+              <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
+                <Link to="/carteira">
+                  <Wallet className="size-4" /> Carteira
+                </Link>
+              </Button>
               {isStaff && (
                 <Button asChild variant="ghost" size="sm">
                   <Link to="/admin">
@@ -123,6 +128,11 @@ export function SiteHeader() {
                   <Button asChild variant="secondary">
                     <Link to="/dashboard" onClick={() => setOpen(false)}>
                       Meu painel
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="text-primary border-primary/20 bg-primary/5">
+                    <Link to="/carteira" onClick={() => setOpen(false)}>
+                      <Wallet className="size-4 mr-2 inline" /> Minha Carteira
                     </Link>
                   </Button>
                   {isStaff && (
