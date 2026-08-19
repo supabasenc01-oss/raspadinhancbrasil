@@ -47,7 +47,9 @@ function LoginPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    navigate({ to: "/dashboard", replace: true });
+    
+    const search = Route.useSearch() as { redirect?: string };
+    navigate({ to: search.redirect || "/dashboard", replace: true });
   }
 
   return (
