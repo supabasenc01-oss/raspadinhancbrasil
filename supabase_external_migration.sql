@@ -386,24 +386,46 @@ BEGIN
     END IF;
 END $$;
 
-CREATE POLICY "storage_platform_read" ON storage.objects FOR SELECT TO anon, authenticated
-  USING (bucket_id IN ('avatars','scratch-cards','scratch-cards-backgrounds','prizes','banners','logos'));
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_platform_read') THEN
+        CREATE POLICY "storage_platform_read" ON storage.objects FOR SELECT TO anon, authenticated
+          USING (bucket_id IN ('avatars','scratch-cards','scratch-cards-backgrounds','prizes','banners','logos'));
+    END IF;
 
-CREATE POLICY "storage_avatars_own_insert" ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
-CREATE POLICY "storage_avatars_own_update" ON storage.objects FOR UPDATE TO authenticated
-  USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text)
-  WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
-CREATE POLICY "storage_avatars_own_delete" ON storage.objects FOR DELETE TO authenticated
-  USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_avatars_own_insert') THEN
+        CREATE POLICY "storage_avatars_own_insert" ON storage.objects FOR INSERT TO authenticated
+          WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
 
-CREATE POLICY "storage_staff_insert" ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
-CREATE POLICY "storage_staff_update" ON storage.objects FOR UPDATE TO authenticated
-  USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()))
-  WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
-CREATE POLICY "storage_staff_delete" ON storage.objects FOR DELETE TO authenticated
-  USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));REVOKE ALL ON FUNCTION public.set_updated_at() FROM anon, authenticated;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_avatars_own_update') THEN
+        CREATE POLICY "storage_avatars_own_update" ON storage.objects FOR UPDATE TO authenticated
+          USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text)
+          WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_avatars_own_delete') THEN
+        CREATE POLICY "storage_avatars_own_delete" ON storage.objects FOR DELETE TO authenticated
+          USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_staff_insert') THEN
+        CREATE POLICY "storage_staff_insert" ON storage.objects FOR INSERT TO authenticated
+          WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_staff_update') THEN
+        CREATE POLICY "storage_staff_update" ON storage.objects FOR UPDATE TO authenticated
+          USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()))
+          WITH CHECK (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage' AND policyname = 'storage_staff_delete') THEN
+        CREATE POLICY "storage_staff_delete" ON storage.objects FOR DELETE TO authenticated
+          USING (bucket_id IN ('scratch-cards','scratch-cards-backgrounds','prizes','banners','logos') AND public.is_staff(auth.uid()));
+    END IF;
+END $$;
+REVOKE ALL ON FUNCTION public.set_updated_at() FROM anon, authenticated;
 REVOKE ALL ON FUNCTION public.handle_new_user() FROM anon, authenticated;
 REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM anon;
 REVOKE ALL ON FUNCTION public.is_staff(uuid) FROM anon;
