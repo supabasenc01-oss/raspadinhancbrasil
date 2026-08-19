@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_notifications_user ON public.notifications (user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications (user_id, is_read);
 GRANT SELECT, UPDATE, DELETE ON public.notifications TO authenticated;
 GRANT ALL ON public.notifications TO service_role;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
