@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy, Calendar, Ticket, User, Gift, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import {
