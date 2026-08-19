@@ -207,6 +207,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="mercadopago" className="gap-2"><Globe className="size-4" /> Mercado Pago</TabsTrigger>
           <TabsTrigger value="links" className="gap-2"><LinkIcon className="size-4" /> Links Rodapé</TabsTrigger>
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
+          <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
           <TabsTrigger value="colors" className="gap-2"><Sparkles className="size-4" /> Cores & Identidade</TabsTrigger>
         </TabsList>
 
