@@ -131,16 +131,17 @@ function NewScratchCardWizard() {
       });
       const base64Data = await base64Promise;
 
-      const { uploadPlatformFileFn } = await import("@/lib/storage.functions");
-      const result = await uploadPlatformFileFn({
-        data: {
+      const { callEdgeFunction } = await import("@/lib/edge-functions");
+      const result = await callEdgeFunction<{ path: string | null; thumbnailPath: string | null; error: string | null }>(
+        'upload-platform-file',
+        {
           bucket: "scratch-cards",
           fileName: file.name,
           fileType: file.type,
           base64Data,
           prefix: ""
         }
-      });
+      );
 
       if (result.error) throw new Error(result.error);
       if (result.path) {

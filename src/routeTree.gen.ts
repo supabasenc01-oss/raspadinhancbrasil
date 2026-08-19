@@ -43,7 +43,6 @@ import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedCarteiraAdicionarRouteImport } from './routes/_authenticated/carteira/adicionar'
 import { Route as AuthenticatedCarteiraSaqueRouteImport } from './routes/_authenticated/carteira/saque'
-import { Route as ApiPublicMercadopagoWebhookRouteImport } from './routes/api/public/mercadopago-webhook'
 import { Route as AuthenticatedAdminRaspadinhasIndexRouteImport } from './routes/_authenticated/admin/raspadinhas/index'
 import { Route as AuthenticatedAdminRaspadinhasNovoRouteImport } from './routes/_authenticated/admin/raspadinhas/novo'
 
@@ -226,12 +225,6 @@ const AuthenticatedCarteiraSaqueRoute =
     path: '/saque',
     getParentRoute: () => AuthenticatedCarteiraRoute,
   } as any)
-const ApiPublicMercadopagoWebhookRoute =
-  ApiPublicMercadopagoWebhookRouteImport.update({
-    id: '/api/public/mercadopago-webhook',
-    path: '/api/public/mercadopago-webhook',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthenticatedAdminRaspadinhasIndexRoute =
   AuthenticatedAdminRaspadinhasIndexRouteImport.update({
     id: '/admin/raspadinhas/',
@@ -278,7 +271,6 @@ export interface FileRoutesByFullPath {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
-  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
@@ -316,7 +308,6 @@ export interface FileRoutesByTo {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
-  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas': typeof AuthenticatedAdminRaspadinhasIndexRoute
@@ -356,7 +347,6 @@ export interface FileRoutesById {
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/_authenticated/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
-  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/_authenticated/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
@@ -396,7 +386,6 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/carteira/adicionar'
     | '/carteira/saque'
-    | '/api/public/mercadopago-webhook'
     | '/admin/'
     | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas/'
@@ -434,7 +423,6 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/carteira/adicionar'
     | '/carteira/saque'
-    | '/api/public/mercadopago-webhook'
     | '/admin'
     | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas'
@@ -473,7 +461,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/carteira/adicionar'
     | '/_authenticated/carteira/saque'
-    | '/api/public/mercadopago-webhook'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/raspadinhas/novo'
     | '/_authenticated/admin/raspadinhas/'
@@ -497,7 +484,6 @@ export interface RootRouteChildren {
   SuporteRoute: typeof SuporteRoute
   TermosRoute: typeof TermosRoute
   RaspadinhaSlugRoute: typeof RaspadinhaSlugRoute
-  ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -740,13 +726,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarteiraSaqueRouteImport
       parentRoute: typeof AuthenticatedCarteiraRoute
     }
-    '/api/public/mercadopago-webhook': {
-      id: '/api/public/mercadopago-webhook'
-      path: '/api/public/mercadopago-webhook'
-      fullPath: '/api/public/mercadopago-webhook'
-      preLoaderRoute: typeof ApiPublicMercadopagoWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/admin/raspadinhas/': {
       id: '/_authenticated/admin/raspadinhas/'
       path: '/admin/raspadinhas'
@@ -842,7 +821,6 @@ const rootRouteChildren: RootRouteChildren = {
   SuporteRoute: SuporteRoute,
   TermosRoute: TermosRoute,
   RaspadinhaSlugRoute: RaspadinhaSlugRoute,
-  ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

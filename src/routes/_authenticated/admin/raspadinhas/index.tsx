@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Ticket, MoreVertical, Edit, Copy, Eye, Play, Pause, Square, TrendingUp, DollarSign, Trophy } from "lucide-react";
 import { toast } from "sonner";
-import { useServerFn } from "@tanstack/react-start";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
@@ -25,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { adminScratchCardsQuery } from "@/lib/queries";
-import { updateScratchCardStatus } from "@/lib/admin.functions";
+import { callEdgeFunction } from "@/lib/edge-functions";
 
 export const Route = createFileRoute("/_authenticated/admin/raspadinhas/")({
   head: () => ({
@@ -39,11 +38,10 @@ export const Route = createFileRoute("/_authenticated/admin/raspadinhas/")({
 
 function AdminScratchCardsPage() {
   const { data: cards, isLoading, refetch } = useQuery(adminScratchCardsQuery);
-  const updateStatusFn = useServerFn(updateScratchCardStatus);
 
   const handleStatusUpdate = async (id: string, status: any) => {
     try {
-      await updateStatusFn({ data: { id, status } });
+      await callEdgeFunction('update-scratch-card-status', { id, status });
       toast.success(`Status atualizado para ${status}`);
       refetch();
     } catch (error: any) {

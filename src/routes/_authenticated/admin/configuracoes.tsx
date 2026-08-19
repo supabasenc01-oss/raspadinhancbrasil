@@ -25,11 +25,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { systemSettingsQuery } from "@/lib/queries";
-import { updateSystemSettings } from "@/lib/settings.functions";
-import { useServerFn } from "@tanstack/react-start";
+import { callEdgeFunction } from "@/lib/edge-functions";
 import { uploadPlatformFile } from "@/lib/storage";
-import { uploadPlatformFileFn } from "@/lib/storage.functions";
-import { ensureStorageBuckets } from "@/lib/storage-init.functions";
 import { useFileUrl } from "@/hooks/useFileUrl";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
@@ -45,8 +42,7 @@ export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
 function AdminSettingsPage() {
   const queryClient = useQueryClient();
   const { data: settings, isLoading } = useQuery(systemSettingsQuery);
-  const updateSettingsFn = useServerFn(updateSystemSettings);
-  
+
   const [values, setValues] = useState<Record<string, string>>({});
   const [isUploading, setIsUploading] = useState<string | null>(null);
 
@@ -79,7 +75,7 @@ function AdminSettingsPage() {
   }, [settings]);
 
   const mutation = useMutation({
-    mutationFn: (data: { key: string; value: string }[]) => updateSettingsFn({ data }),
+    mutationFn: (data: { key: string; value: string }[]) => callEdgeFunction('update-system-settings', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "settings"] });
       queryClient.invalidateQueries({ queryKey: ["system-settings"] });
@@ -142,15 +138,16 @@ function AdminSettingsPage() {
 
       const base64Data = await base64Promise;
       
-      const result = await uploadPlatformFileFn({
-        data: {
+      const result = await callEdgeFunction<{ path: string | null; error: string | null }>(
+        'upload-platform-file',
+        {
           bucket: "logos",
           fileName: file.name,
           fileType: file.type,
           base64Data,
           prefix: ""
         }
-      });
+      );
 
       if (!result) throw new Error("O servidor não retornou resposta");
       if (result.error) throw new Error(result.error);
@@ -175,7 +172,7 @@ function AdminSettingsPage() {
 
   const handleFixBuckets = async () => {
     try {
-      const result = await ensureStorageBuckets();
+      const result = await callEdgeFunction<{ success: boolean; error?: string }>('ensure-storage-buckets');
       if (result.success) {
         toast.success("Pastas de armazenamento verificadas/criadas!");
       } else {

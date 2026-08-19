@@ -1,0 +1,8 @@
+# SPA fallback: any request that doesn't match a real file/dir is served
+# index.html, letting TanStack Router's client-side routing take over.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ /index.html [L]
+</IfModule>

@@ -1,0 +1,39 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-hostinger
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (static SPA)
+        run: npm run build
+
+      - name: Deploy to Hostinger via SSH
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: -avzr --delete
+          path: .output/public/
+          remote_path: domains/stockatacarejorj.com.br/public_html/
+          remote_host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          remote_port: ${{ secrets.HOSTINGER_SSH_PORT }}
+          remote_user: ${{ secrets.HOSTINGER_SSH_USER }}
+          remote_key: ${{ secrets.HOSTINGER_SSH_KEY }}

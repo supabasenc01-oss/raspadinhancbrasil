@@ -4,9 +4,19 @@ import { BarChart3, TrendingUp, DollarSign, Ticket, Users, ArrowUpRight } from "
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAdminStats } from "@/lib/admin.functions";
-import { useServerFn } from "@tanstack/react-start";
+import { callEdgeFunction } from "@/lib/edge-functions";
 import { formatCurrency } from "@/lib/format";
+
+type AdminStats = {
+  totalUsers: number;
+  activeUsers: number;
+  activeCards: number;
+  totalPlays: number;
+  totalRevenue: number;
+  totalPrizes: number;
+  totalDeposited: number;
+  balanceMovement: number;
+};
 
 export const Route = createFileRoute("/_authenticated/admin/relatorios")({
   head: () => ({
@@ -19,10 +29,9 @@ export const Route = createFileRoute("/_authenticated/admin/relatorios")({
 });
 
 function AdminReportsPage() {
-  const fetchStats = useServerFn(getAdminStats);
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-stats', 'all'],
-    queryFn: () => fetchStats({ data: { period: 'all' } })
+    queryFn: () => callEdgeFunction<AdminStats>('get-admin-stats', { period: 'all' })
   });
 
   return (

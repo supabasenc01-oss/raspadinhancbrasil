@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image as ImageIcon, Plus, Edit, Trash2, CheckCircle2, XCircle, ExternalLink, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { adminBannersQuery } from "@/lib/queries";
 import { formatDate } from "@/lib/format";
-import { upsertBanner, deleteBanner } from "@/lib/admin.functions";
+import { callEdgeFunction } from "@/lib/edge-functions";
 import {
   Dialog,
   DialogContent,
@@ -73,8 +72,6 @@ export const Route = createFileRoute("/_authenticated/admin/banners")({
 function AdminBannersPage() {
   const queryClient = useQueryClient();
   const { data: banners, isLoading } = useQuery(adminBannersQuery);
-  const upsertBannerFn = useServerFn(upsertBanner);
-  const deleteBannerFn = useServerFn(deleteBanner);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<BannerFormValues | null>(null);
@@ -97,7 +94,7 @@ function AdminBannersPage() {
   });
 
   const upsertMutation = useMutation({
-    mutationFn: (data: BannerFormValues) => upsertBannerFn({ data }),
+    mutationFn: (data: BannerFormValues) => callEdgeFunction('upsert-banner', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "banners"] });
       queryClient.invalidateQueries({ queryKey: ["banners", "home-hero"] });
@@ -112,7 +109,7 @@ function AdminBannersPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteBannerFn({ data: { id } }),
+    mutationFn: (id: string) => callEdgeFunction('delete-banner', { id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "banners"] });
       queryClient.invalidateQueries({ queryKey: ["banners", "home-hero"] });
@@ -203,16 +200,16 @@ function AdminBannersPage() {
       });
       const base64Data = await base64Promise;
 
-      const { uploadPlatformFileFn } = await import("@/lib/storage.functions");
-      const result = await uploadPlatformFileFn({
-        data: {
+      const result = await callEdgeFunction<{ path: string | null; thumbnailPath: string | null; error: string | null }>(
+        'upload-platform-file',
+        {
           bucket: "banners",
           fileName: file.name,
           fileType: file.type,
           base64Data,
           prefix: ""
         }
-      });
+      );
 
       if (result.error) throw new Error(result.error);
       if (result.path) {

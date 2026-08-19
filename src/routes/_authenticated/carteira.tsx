@@ -19,8 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency } from '@/lib/format';
 import { supabase } from '@/integrations/supabase/client';
-import { useServerFn } from '@tanstack/react-start';
-import { getWalletBalance } from '@/lib/payments.functions';
+import { callEdgeFunction } from '@/lib/edge-functions';
 
 export const Route = createFileRoute('/_authenticated/carteira')({
   component: WalletPage,
@@ -28,11 +27,10 @@ export const Route = createFileRoute('/_authenticated/carteira')({
 
 function WalletPage() {
   const { user } = useAuth();
-  const fetchBalance = useServerFn(getWalletBalance);
-  
+
   const { data: balanceData, isLoading: isLoadingBalance } = useQuery({
     queryKey: ['wallet-balance', user?.id],
-    queryFn: () => fetchBalance({}),
+    queryFn: () => callEdgeFunction<{ balance: number }>('get-wallet-balance'),
     enabled: !!user?.id,
   });
 

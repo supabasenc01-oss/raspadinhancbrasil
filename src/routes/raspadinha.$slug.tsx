@@ -25,11 +25,9 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScratchArea } from "@/components/scratch/ScratchArea";
 import { scratchCardBySlugQuery, ScratchCardPrize } from "@/lib/queries";
-import { playScratchCard } from "@/lib/game.functions";
 import { formatCurrency } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
-import { getWalletBalance } from "@/lib/payments.functions";
-import { useServerFn } from "@tanstack/react-start";
+import { callEdgeFunction } from "@/lib/edge-functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useHydrated } from "@/hooks/useHydrated";
 
@@ -42,11 +40,10 @@ function ScratchCardDetailPage() {
   const hydrated = useHydrated();
   const { user, isAuthenticated } = useAuth();
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
-  const fetchBalance = useServerFn(getWalletBalance);
-  
+
   const { data: balanceData, refetch: refetchBalance } = useQuery({
     queryKey: ['wallet-balance', user?.id],
-    queryFn: () => fetchBalance({}),
+    queryFn: () => callEdgeFunction<{ balance: number }>('get-wallet-balance'),
     enabled: !!user?.id,
     staleTime: 1000 * 30, // 30 seconds
     gcTime: 1000 * 60 * 5, // 5 minutes
@@ -71,7 +68,11 @@ function ScratchCardDetailPage() {
 
     setIsProcessing(true);
     try {
-      const result = await playScratchCard({ data: { cardId: card.id } });
+      const result = await callEdgeFunction<{
+        success: boolean;
+        result_type: "WIN" | "LOSE";
+        prize?: { title: string; value: number; image_url: string | null };
+      }>('play-scratch-card', { cardId: card.id });
       if (result.success) {
         // Define Big Win (e.g., value > 1000)
         const isBigWin = result.result_type === "WIN" && (result.prize?.value ?? 0) >= 1000;

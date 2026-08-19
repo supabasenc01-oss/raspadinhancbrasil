@@ -21,11 +21,20 @@ import {
 import { AdminShell } from '@/components/admin/AdminShell';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/format';
-import { getAdminStats } from '@/lib/admin.functions';
-import { useServerFn } from '@tanstack/react-start';
+import { callEdgeFunction } from '@/lib/edge-functions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { activateAllScratchCards } from '@/lib/debug.functions';
 import { toast } from 'sonner';
+
+type AdminStats = {
+  totalUsers: number;
+  activeUsers: number;
+  activeCards: number;
+  totalPlays: number;
+  totalRevenue: number;
+  totalPrizes: number;
+  totalDeposited: number;
+  balanceMovement: number;
+};
 
 export const Route = createFileRoute('/_authenticated/admin/dashboard')({
   component: AdminDashboard,
@@ -33,12 +42,10 @@ export const Route = createFileRoute('/_authenticated/admin/dashboard')({
 
 function AdminDashboard() {
   const [period, setPeriod] = useState<'today' | '7d' | '30d' | '90d' | 'all'>('all');
-  const fetchStats = useServerFn(getAdminStats);
-  const activateCardsFn = useServerFn(activateAllScratchCards);
 
   const { data: stats, isLoading, refetch } = useQuery({
     queryKey: ['admin-stats', period],
-    queryFn: () => fetchStats({ data: { period } })
+    queryFn: () => callEdgeFunction<AdminStats>('get-admin-stats', { period })
   });
 
   const cards = [
@@ -108,7 +115,7 @@ function AdminDashboard() {
             className="text-xs border-primary/30"
             onClick={async () => {
               try {
-                const res = await activateCardsFn({});
+                const res = await callEdgeFunction<{ success: boolean; error?: string }>('activate-all-scratch-cards');
                 if (res.success) {
                   toast.success("Todas as raspadinhas foram ativadas!");
                   refetch();

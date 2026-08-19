@@ -7,9 +7,7 @@ import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { systemSettingsQuery } from '@/lib/queries';
-import { updateSystemSettings } from '@/lib/settings.functions';
-import { updateWithdrawalStatus } from '@/lib/admin.functions';
-import { useServerFn } from '@tanstack/react-start';
+import { callEdgeFunction } from '@/lib/edge-functions';
 import { supabase } from '@/integrations/supabase/client';
 
 export const Route = createFileRoute('/_authenticated/admin/financeiro')({
@@ -18,8 +16,6 @@ export const Route = createFileRoute('/_authenticated/admin/financeiro')({
 
 function AdminFinancePage() {
   const queryClient = useQueryClient();
-  const updateSettings = useServerFn(updateSystemSettings);
-  const updateWithdrawalStatusFn = useServerFn(updateWithdrawalStatus);
   const { data: settings } = useQuery(systemSettingsQuery);
   
   const [values, setValues] = useState<Record<string, string>>({});
@@ -67,7 +63,7 @@ function AdminFinancePage() {
   };
 
   const mutation = useMutation({
-    mutationFn: (data: { key: string; value: string }[]) => updateSettings({ data }),
+    mutationFn: (data: { key: string; value: string }[]) => callEdgeFunction('update-system-settings', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['system_settings'] });
       toast.success("Configurações salvas com sucesso!");
@@ -88,7 +84,7 @@ function AdminFinancePage() {
 
   const handleWithdrawalUpdate = async (id: string, status: 'PENDING' | 'COMPLETED' | 'CANCELLED') => {
     try {
-      await updateWithdrawalStatusFn({ data: { id, status } });
+      await callEdgeFunction('update-withdrawal-status', { id, status });
       toast.success("Status atualizado!");
       setWithdrawals(prev => prev.map(w => w.id === id ? { ...w, status } : w));
     } catch (error: any) {

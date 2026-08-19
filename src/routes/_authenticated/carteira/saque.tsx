@@ -6,8 +6,7 @@ import { Label } from '@/components/ui/label'
 import { AlertCircle, ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
-import { getWalletBalance } from '@/lib/payments.functions'
+import { callEdgeFunction } from '@/lib/edge-functions'
 import { formatCurrency } from '@/lib/format'
 
 export const Route = createFileRoute('/_authenticated/carteira/saque')({
@@ -16,11 +15,10 @@ export const Route = createFileRoute('/_authenticated/carteira/saque')({
 
 function SaquePage() {
   const { user } = useAuth()
-  const fetchBalance = useServerFn(getWalletBalance)
-  
+
   const { data: balanceData } = useQuery({
     queryKey: ['wallet-balance', user?.id],
-    queryFn: () => fetchBalance({}),
+    queryFn: () => callEdgeFunction<{ balance: number }>('get-wallet-balance'),
     enabled: !!user?.id,
   })
 

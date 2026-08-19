@@ -35,7 +35,7 @@ export async function resolveFileUrl(value: string | null | undefined, cacheBust
       const url = new URL(publicUrl);
       // Sempre forçar o domínio direto do Supabase para o Storage se estiver no sandbox Lovable ou em qualquer domínio .lovable.app
       if (true) { // Always force direct URL for better reliability in preview/custom domains
-        const projectRef = "endmonqujwhbprzprwjh";
+        const projectRef = import.meta.env['VITE_EXTERNAL_SUPABASE_PROJECT_ID'] || import.meta.env['VITE_SUPABASE_PROJECT_ID'];
         publicUrl = `https://${projectRef}.supabase.co/storage/v1/object/public/${bucket}/${path}`;
       }
     } catch (e) {}

@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -31,7 +30,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useSettings } from "@/hooks/useSettings";
 import { useFileUrl } from "@/hooks/useFileUrl";
-import { getWalletBalance } from "@/lib/payments.functions";
+import { callEdgeFunction } from "@/lib/edge-functions";
 import { formatCurrency } from "@/lib/format";
 
 const NAV_ITEMS = [
@@ -97,11 +96,10 @@ export function SiteHeader() {
   const { isAuthenticated, isStaff, profile, signOut, user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const fetchBalance = useServerFn(getWalletBalance);
 
   const { data: balanceData } = useQuery({
     queryKey: ['wallet-balance', user?.id],
-    queryFn: () => fetchBalance({}),
+    queryFn: () => callEdgeFunction<{ balance: number }>('get-wallet-balance'),
     enabled: !!user?.id,
     refetchInterval: 30000, // Atualiza a cada 30 segundos
   });

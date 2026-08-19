@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Users, Search, Mail, Phone, Calendar, Wallet, TrendingUp, ShoppingBag, Trophy, ShieldAlert } from "lucide-react";
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/format";
-import { getAdminUsers } from "@/lib/admin.functions";
+import { callEdgeFunction } from "@/lib/edge-functions";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
   head: () => ({
@@ -32,11 +31,10 @@ export const Route = createFileRoute("/_authenticated/admin/usuarios")({
 function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const fetchUsers = useServerFn(getAdminUsers);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-users', page, search],
-    queryFn: () => fetchUsers({ data: { page, search } })
+    queryFn: () => callEdgeFunction<{ users: any[]; count: number }>('get-admin-users', { page, search })
   });
 
   return (

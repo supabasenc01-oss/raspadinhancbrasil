@@ -10,8 +10,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useServerFn } from '@tanstack/react-start';
-import { createPayment } from '@/lib/payments.functions';
+import { callEdgeFunction } from '@/lib/edge-functions';
 import { formatCurrency } from '@/lib/format';
 import { toast } from 'sonner';
 
@@ -29,20 +28,16 @@ function AddBalancePage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentResult, setPaymentResult] = useState<any>(null);
 
-  const processPayment = useServerFn(createPayment);
-
   const handleCreatePayment = async () => {
     if (!paymentMethod) return;
-    
+
     setIsProcessing(true);
     try {
-      const result = await processPayment({ 
-        data: { 
-          amount: customAmount ? Number(customAmount) : amount, 
-          paymentMethod 
-        } 
+      const result = await callEdgeFunction('create-payment', {
+        amount: customAmount ? Number(customAmount) : amount,
+        paymentMethod,
       });
-      
+
       setPaymentResult(result);
     } catch (err: any) {
       toast.error(err.message || "Erro ao gerar pagamento");
