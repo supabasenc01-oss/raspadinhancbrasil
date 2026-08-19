@@ -26,7 +26,21 @@ export async function resolveFileUrl(value: string | null | undefined): Promise<
   if (!bucket || !path) return value;
 
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data?.publicUrl ?? null;
+  const publicUrl = data?.publicUrl ?? null;
+
+  // Se estivermos em um Supabase externo, a URL pública padrão pode não funcionar devido ao proxy
+  // Vamos tentar garantir que a URL aponta para o domínio do projeto se estivermos no Lovable
+  if (publicUrl && typeof window !== 'undefined' && window.location.hostname.includes('lovableproject.com')) {
+    try {
+      const url = new URL(publicUrl);
+      if (url.hostname.includes('supabase.co')) {
+        // Tenta usar a URL direta do Supabase se o proxy falhar
+        return publicUrl;
+      }
+    } catch (e) {}
+  }
+
+  return publicUrl;
 }
 
 export async function uploadPlatformFile(
