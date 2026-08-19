@@ -52,7 +52,12 @@ CREATE TABLE IF NOT EXISTS public.roles (
 GRANT SELECT ON public.roles TO authenticated, anon;
 GRANT ALL ON public.roles TO service_role;
 ALTER TABLE public.roles ENABLE ROW LEVEL SECURITY;
-CREATE TRIGGER trg_roles_updated BEFORE UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_roles_updated') THEN
+        CREATE TRIGGER trg_roles_updated BEFORE UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+    END IF;
+END $$;
 INSERT INTO public.roles (key, name, description, is_staff) VALUES
   ('SUPER_ADMIN','Super Administrador','Acesso total ao sistema', true),
   ('ADMIN','Administrador','Gestão da plataforma', true),
