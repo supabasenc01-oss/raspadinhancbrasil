@@ -23,11 +23,23 @@ import { AppDownloadBanner } from '@/components/common/AppDownloadBanner';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { ScratchDemo } from '@/components/home/ScratchDemo';
 
+import { useSettings } from '@/hooks/useSettings';
+
 export const Route = createFileRoute('/')({
   component: HomePage,
 });
 
 function HomePage() {
+  const { 
+    showHeroBanners, 
+    showWinnersTicker, 
+    showScratchDemo, 
+    showScratchCards, 
+    showHowToPlay, 
+    showLatestWinners, 
+    showTestimonials, 
+    showAppDownload 
+  } = useSettings();
   const { data: scratchCards, isLoading } = useQuery(activeScratchCardsQuery);
   const { data: winners } = useQuery(publicWinnersQuery);
   const [filter, setFilter] = useState<'ALL' | 'CASH' | 'PRODUCTS'>('ALL');
@@ -41,25 +53,26 @@ function HomePage() {
 
   return (
     <PublicPage>
-      <AppDownloadBanner />
+      {showAppDownload && <AppDownloadBanner />}
       
       {/* Hero / Banner Area */}
-      <HomeCarousel />
+      {showHeroBanners && <HomeCarousel />}
 
       {/* Winners Ticker */}
-      <WinnersTicker winners={winners} />
+      {showWinnersTicker && <WinnersTicker winners={winners} />}
 
       {/* Live Scratch Demo */}
-      <ScratchDemo />
+      {showScratchDemo && <ScratchDemo />}
 
       {/* Featured & Categories */}
-      <section className="py-20 px-4 bg-background">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div className="space-y-4">
-              <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
-                EXPLORE AS <span className="text-primary">RASPADINHAS</span>
-              </h1>
+      {showScratchCards && (
+        <section className="py-20 px-4 bg-background">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+              <div className="space-y-4">
+                <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none">
+                  EXPLORE AS <span className="text-primary">RASPADINHAS</span>
+                </h1>
               <div className="flex flex-wrap gap-2">
                 <Button 
                   variant={filter === 'ALL' ? 'default' : 'outline'} 
@@ -124,13 +137,15 @@ function HomePage() {
           )}
         </div>
       </section>
+      )}
 
       {/* How it Works (Brief) */}
-      <section className="py-20 bg-primary/[0.02] border-y border-primary/5">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-display font-black">COMO <span className="text-primary">JOGAR</span></h2>
-          </div>
+      {showHowToPlay && (
+        <section className="py-20 bg-primary/[0.02] border-y border-primary/5">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-display font-black">COMO <span className="text-primary">JOGAR</span></h2>
+            </div>
           
           <div className="grid md:grid-cols-3 gap-10">
             {[
@@ -161,16 +176,18 @@ function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Latest Winners */}
-      <section className="py-20 px-4 overflow-hidden">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="size-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
-              <Trophy className="size-5" />
+      {showLatestWinners && (
+        <section className="py-20 px-4 overflow-hidden">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex items-center gap-3 mb-12">
+              <div className="size-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                <Trophy className="size-5" />
+              </div>
+              <h2 className="text-3xl font-display font-black tracking-tight">ÚLTIMOS <span className="text-accent">GANHADORES</span></h2>
             </div>
-            <h2 className="text-3xl font-display font-black tracking-tight">ÚLTIMOS <span className="text-accent">GANHADORES</span></h2>
-          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {(winners || []).slice(0, 3).map((winner, i) => (
@@ -204,9 +221,10 @@ function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Testimonials Section */}
-      <TestimonialsSection />
+      {showTestimonials && <TestimonialsSection />}
     </PublicPage>
   );
 }
