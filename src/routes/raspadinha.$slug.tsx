@@ -11,7 +11,8 @@ import {
   Sparkles, 
   Ticket, 
   Trophy, 
-  Zap 
+  Zap,
+  Wallet
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -24,6 +25,8 @@ import { scratchCardBySlugQuery } from "@/lib/queries";
 import { playScratchCard } from "@/lib/game.functions";
 import { formatCurrency } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
+import { getWalletBalance } from "@/lib/payments.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
   component: ScratchCardDetailPage,
@@ -31,8 +34,15 @@ export const Route = createFileRoute("/raspadinha/$slug")({
 
 function ScratchCardDetailPage() {
   const { slug } = Route.useParams();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
+  const fetchBalance = useServerFn(getWalletBalance);
+  
+  const { data: balanceData, refetch: refetchBalance } = useQuery({
+    queryKey: ['wallet-balance', user?.id],
+    queryFn: () => fetchBalance({}),
+    enabled: !!user?.id,
+  });
   
   const [gameState, setGameState] = useState<"IDLE" | "PLAYING" | "SCRATCHING" | "REVEALED">("IDLE");
   const [isAutoRevealing, setIsAutoRevealing] = useState(false);
@@ -56,6 +66,7 @@ function ScratchCardDetailPage() {
       if (result.success) {
         setGameResult(result);
         setGameState("SCRATCHING");
+        refetchBalance(); // Update balance after purchase/win
       } else {
         toast.error("Não foi possível iniciar a jogada.");
       }
@@ -150,19 +161,44 @@ function ScratchCardDetailPage() {
                       {card.is_free ? "Raspadinha Grátis!" : `Valor por jogada: ${formatCurrency(card.price)}`}
                     </p>
                   </div>
-                  <Button 
-                    size="lg" 
-                    className="w-full bg-gradient-brand text-primary-foreground"
-                    onClick={handleStartGame}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? (
-                      <Loader2 className="size-5 animate-spin mr-2" />
-                    ) : (
-                      <Zap className="size-5 mr-2" />
-                    )}
-                    {card.is_free ? "RASPAR AGORA" : "COMPRAR E RASPAR"}
-                  </Button>
+                  {isAuthenticated ? (
+                    <div className="space-y-4 w-full">
+                      <div className="flex items-center justify-center gap-2 p-2 rounded-xl bg-surface border border-border/50">
+                        <Wallet className="size-4 text-primary" />
+                        <span className="text-sm font-bold">{formatCurrency(balanceData?.balance || 0)}</span>
+                      </div>
+                      
+                      {!card.is_free && (balanceData?.balance || 0) < card.price ? (
+                        <div className="space-y-3">
+                          <Alert variant="destructive" className="text-left py-2 px-3">
+                            <AlertCircle className="size-4" />
+                            <AlertDescription className="text-[10px]">Saldo insuficiente para jogar.</AlertDescription>
+                          </Alert>
+                          <Button asChild className="w-full h-14 font-black" variant="secondary">
+                            <Link to="/carteira/adicionar">ADICIONAR SALDO</Link>
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          size="lg" 
+                          className="w-full h-16 text-lg font-black bg-gradient-brand shadow-xl shadow-primary/20"
+                          onClick={handleStartGame}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? (
+                            <Loader2 className="size-6 animate-spin mr-2" />
+                          ) : (
+                            <Zap className="size-6 mr-2" />
+                          )}
+                          {card.is_free ? "RASPAR AGORA" : "COMPRAR E RASPAR"}
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <Button asChild size="lg" className="w-full bg-gradient-brand">
+                      <Link to="/login">FAZER LOGIN PARA JOGAR</Link>
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="w-full space-y-6">
