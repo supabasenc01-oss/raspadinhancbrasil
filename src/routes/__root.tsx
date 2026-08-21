@@ -68,10 +68,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           </svg>
         </div>
         <h1 className="font-display text-3xl font-bold tracking-tight">
-          Não foi possível carregar esta página
+          erro de carregamento da página
         </h1>
         <p className="text-slate-400">
-          Algo deu errado no processamento da página. Verifique sua conexão ou tente recarregar.
+          erro de carregamento da página
         </p>
         {process.env['NODE_ENV'] === "development" && (
           <div className="mt-4 overflow-auto rounded-lg bg-black/40 p-4 text-left text-xs font-mono text-red-400 max-h-[200px]">
