@@ -18,8 +18,8 @@ export function renderErrorPage(): string {
   </head>
   <body>
     <div class="card">
-      <h1>Não foi possível carregar esta página</h1>
-      <p>Algo deu errado. Tente novamente ou volte para o início.</p>
+      <h1>erro de carregamento da página</h1>
+      <p>erro de carregamento da página</p>
       <div class="actions">
         <button class="primary" onclick="location.reload()">Tentar novamente</button>
         <a class="secondary" href="/">Ir para o início</a>
