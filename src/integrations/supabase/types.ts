@@ -253,6 +253,57 @@ export type Database = {
         }
         Relationships: []
       }
+      receipts: {
+        Row: {
+          created_at: string
+          credits_granted: number
+          id: string
+          image_url: string
+          purchase_date: string | null
+          purchase_value: number
+          receipt_number: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          store_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_granted?: number
+          id?: string
+          image_url: string
+          purchase_date?: string | null
+          purchase_value?: number
+          receipt_number?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          store_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_granted?: number
+          id?: string
+          image_url?: string
+          purchase_date?: string | null
+          purchase_value?: number
+          receipt_number?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          store_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       roles: {
         Row: {
           created_at: string
@@ -396,6 +447,27 @@ export type Database = {
           status?: Database["public"]["Enums"]["scratch_card_status"]
           thumbnail_url?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      scratch_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -654,6 +726,15 @@ export type Database = {
           _user_id: string
         }
         Returns: string
+      }
+      review_receipt: {
+        Args: {
+          _approve: boolean
+          _credits?: number
+          _notes?: string
+          _receipt_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {
