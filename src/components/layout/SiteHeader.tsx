@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { 
   Menu, 
   Sparkles, 
+  Receipt,
   ShieldCheck, 
   LogOut, 
   LayoutDashboard, 
@@ -195,6 +196,13 @@ export function SiteHeader() {
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator className="bg-border/50 my-1" />
+
+                  <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2.5">
+                    <Link to="/cupons" className="flex items-center gap-3">
+                      <Receipt className="size-4 text-primary" />
+                      <span className="font-medium">Enviar cupom fiscal</span>
+                    </Link>
+                  </DropdownMenuItem>
 
                   <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2.5">
                     <Link to="/carteira/adicionar" className="flex items-center gap-3">
