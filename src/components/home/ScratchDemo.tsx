@@ -13,13 +13,11 @@ export function ScratchDemo() {
   const { logoUrl: rawLogoUrl, siteName } = useSettings();
   const logoUrl = useFileUrl(rawLogoUrl);
 
-  // Ajustei para usar caminhos genéricos que não quebram se o arquivo não existir
-  const demoCoverPath = "scratch-cards/demo-cover.png"; 
-  const demoResultPath = "prizes/demo-win.png";
+  // Demonstração usa apenas o logotipo do site e o layout de prêmio (sem arquivos externos)
   const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
 
-  const demoCover = useFileUrl(demoCoverPath);
-  const demoResult = useFileUrl(demoResultPath);
+  const demoCover = logoUrl;
+  const demoResult = null;
 
   const handleComplete = () => {
     setFinished(true);
