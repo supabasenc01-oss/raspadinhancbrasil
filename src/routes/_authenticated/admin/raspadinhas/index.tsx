@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Ticket, MoreVertical, Edit, Copy, Eye, Play, Pause, Square, TrendingUp, DollarSign, Trophy } from "lucide-react";
+import { Ticket, MoreVertical, Edit, Copy, Eye, Play, Pause, Square, Trash2, TrendingUp, DollarSign, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -25,6 +25,7 @@ import {
 import { formatCurrency, formatDate } from "@/lib/format";
 import { adminScratchCardsQuery } from "@/lib/queries";
 import { callEdgeFunction } from "@/lib/edge-functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/raspadinhas/")({
   head: () => ({
@@ -41,11 +42,40 @@ function AdminScratchCardsPage() {
 
   const handleStatusUpdate = async (id: string, status: any) => {
     try {
-      await callEdgeFunction('update-scratch-card-status', { id, status });
+      // Caminho direto (RLS de staff). Se falhar, tenta a função de servidor.
+      const { error } = await supabase
+        .from("scratch_cards")
+        .update({ status, ...(status === "ACTIVE" ? {} : { is_featured: false }) })
+        .eq("id", id);
+      if (error) {
+        await callEdgeFunction("update-scratch-card-status", { id, status });
+      }
       toast.success(`Status atualizado para ${status}`);
       refetch();
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message ?? "Não foi possível atualizar o status");
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Excluir definitivamente a raspadinha "${name}"?`)) return;
+    try {
+      await supabase.from("scratch_card_prizes").delete().eq("scratch_card_id", id);
+      const { error } = await supabase.from("scratch_cards").delete().eq("id", id);
+      if (error) {
+        // Provavelmente há jogadas vinculadas: arquiva para sair do site.
+        const { error: archiveError } = await supabase
+          .from("scratch_cards")
+          .update({ status: "ARCHIVED", is_featured: false })
+          .eq("id", id);
+        if (archiveError) throw archiveError;
+        toast.success("Raspadinha arquivada (possuía jogadas registradas).");
+      } else {
+        toast.success("Raspadinha excluída");
+      }
+      refetch();
+    } catch (error: any) {
+      toast.error(error.message ?? "Não foi possível excluir");
     }
   };
 
@@ -173,6 +203,13 @@ function AdminScratchCardsPage() {
                             <Square className="size-4 mr-2 text-red-500" /> Encerrar
                           </DropdownMenuItem>
                         )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-red-500 focus:text-red-500"
+                          onClick={() => handleDelete(card.id, card.name)}
+                        >
+                          <Trash2 className="size-4 mr-2" /> Excluir
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
