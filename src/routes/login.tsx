@@ -28,16 +28,16 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { signIn, signInWithGoogle, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+  const search = Route.useSearch() as { redirect?: string };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      const search = Route.useSearch() as { redirect?: string };
       navigate({ to: search.redirect || "/dashboard", replace: true });
     }
-  }, [isAuthenticated, loading, navigate]);
+  }, [isAuthenticated, loading, navigate, search.redirect]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -52,10 +52,10 @@ function LoginPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    
-    const search = Route.useSearch() as { redirect?: string };
+
     navigate({ to: search.redirect || "/dashboard", replace: true });
   }
+
 
   return (
     <AuthCard
