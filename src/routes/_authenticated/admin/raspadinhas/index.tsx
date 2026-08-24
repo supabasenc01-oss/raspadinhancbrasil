@@ -25,6 +25,7 @@ import {
 import { formatCurrency, formatDate } from "@/lib/format";
 import { adminScratchCardsQuery } from "@/lib/queries";
 import { callEdgeFunction } from "@/lib/edge-functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/raspadinhas/")({
   head: () => ({
