@@ -1,4 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import logoAsset from "../../public/logo.png.asset.json";
+
+// Arquivos de /public que são externalizados para a CDN no build:
+// mapeamos o caminho local para a URL final para não dar 404 em produção.
+const LOCAL_ASSET_MAP: Record<string, string> = {
+  "/logo.png": logoAsset.url,
+};
+
 
 export type PlatformBucket =
   | "avatars"
