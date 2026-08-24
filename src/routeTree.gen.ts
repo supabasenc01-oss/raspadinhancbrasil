@@ -26,6 +26,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SuporteRouteImport } from './routes/suporte'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
+import { Route as AuthenticatedCuponsRouteImport } from './routes/_authenticated/cupons'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedIndicacaoRouteImport } from './routes/_authenticated/indicacao'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
@@ -128,6 +129,11 @@ const TermosRoute = TermosRouteImport.update({
 const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCuponsRoute = AuthenticatedCuponsRouteImport.update({
+  id: '/cupons',
+  path: '/cupons',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
+  '/cupons': typeof AuthenticatedCuponsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/indicacao': typeof AuthenticatedIndicacaoRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
+  '/cupons': typeof AuthenticatedCuponsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/indicacao': typeof AuthenticatedIndicacaoRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRouteWithChildren
+  '/_authenticated/cupons': typeof AuthenticatedCuponsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/indicacao': typeof AuthenticatedIndicacaoRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
@@ -370,6 +379,7 @@ export interface FileRouteTypes {
     | '/suporte'
     | '/termos'
     | '/carteira'
+    | '/cupons'
     | '/dashboard'
     | '/indicacao'
     | '/perfil'
@@ -407,6 +417,7 @@ export interface FileRouteTypes {
     | '/suporte'
     | '/termos'
     | '/carteira'
+    | '/cupons'
     | '/dashboard'
     | '/indicacao'
     | '/perfil'
@@ -445,6 +456,7 @@ export interface FileRouteTypes {
     | '/suporte'
     | '/termos'
     | '/_authenticated/carteira'
+    | '/_authenticated/cupons'
     | '/_authenticated/dashboard'
     | '/_authenticated/indicacao'
     | '/_authenticated/perfil'
@@ -607,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cupons': {
+      id: '/_authenticated/cupons'
+      path: '/cupons'
+      fullPath: '/cupons'
+      preLoaderRoute: typeof AuthenticatedCuponsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -760,6 +779,7 @@ const AuthenticatedCarteiraRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRouteWithChildren
+  AuthenticatedCuponsRoute: typeof AuthenticatedCuponsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndicacaoRoute: typeof AuthenticatedIndicacaoRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
@@ -780,6 +800,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRouteWithChildren,
+  AuthenticatedCuponsRoute: AuthenticatedCuponsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndicacaoRoute: AuthenticatedIndicacaoRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
