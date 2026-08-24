@@ -24,6 +24,8 @@ export type PlatformBucket =
 export async function resolveFileUrl(value: string | null | undefined, cacheBust?: string): Promise<string | null> {
   if (!value) return null;
   if (/^(https?:|data:|blob:)/.test(value)) return value;
+  if (LOCAL_ASSET_MAP[value]) return LOCAL_ASSET_MAP[value] ?? value;
+  if (value.startsWith("/")) return value;
 
   const parts = value.split("/");
   if (parts.length < 2) return value; 
