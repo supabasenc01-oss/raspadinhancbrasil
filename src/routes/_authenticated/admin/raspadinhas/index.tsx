@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Ticket, MoreVertical, Edit, Copy, Eye, Play, Pause, Square, TrendingUp, DollarSign, Trophy } from "lucide-react";
+import { Ticket, MoreVertical, Edit, Copy, Eye, Play, Pause, Square, Trash2, TrendingUp, DollarSign, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
