@@ -53,10 +53,11 @@ function HomePage() {
 
   return (
     <PublicPage>
-      {showAppDownload && <AppDownloadBanner />}
-      
-      {/* Hero / Banner Area */}
+      {/* Hero / Banner Area (logo abaixo do logotipo/header) */}
       {showHeroBanners && <HomeCarousel />}
+
+      {showAppDownload && <AppDownloadBanner />}
+
 
       {/* Winners Ticker */}
       {showWinnersTicker && <WinnersTicker winners={winners} />}
