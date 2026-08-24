@@ -103,7 +103,7 @@ function AdminReceiptsPage() {
         _receipt_id: selected.id,
         _approve: approve,
         _credits: approve ? Number(credits) || 0 : 0,
-        _notes: notes || null,
+        _notes: notes || undefined,
       });
       if (error) throw error;
       toast.success(approve ? "Cupom aprovado e raspadinhas liberadas." : "Cupom reprovado.");

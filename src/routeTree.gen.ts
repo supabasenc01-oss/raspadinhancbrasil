@@ -35,6 +35,7 @@ import { Route as RaspadinhaSlugRouteImport } from './routes/raspadinha.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
+import { Route as AuthenticatedAdminCuponsRouteImport } from './routes/_authenticated/admin/cupons'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as AuthenticatedAdminFinanceiroRouteImport } from './routes/_authenticated/admin/financeiro'
 import { Route as AuthenticatedAdminGanhadoresRouteImport } from './routes/_authenticated/admin/ganhadores'
@@ -178,6 +179,12 @@ const AuthenticatedAdminConfiguracoesRoute =
     path: '/admin/configuracoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminCuponsRoute =
+  AuthenticatedAdminCuponsRouteImport.update({
+    id: '/admin/cupons',
+    path: '/admin/cupons',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/admin/dashboard',
@@ -269,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/admin/cupons': typeof AuthenticatedAdminCuponsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
   '/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
@@ -307,6 +315,7 @@ export interface FileRoutesByTo {
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/admin/cupons': typeof AuthenticatedAdminCuponsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
   '/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
@@ -347,6 +356,7 @@ export interface FileRoutesById {
   '/raspadinha/$slug': typeof RaspadinhaSlugRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/_authenticated/admin/cupons': typeof AuthenticatedAdminCuponsRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/financeiro': typeof AuthenticatedAdminFinanceiroRoute
   '/_authenticated/admin/ganhadores': typeof AuthenticatedAdminGanhadoresRoute
@@ -387,6 +397,7 @@ export interface FileRouteTypes {
     | '/raspadinha/$slug'
     | '/admin/banners'
     | '/admin/configuracoes'
+    | '/admin/cupons'
     | '/admin/dashboard'
     | '/admin/financeiro'
     | '/admin/ganhadores'
@@ -425,6 +436,7 @@ export interface FileRouteTypes {
     | '/raspadinha/$slug'
     | '/admin/banners'
     | '/admin/configuracoes'
+    | '/admin/cupons'
     | '/admin/dashboard'
     | '/admin/financeiro'
     | '/admin/ganhadores'
@@ -464,6 +476,7 @@ export interface FileRouteTypes {
     | '/raspadinha/$slug'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/configuracoes'
+    | '/_authenticated/admin/cupons'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/financeiro'
     | '/_authenticated/admin/ganhadores'
@@ -682,6 +695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminConfiguracoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/cupons': {
+      id: '/_authenticated/admin/cupons'
+      path: '/admin/cupons'
+      fullPath: '/admin/cupons'
+      preLoaderRoute: typeof AuthenticatedAdminCuponsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
       path: '/admin/dashboard'
@@ -786,6 +806,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTransacoesRoute: typeof AuthenticatedTransacoesRoute
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
+  AuthenticatedAdminCuponsRoute: typeof AuthenticatedAdminCuponsRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminFinanceiroRoute: typeof AuthenticatedAdminFinanceiroRoute
   AuthenticatedAdminGanhadoresRoute: typeof AuthenticatedAdminGanhadoresRoute
@@ -807,6 +828,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTransacoesRoute: AuthenticatedTransacoesRoute,
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
+  AuthenticatedAdminCuponsRoute: AuthenticatedAdminCuponsRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminFinanceiroRoute: AuthenticatedAdminFinanceiroRoute,
   AuthenticatedAdminGanhadoresRoute: AuthenticatedAdminGanhadoresRoute,
