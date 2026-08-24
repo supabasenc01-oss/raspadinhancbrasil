@@ -203,6 +203,13 @@ function AdminScratchCardsPage() {
                             <Square className="size-4 mr-2 text-red-500" /> Encerrar
                           </DropdownMenuItem>
                         )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-red-500 focus:text-red-500"
+                          onClick={() => handleDelete(card.id, card.name)}
+                        >
+                          <Trash2 className="size-4 mr-2" /> Excluir
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
