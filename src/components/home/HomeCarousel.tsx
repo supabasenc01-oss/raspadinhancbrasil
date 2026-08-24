@@ -7,7 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useFileUrl } from "@/hooks/useFileUrl";
 import { supabase } from "@/integrations/supabase/client";
-import heroBanner from "@/assets/hero-banner.jpg.asset.json";
+import heroBanner from "@/assets/banner-home.jpg.asset.json";
 
 type Banner = {
   id: string;
