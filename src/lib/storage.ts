@@ -25,28 +25,17 @@ export async function resolveFileUrl(value: string | null | undefined, cacheBust
 
   if (!bucket || !path) return value;
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  let publicUrl = data?.publicUrl ?? null;
+  // Buckets são privados nesta plataforma: geramos uma URL assinada.
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60);
+  if (error || !data?.signedUrl) return null;
 
-  // Garantir que a URL aponta para o domínio direto do Supabase se estivermos no ambiente do Lovable
-  // Isso resolve problemas de resolução de proxy no sandbox
-  if (publicUrl && typeof window !== 'undefined') {
-    try {
-      const url = new URL(publicUrl);
-      // Sempre forçar o domínio direto do Supabase para o Storage se estiver no sandbox Lovable ou em qualquer domínio .lovable.app
-      if (true) { // Always force direct URL for better reliability in preview/custom domains
-        const projectRef = import.meta.env['VITE_EXTERNAL_SUPABASE_PROJECT_ID'] || import.meta.env['VITE_SUPABASE_PROJECT_ID'];
-        publicUrl = `https://${projectRef}.supabase.co/storage/v1/object/public/${bucket}/${path}`;
-      }
-    } catch (e) {}
+  let signedUrl = data.signedUrl;
+  if (cacheBust) {
+    const separator = signedUrl.includes("?") ? "&" : "?";
+    signedUrl = `${signedUrl}${separator}v=${cacheBust}`;
   }
 
-  if (publicUrl && cacheBust) {
-    const separator = publicUrl.includes('?') ? '&' : '?';
-    publicUrl = `${publicUrl}${separator}v=${cacheBust}`;
-  }
-
-  return publicUrl;
+  return signedUrl;
 }
 
 export async function uploadPlatformFile(
