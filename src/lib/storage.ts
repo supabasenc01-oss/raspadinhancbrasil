@@ -1,4 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import logoAsset from "../../public/logo.png.asset.json";
+
+// Arquivos de /public que são externalizados para a CDN no build:
+// mapeamos o caminho local para a URL final para não dar 404 em produção.
+const LOCAL_ASSET_MAP: Record<string, string> = {
+  "/logo.png": logoAsset.url,
+};
+
 
 export type PlatformBucket =
   | "avatars"
@@ -16,6 +24,8 @@ export type PlatformBucket =
 export async function resolveFileUrl(value: string | null | undefined, cacheBust?: string): Promise<string | null> {
   if (!value) return null;
   if (/^(https?:|data:|blob:)/.test(value)) return value;
+  if (LOCAL_ASSET_MAP[value]) return LOCAL_ASSET_MAP[value] ?? value;
+  if (value.startsWith("/")) return value;
 
   const parts = value.split("/");
   if (parts.length < 2) return value; 
