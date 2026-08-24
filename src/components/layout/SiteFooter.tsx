@@ -86,12 +86,12 @@ export function SiteFooter() {
         <div>© {new Date().getFullYear()} {siteName}. Todos os direitos reservados.</div>
         <div>
           <a 
-            href="https://www.ncbrasil.com.br" 
+            href="https://www.ncbrasil.com.br/sistema-de-raspadinha" 
             target="_blank" 
             rel="noopener noreferrer"
             className="hover:text-primary transition-colors font-medium"
           >
-            Sistema de Raspadinha por NC Brasil
+            Sistema de Raspadinhas
           </a>
         </div>
       </div>
