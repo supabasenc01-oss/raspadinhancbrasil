@@ -37,7 +37,7 @@ export function HomeCarousel() {
   const slides: Banner[] =
     data && data.length > 0
       ? data
-      : [{ id: "default", title: "Raspou, achou, ganhou!", image_url: heroBanner.url, link_url: "/raspadinhas" }];
+      : [{ id: "default", title: "Raspou, achou, ganhou!", image_url: heroBanner.url, link_url: "/cadastro" }];
 
   const slide = slides[Math.min(current, slides.length - 1)]!;
   const next = () => setCurrent((p) => (p + 1) % slides.length);
