@@ -336,9 +336,15 @@ function EditScratchCardPage() {
                   </Field>
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-                  <Field label="Imagem do prêmio" htmlFor={`prize_image_${index}`}>
-                    <Input id={`prize_image_${index}`} value={prize.image_url} onChange={(event) => updatePrize(index, "image_url", event.target.value)} placeholder="Opcional" />
-                  </Field>
+                  <ImageUploadField
+                    id={`prize_image_${index}`}
+                    label="Imagem do prêmio"
+                    value={prize.image_url}
+                    onChange={(value) => updatePrize(index, "image_url", value)}
+                    bucket="prizes"
+                    hint="Imagem revelada quando o usuário ganha este prêmio."
+                  />
+
                   <div className="flex items-center gap-3 pb-2">
                     <Switch checked={prize.is_active} onCheckedChange={(checked) => updatePrize(index, "is_active", checked)} id={`prize_active_${index}`} />
                     <Label htmlFor={`prize_active_${index}`}>Ativo</Label>
