@@ -227,7 +227,7 @@ function ScratchCardDetailPage() {
                   <div className="w-full max-w-[min(450px,92vw)] mx-auto">
                     {hydrated ? (
                       <ScratchArea 
-                        coverImage={card.image_url ?? null} 
+                        coverImage={card.scratch_image_url ?? card.image_url ?? null} 
                         resultImage={gameResult?.prize?.image_url ?? null}
                         onComplete={handleScratchComplete}
                         isAutoRevealing={isAutoRevealing}
