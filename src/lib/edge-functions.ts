@@ -4,7 +4,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const SUPABASE_URL =
-  import.meta.env["VITE_EXTERNAL_SUPABASE_URL"] || import.meta.env["VITE_SUPABASE_URL"];
+  import.meta.env["VITE_SUPABASE_URL"];
 
 export class EdgeFunctionError extends Error {
   constructor(
