@@ -6,6 +6,8 @@ import { Zap, Trophy, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useSettings } from '@/hooks/useSettings';
 import { useFileUrl } from '@/hooks/useFileUrl';
+import { useQuery } from '@tanstack/react-query';
+import { activeScratchCardsQuery } from '@/lib/queries';
 
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
