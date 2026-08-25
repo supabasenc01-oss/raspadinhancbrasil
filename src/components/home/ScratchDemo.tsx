@@ -10,14 +10,22 @@ import { useFileUrl } from '@/hooks/useFileUrl';
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
   const [finished, setFinished] = useState(false);
-  const { logoUrl: rawLogoUrl, siteName } = useSettings();
+  const { logoUrl: rawLogoUrl, siteName, scratchOverlayLogoUrl } = useSettings();
   const logoUrl = useFileUrl(rawLogoUrl);
 
-  // Demonstração usa apenas o logotipo do site e o layout de prêmio (sem arquivos externos)
+  // A demo usa a mesma imagem de raspagem configurada nas raspadinhas ativas
+  const { data: cards } = useQuery(activeScratchCardsQuery);
+  const demoScratchImage =
+    scratchOverlayLogoUrl ||
+    cards?.find((card) => card.scratch_image_url)?.scratch_image_url ||
+    null;
+  const demoScratchUrl = useFileUrl(demoScratchImage);
+
   const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
 
-  const demoCover = logoUrl;
+  const demoCover = demoScratchUrl || logoUrl;
   const demoResult = null;
+
 
   const handleComplete = () => {
     setFinished(true);
