@@ -181,8 +181,10 @@ function AdminScratchCardsPage() {
                             <Eye className="size-4 mr-2" /> Visualizar
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Edit className="size-4 mr-2" /> Editar
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/raspadinhas/$id" params={{ id: card.id }}>
+                            <Edit className="size-4 mr-2" /> Editar
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Copy className="size-4 mr-2" /> Duplicar

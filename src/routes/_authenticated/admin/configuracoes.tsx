@@ -15,7 +15,8 @@ import {
   Upload,
   Loader2,
   Sparkles,
-  Palette
+  Palette,
+  KeyRound
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -30,6 +31,7 @@ import { systemSettingsQuery } from "@/lib/queries";
 import { callEdgeFunction } from "@/lib/edge-functions";
 import { uploadPlatformFile } from "@/lib/storage";
 import { useFileUrl } from "@/hooks/useFileUrl";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -47,6 +49,7 @@ function AdminSettingsPage() {
 
   const [values, setValues] = useState<Record<string, string>>({});
   const [isUploading, setIsUploading] = useState<string | null>(null);
+  const [passwordForm, setPasswordForm] = useState({ password: "", confirmPassword: "" });
 
   useEffect(() => {
     if (settings && Array.isArray(settings)) {
@@ -87,6 +90,31 @@ function AdminSettingsPage() {
     onError: (error: any) => {
       toast.error("Erro ao salvar configurações: " + error.message);
     }
+  });
+
+  const passwordMutation = useMutation({
+    mutationFn: async () => {
+      const password = passwordForm.password.trim();
+      const confirmPassword = passwordForm.confirmPassword.trim();
+
+      if (password.length < 8) {
+        throw new Error("A nova senha deve ter pelo menos 8 caracteres.");
+      }
+
+      if (password !== confirmPassword) {
+        throw new Error("As senhas digitadas não conferem.");
+      }
+
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setPasswordForm({ password: "", confirmPassword: "" });
+      toast.success("Senha administrativa atualizada com sucesso!");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Não foi possível atualizar a senha.");
+    },
   });
 
   const handleChange = (key: string, value: string) => {
@@ -208,6 +236,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
           <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
           <TabsTrigger value="colors" className="gap-2"><Palette className="size-4" /> Cores & Identidade</TabsTrigger>
+          <TabsTrigger value="account" className="gap-2"><KeyRound className="size-4" /> Conta</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -656,6 +685,50 @@ function AdminSettingsPage() {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="account">
+          <Card className="bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Senha do Administrador</CardTitle>
+              <CardDescription>Altere a senha da conta administrativa que está conectada agora.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="admin_new_password">Nova senha</Label>
+                  <Input
+                    id="admin_new_password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={passwordForm.password}
+                    onChange={(event) => setPasswordForm((current) => ({ ...current, password: event.target.value }))}
+                    placeholder="Mínimo de 8 caracteres"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="admin_confirm_password">Confirmar senha</Label>
+                  <Input
+                    id="admin_confirm_password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))}
+                    placeholder="Digite novamente"
+                  />
+                </div>
+              </div>
+              <Button
+                type="button"
+                onClick={() => passwordMutation.mutate()}
+                disabled={passwordMutation.isPending}
+                className="bg-gradient-brand"
+              >
+                {passwordMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <KeyRound className="mr-2 size-4" />}
+                Atualizar senha
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
