@@ -46,6 +46,7 @@ import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authen
 import { Route as AuthenticatedCarteiraAdicionarRouteImport } from './routes/_authenticated/carteira/adicionar'
 import { Route as AuthenticatedCarteiraSaqueRouteImport } from './routes/_authenticated/carteira/saque'
 import { Route as AuthenticatedAdminRaspadinhasIndexRouteImport } from './routes/_authenticated/admin/raspadinhas/index'
+import { Route as AuthenticatedAdminRaspadinhasIdRouteImport } from './routes/_authenticated/admin/raspadinhas/$id'
 import { Route as AuthenticatedAdminRaspadinhasNovoRouteImport } from './routes/_authenticated/admin/raspadinhas/novo'
 
 const IndexRoute = IndexRouteImport.update({
@@ -244,6 +245,12 @@ const AuthenticatedAdminRaspadinhasIndexRoute =
     path: '/admin/raspadinhas/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminRaspadinhasIdRoute =
+  AuthenticatedAdminRaspadinhasIdRouteImport.update({
+    id: '/admin/raspadinhas/$id',
+    path: '/admin/raspadinhas/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRaspadinhasNovoRoute =
   AuthenticatedAdminRaspadinhasNovoRouteImport.update({
     id: '/admin/raspadinhas/novo',
@@ -287,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/$id': typeof AuthenticatedAdminRaspadinhasIdRoute
   '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
@@ -326,6 +334,7 @@ export interface FileRoutesByTo {
   '/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/raspadinhas/$id': typeof AuthenticatedAdminRaspadinhasIdRoute
   '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
@@ -367,6 +376,7 @@ export interface FileRoutesById {
   '/_authenticated/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/_authenticated/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/raspadinhas/$id': typeof AuthenticatedAdminRaspadinhasIdRoute
   '/_authenticated/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/_authenticated/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
@@ -408,6 +418,7 @@ export interface FileRouteTypes {
     | '/carteira/adicionar'
     | '/carteira/saque'
     | '/admin/'
+    | '/admin/raspadinhas/$id'
     | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas/'
   fileRoutesByTo: FileRoutesByTo
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/carteira/adicionar'
     | '/carteira/saque'
     | '/admin'
+    | '/admin/raspadinhas/$id'
     | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas'
   id:
@@ -487,6 +499,7 @@ export interface FileRouteTypes {
     | '/_authenticated/carteira/adicionar'
     | '/_authenticated/carteira/saque'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/raspadinhas/$id'
     | '/_authenticated/admin/raspadinhas/novo'
     | '/_authenticated/admin/raspadinhas/'
   fileRoutesById: FileRoutesById
@@ -772,6 +785,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRaspadinhasIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/raspadinhas/$id': {
+      id: '/_authenticated/admin/raspadinhas/$id'
+      path: '/admin/raspadinhas/$id'
+      fullPath: '/admin/raspadinhas/$id'
+      preLoaderRoute: typeof AuthenticatedAdminRaspadinhasIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/raspadinhas/novo': {
       id: '/_authenticated/admin/raspadinhas/novo'
       path: '/admin/raspadinhas/novo'
@@ -815,6 +835,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRelatoriosRoute: typeof AuthenticatedAdminRelatoriosRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminRaspadinhasIdRoute: typeof AuthenticatedAdminRaspadinhasIdRoute
   AuthenticatedAdminRaspadinhasNovoRoute: typeof AuthenticatedAdminRaspadinhasNovoRoute
   AuthenticatedAdminRaspadinhasIndexRoute: typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
@@ -837,6 +858,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRelatoriosRoute: AuthenticatedAdminRelatoriosRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminRaspadinhasIdRoute: AuthenticatedAdminRaspadinhasIdRoute,
   AuthenticatedAdminRaspadinhasNovoRoute:
     AuthenticatedAdminRaspadinhasNovoRoute,
   AuthenticatedAdminRaspadinhasIndexRoute:
