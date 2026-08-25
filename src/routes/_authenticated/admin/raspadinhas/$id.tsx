@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -261,16 +262,30 @@ function EditScratchCardPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              <Field label="Imagem de capa" htmlFor="scratch_image_url">
-                <Input id="scratch_image_url" value={form.image_url} onChange={(event) => updateForm("image_url", event.target.value)} placeholder="URL ou caminho da imagem" />
-              </Field>
-              <Field label="Imagem de fundo" htmlFor="scratch_background_url">
-                <Input id="scratch_background_url" value={form.background_url} onChange={(event) => updateForm("background_url", event.target.value)} placeholder="Opcional" />
-              </Field>
-              <Field label="Camada de raspagem" htmlFor="scratch_cover_url">
-                <Input id="scratch_cover_url" value={form.scratch_image_url} onChange={(event) => updateForm("scratch_image_url", event.target.value)} placeholder="Opcional" />
-              </Field>
+              <ImageUploadField
+                id="scratch_image_url"
+                label="Imagem de capa"
+                value={form.image_url}
+                onChange={(value) => updateForm("image_url", value)}
+                prefix="capas"
+              />
+              <ImageUploadField
+                id="scratch_background_url"
+                label="Imagem de fundo"
+                value={form.background_url}
+                onChange={(value) => updateForm("background_url", value)}
+                bucket="scratch-cards-backgrounds"
+              />
+              <ImageUploadField
+                id="scratch_cover_url"
+                label="Imagem para raspar"
+                value={form.scratch_image_url}
+                onChange={(value) => updateForm("scratch_image_url", value)}
+                prefix="raspagem"
+                hint="Esta é a imagem que o usuário raspa para revelar o prêmio."
+              />
             </div>
+
 
             <div className="flex items-center gap-3 rounded-xl border border-border/60 p-4">
               <Switch checked={form.is_featured && form.status === "ACTIVE"} disabled={form.status !== "ACTIVE"} onCheckedChange={(checked) => updateForm("is_featured", checked)} id="scratch_featured" />
@@ -321,9 +336,15 @@ function EditScratchCardPage() {
                   </Field>
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-                  <Field label="Imagem do prêmio" htmlFor={`prize_image_${index}`}>
-                    <Input id={`prize_image_${index}`} value={prize.image_url} onChange={(event) => updatePrize(index, "image_url", event.target.value)} placeholder="Opcional" />
-                  </Field>
+                  <ImageUploadField
+                    id={`prize_image_${index}`}
+                    label="Imagem do prêmio"
+                    value={prize.image_url}
+                    onChange={(value) => updatePrize(index, "image_url", value)}
+                    bucket="prizes"
+                    hint="Imagem revelada quando o usuário ganha este prêmio."
+                  />
+
                   <div className="flex items-center gap-3 pb-2">
                     <Switch checked={prize.is_active} onCheckedChange={(checked) => updatePrize(index, "is_active", checked)} id={`prize_active_${index}`} />
                     <Label htmlFor={`prize_active_${index}`}>Ativo</Label>
