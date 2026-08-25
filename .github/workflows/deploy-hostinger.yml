@@ -25,6 +25,13 @@ jobs:
         run: npm ci
 
       - name: Build (static SPA)
+        env:
+          VITE_SUPABASE_URL: https://endmonqujwhbprzprwjh.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_q3D65In-ef3vBZlPpZhOxA_EyI9pyLP
+          VITE_SUPABASE_PROJECT_ID: endmonqujwhbprzprwjh
+          SUPABASE_URL: https://endmonqujwhbprzprwjh.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_q3D65In-ef3vBZlPpZhOxA_EyI9pyLP
+          SUPABASE_PROJECT_ID: endmonqujwhbprzprwjh
         run: npm run build
 
       - name: Deploy to Hostinger via SSH
