@@ -365,6 +365,23 @@ function EditScratchCardPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-muted-foreground space-y-2">
+              <p className="font-bold text-foreground">Como preencher a chance de ganhar</p>
+              <p>
+                Digite direto em <strong>porcentagem</strong>. Exemplos: <strong>10</strong> = 10 em cada
+                100 raspagens ganham este prêmio; <strong>1</strong> = 1 em cada 100; <strong>0,5</strong> = 1 em
+                cada 200.
+              </p>
+              <p>
+                A soma de todos os prêmios não pode passar de <strong>100%</strong>. O que faltar para 100%
+                é a chance de <strong>não ganhar nada</strong>. Hoje a soma está em{" "}
+                <strong className={totalProbability > 1 ? "text-destructive" : "text-primary"}>
+                  {(totalProbability * 100).toFixed(2)}%
+                </strong>{" "}
+                — chance de não ganhar: <strong>{Math.max(0, (1 - totalProbability) * 100).toFixed(2)}%</strong>.
+              </p>
+              <p>Use “Distribuir probabilidades” para dividir 100% igualmente entre os prêmios.</p>
+            </div>
             {form.prizes.map((prize, index) => (
               <div key={prize.id ?? `new-${index}`} className="rounded-xl border border-border/60 bg-background/40 p-4">
                 <div className="mb-4 flex items-center justify-between gap-3">
@@ -382,8 +399,20 @@ function EditScratchCardPage() {
                   <Field label="Valor" htmlFor={`prize_value_${index}`}>
                     <Input id={`prize_value_${index}`} type="number" min="0" step="0.01" value={prize.value} onChange={(event) => updatePrize(index, "value", toNumber(event.target.value))} />
                   </Field>
-                  <Field label="Prob. 0 a 1" htmlFor={`prize_probability_${index}`}>
-                    <Input id={`prize_probability_${index}`} type="number" min="0" max="1" step="0.0001" value={prize.probability} onChange={(event) => updatePrize(index, "probability", toNumber(event.target.value))} />
+                  <Field label="Chance de ganhar (%)" htmlFor={`prize_probability_${index}`}>
+                    <div className="relative">
+                      <Input
+                        id={`prize_probability_${index}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        className="pr-8"
+                        value={Number((safeNumber(prize.probability) * 100).toFixed(2))}
+                        onChange={(event) => updatePrize(index, "probability", toNumber(event.target.value) / 100)}
+                      />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">%</span>
+                    </div>
                   </Field>
                   <Field label="Total" htmlFor={`prize_total_${index}`}>
                     <Input id={`prize_total_${index}`} type="number" min="1" value={prize.quantity_total} onChange={(event) => updatePrize(index, "quantity_total", toNumber(event.target.value))} />

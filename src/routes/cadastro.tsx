@@ -49,12 +49,25 @@ function SignUpPage() {
     storeName: "",
     storeId: "",
   });
+  const [step, setStep] = useState<1 | 2>(1);
   const [submitting, setSubmitting] = useState(false);
   const [awaitingReview, setAwaitingReview] = useState(false);
   const { data: stores } = useQuery(storesQuery);
 
   function update(field: keyof typeof form, value: string) {
     setForm((previous) => ({ ...previous, [field]: value }));
+  }
+
+  function goToStep2() {
+    if (!form.fullName.trim() || !form.email.trim()) {
+      toast.error("Preencha seu nome completo e e-mail.");
+      return;
+    }
+    if (form.password.length < 8) {
+      toast.error("A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
+    setStep(2);
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -158,8 +171,12 @@ function SignUpPage() {
 
   return (
     <AuthCard
-      title="Criar sua conta"
-      description="Informe seus dados e o cupom fiscal da sua compra para pré-aprovação."
+      title={step === 1 ? "Criar sua conta — dados pessoais" : "Criar sua conta — cupom fiscal"}
+      description={
+        step === 1
+          ? "Passo 1 de 2: preencha seus dados pessoais."
+          : "Passo 2 de 2: informe o cupom fiscal e a filial onde você comprou."
+      }
       footer={
         <>
           Já tem conta?{" "}
@@ -169,113 +186,91 @@ function SignUpPage() {
         </>
       }
     >
+      <div className="mb-6 flex items-center gap-2">
+        {[1, 2].map((item) => (
+          <div key={item} className="flex-1 space-y-1">
+            <div
+              className={`h-1.5 rounded-full ${item <= step ? "bg-gradient-brand" : "bg-border"}`}
+            />
+            <p className={`text-[10px] font-bold uppercase tracking-wider ${item <= step ? "text-primary" : "text-muted-foreground"}`}>
+              {item === 1 ? "1. Dados pessoais" : "2. Cupom e filial"}
+            </p>
+          </div>
+        ))}
+      </div>
+
       <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="space-y-2">
-          <Label htmlFor="fullName">Nome completo</Label>
-          <Input
-            id="fullName"
-            required
-            value={form.fullName}
-            onChange={(event) => update("fullName", event.target.value)}
-            placeholder="Seu nome"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">E-mail</Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={form.email}
-            onChange={(event) => update("email", event.target.value)}
-            placeholder="voce@email.com"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="phone">Telefone (opcional)</Label>
-          <Input
-            id="phone"
-            type="tel"
-            value={form.phone}
-            onChange={(event) => update("phone", event.target.value)}
-            placeholder="(11) 90000-0000"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="receiptNumber">Número do cupom fiscal *</Label>
-          <Input
-            id="receiptNumber"
-            required
-            maxLength={60}
-            value={form.receiptNumber}
-            onChange={(event) => update("receiptNumber", event.target.value)}
-            placeholder="Ex: 000123456"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="storeName">Filial onde você comprou *</Label>
-          <select
-            id="storeName"
-            required
-            className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-            value={form.storeId}
-            onChange={(event) => {
-              update("storeId", event.target.value);
-              update("storeName", storeName(stores, event.target.value));
-            }}
-          >
-            <option value="">Selecione a filial…</option>
-            {(stores ?? []).map((store) => (
-              <option key={store.id} value={store.id}>
-                {store.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Senha</Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={form.password}
-            onChange={(event) => update("password", event.target.value)}
-            placeholder="Mínimo de 8 caracteres"
-          />
-        </div>
+        {step === 1 ? (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nome completo</Label>
+              <Input
+                id="fullName"
+                required
+                value={form.fullName}
+                onChange={(event) => update("fullName", event.target.value)}
+                placeholder="Seu nome"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={form.email}
+                onChange={(event) => update("email", event.target.value)}
+                placeholder="voce@email.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Telefone (opcional)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={form.phone}
+                onChange={(event) => update("phone", event.target.value)}
+                placeholder="(11) 90000-0000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={form.password}
+                onChange={(event) => update("password", event.target.value)}
+                placeholder="Mínimo de 8 caracteres"
+              />
+            </div>
 
-        <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
-          O valor do seu cupom fiscal será conferido pela filial escolhida antes da liberação das
-          raspadinhas. Cada cupom fiscal pode ser usado uma única vez, e não é válido em outra
-          filial.
-        </p>
+            <Button
+              type="button"
+              onClick={goToStep2}
+              className="w-full bg-gradient-brand text-primary-foreground"
+            >
+              Continuar
+            </Button>
 
-        <Button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-gradient-brand text-primary-foreground"
-        >
-          {submitting ? "Criando conta..." : "Criar conta e enviar cupom"}
-        </Button>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-surface px-2 text-muted-foreground">Ou cadastre-se com</span>
+              </div>
+            </div>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-surface px-2 text-muted-foreground">Ou cadastre-se com</span>
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => signInWithGoogle()}
-          className="w-full gap-2 border-border/50 bg-surface/50 hover:bg-surface"
-        >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => signInWithGoogle()}
+              className="w-full gap-2 border-border/50 bg-surface/50 hover:bg-surface"
+            >
           <svg className="size-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -295,19 +290,78 @@ function SignUpPage() {
             />
           </svg>
           Google
-        </Button>
+            </Button>
 
-        <p className="text-xs text-muted-foreground">
-          Ao continuar você concorda com os{" "}
-          <Link to="/termos" className="text-primary hover:underline">
-            Termos de uso
-          </Link>{" "}
-          e a{" "}
-          <Link to="/privacidade" className="text-primary hover:underline">
-            Política de privacidade
-          </Link>
-          .
-        </p>
+            <p className="text-xs text-muted-foreground">
+              Ao continuar você concorda com os{" "}
+              <Link to="/termos" className="text-primary hover:underline">
+                Termos de uso
+              </Link>{" "}
+              e a{" "}
+              <Link to="/privacidade" className="text-primary hover:underline">
+                Política de privacidade
+              </Link>
+              .
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="receiptNumber">Número do cupom fiscal *</Label>
+              <Input
+                id="receiptNumber"
+                required
+                maxLength={60}
+                value={form.receiptNumber}
+                onChange={(event) => update("receiptNumber", event.target.value)}
+                placeholder="Ex: 000123456"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="storeName">Filial onde você comprou *</Label>
+              <select
+                id="storeName"
+                required
+                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                value={form.storeId}
+                onChange={(event) => {
+                  update("storeId", event.target.value);
+                  update("storeName", storeName(stores, event.target.value));
+                }}
+              >
+                <option value="">Selecione a filial…</option>
+                {(stores ?? []).map((store) => (
+                  <option key={store.id} value={store.id}>
+                    {store.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
+              O valor do seu cupom fiscal será conferido pela filial escolhida antes da liberação das
+              raspadinhas. Cada cupom fiscal pode ser usado uma única vez, e não é válido em outra
+              filial.
+            </p>
+
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-gradient-brand text-primary-foreground"
+            >
+              {submitting ? "Criando conta..." : "Criar conta e enviar cupom"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              disabled={submitting}
+              onClick={() => setStep(1)}
+            >
+              Voltar para dados pessoais
+            </Button>
+          </>
+        )}
       </form>
     </AuthCard>
   );
