@@ -92,14 +92,32 @@ function AdminReceiptsPage() {
       return;
     }
     setCredits(String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)))));
+    setConfirmedValue(selected.purchase_value > 0 ? String(selected.purchase_value) : "");
     setNotes("");
     resolveFileUrl(selected.image_url).then(setImageUrl);
   }, [selected, perCredit]);
 
+  const suggestedCredits = Math.max(
+    0,
+    Math.floor((Number(confirmedValue.replace(",", ".")) || 0) / (perCredit ?? 100)),
+  );
+
   const review = async (approve: boolean) => {
     if (!selected) return;
+    const parsedValue = Number(confirmedValue.replace(",", "."));
+    if (approve && (!parsedValue || parsedValue <= 0)) {
+      toast.error("Confirme o valor da compra do cupom fiscal antes de liberar.");
+      return;
+    }
     setSaving(true);
     try {
+      if (approve && parsedValue !== selected.purchase_value) {
+        const { error: valueError } = await supabase
+          .from("receipts")
+          .update({ purchase_value: parsedValue })
+          .eq("id", selected.id);
+        if (valueError) throw valueError;
+      }
       const { error } = await supabase.rpc("review_receipt", {
         _receipt_id: selected.id,
         _approve: approve,
