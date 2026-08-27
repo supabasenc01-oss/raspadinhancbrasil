@@ -52,20 +52,22 @@ function AdminStatsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("scratch_plays" as any)
-        .select("*, scratch_cards(name), profiles:user_id(full_name, email)")
+        .select("*, scratch_cards(name)")
         .order("created_at", { ascending: false })
         .limit(100);
-      if (error) {
-        // profiles não tem FK direta com scratch_plays em alguns ambientes
-        const fallback = await supabase
-          .from("scratch_plays" as any)
-          .select("*, scratch_cards(name)")
-          .order("created_at", { ascending: false })
-          .limit(100);
-        if (fallback.error) throw fallback.error;
-        return (fallback.data ?? []) as any[];
-      }
-      return (data ?? []) as any[];
+      if (error) throw error;
+
+      const rows = (data ?? []) as any[];
+      const ids = Array.from(new Set(rows.map((r) => r.user_id)));
+      if (ids.length === 0) return rows;
+
+      // scratch_plays referencia auth.users, então buscamos os perfis separadamente.
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", ids);
+      const map = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      return rows.map((r) => ({ ...r, profiles: map.get(r.user_id) ?? null }));
     },
   });
 
