@@ -424,17 +424,38 @@ function NewScratchCardWizard() {
                   <h3 className="font-bold flex items-center gap-2">
                     <Trophy className="size-4 text-primary" /> Tabela de Prêmios
                   </h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      const prizes = form.getValues("prizes");
-                      form.setValue("prizes", [...prizes, { title: `Prêmio ${prizes.length + 1}`, value: 0, probability: 0, quantity_total: 10, is_active: true }]);
-                    }}
-                  >
-                    <Plus className="size-4 mr-2" /> Adicionar
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const prizes = form.getValues("prizes");
+                        form.setValue("prizes", [...prizes, { title: `Prêmio ${prizes.length + 1}`, value: 0, probability: 0, quantity_total: 10, is_active: true }]);
+                      }}
+                    >
+                      <Plus className="size-4 mr-2" /> Adicionar
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const prizes = form.getValues("prizes");
+                        const extras = Array.from({ length: 10 }, (_, offset) => ({
+                          title: `Prêmio ${prizes.length + offset + 1}`,
+                          value: 0,
+                          probability: 0,
+                          quantity_total: 10,
+                          is_active: true,
+                        }));
+                        form.setValue("prizes", [...prizes, ...extras]);
+                      }}
+                    >
+                      <Plus className="size-4 mr-2" /> +10
+                    </Button>
+                  </div>
+
                 </div>
 
                 <div className="space-y-4">

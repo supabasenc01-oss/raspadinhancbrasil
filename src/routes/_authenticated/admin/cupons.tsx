@@ -91,7 +91,7 @@ function AdminReceiptsPage() {
       setImageUrl(null);
       return;
     }
-    setCredits(String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)))));
+    setCredits(String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)) * 2)));
     setConfirmedValue(selected.purchase_value > 0 ? String(selected.purchase_value) : "");
     setNotes("");
     resolveFileUrl(selected.image_url).then(setImageUrl);
@@ -99,7 +99,7 @@ function AdminReceiptsPage() {
 
   const suggestedCredits = Math.max(
     0,
-    Math.floor((Number(confirmedValue.replace(",", ".")) || 0) / (perCredit ?? 100)),
+    Math.floor((Number(confirmedValue.replace(",", ".")) || 0) / (perCredit ?? 100)) * 2,
   );
 
   const review = async (approve: boolean) => {
@@ -279,8 +279,7 @@ function AdminReceiptsPage() {
                       onChange={(event) => setCredits(event.target.value)}
                     />
                     <p className="text-[10px] text-muted-foreground">
-                      Sugestão baseada na regra atual: 1 raspadinha a cada{" "}
-                      {formatCurrency(perCredit ?? 100)}.
+                      Regra atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
                     </p>
                   </div>
                   <div className="space-y-2">

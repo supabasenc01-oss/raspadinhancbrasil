@@ -85,16 +85,18 @@ function EditScratchCardPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<CardForm | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
 
-  const { data: card, isLoading } = useQuery({
+  const { data: card, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["admin", "scratch-card", id],
+    retry: 1,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error: queryError } = await supabase
         .from("scratch_cards")
         .select("*, scratch_card_prizes(*)")
         .eq("id", id)
         .maybeSingle();
-      if (error) throw error;
+      if (queryError) throw queryError;
       if (!data) throw new Error("Raspadinha não encontrada.");
       return data;
     },
@@ -102,6 +104,8 @@ function EditScratchCardPage() {
 
   useEffect(() => {
     if (!card) return;
+    // Só inicializa uma vez por raspadinha, para não descartar edições em andamento.
+    if (loadedId === card.id) return;
 
     const prizes = [...(card.scratch_card_prizes ?? [])]
       .sort((first, second) => first.created_at.localeCompare(second.created_at))
@@ -131,7 +135,9 @@ function EditScratchCardPage() {
       thumbnail_url: card.thumbnail_url ?? "",
       prizes: prizes.length > 0 ? prizes : [emptyPrize(1)],
     });
-  }, [card]);
+    setLoadedId(card.id);
+  }, [card, loadedId]);
+
 
   const saveMutation = useMutation({
     mutationFn: async (values: CardForm) => {
@@ -193,17 +199,35 @@ function EditScratchCardPage() {
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "scratch-cards"] });
-      queryClient.invalidateQueries({ queryKey: ["admin", "scratch-card", id] });
       queryClient.invalidateQueries({ queryKey: ["scratch-cards"] });
       toast.success("Raspadinha atualizada com sucesso!");
-      navigate({ to: "/admin/raspadinhas" });
+      // Recarrega os prêmios (com os novos ids) mantendo o admin na tela de edição.
+      setLoadedId(null);
+      await queryClient.invalidateQueries({ queryKey: ["admin", "scratch-card", id] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Não foi possível salvar a raspadinha.");
     },
   });
+
+  if (error) {
+    return (
+      <AdminShell title="Editar Raspadinha">
+        <div className="surface-card space-y-4 p-6 text-center">
+          <p className="font-bold">Não foi possível abrir esta raspadinha</p>
+          <p className="text-sm text-muted-foreground">{(error as Error).message}</p>
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => refetch()} disabled={isFetching}>
+              Tentar novamente
+            </Button>
+            <Button onClick={() => navigate({ to: "/admin/raspadinhas" })}>Voltar</Button>
+          </div>
+        </div>
+      </AdminShell>
+    );
+  }
 
   if (isLoading || !form) {
     return (
@@ -212,6 +236,7 @@ function EditScratchCardPage() {
       </AdminShell>
     );
   }
+
 
   const totalProbability = form.prizes.reduce((total, prize) => total + safeNumber(prize.probability), 0);
 
@@ -301,12 +326,28 @@ function EditScratchCardPage() {
           <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Prêmios e probabilidades</CardTitle>
-              <CardDescription>Probabilidade total: {(totalProbability * 100).toFixed(2)}% • Preço atual: {formatCurrency(form.price)}</CardDescription>
+              <CardDescription>
+                {form.prizes.length} prêmio(s) • Probabilidade total: {(totalProbability * 100).toFixed(2)}%
+                {totalProbability > 1 ? " (acima de 100%, ajuste antes de salvar)" : ""}
+              </CardDescription>
             </div>
-            <Button type="button" variant="outline" onClick={() => updateForm("prizes", [...form.prizes, emptyPrize(form.prizes.length + 1)])}>
-              <Plus className="mr-2 size-4" /> Adicionar prêmio
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={() => addPrizes(1)}>
+                <Plus className="mr-2 size-4" /> Adicionar prêmio
+              </Button>
+              <Button type="button" variant="outline" onClick={() => addPrizes(10)}>
+                <Plus className="mr-2 size-4" /> +10 prêmios
+              </Button>
+              <Button type="button" variant="secondary" onClick={distributeProbabilities}>
+                Distribuir probabilidades
+              </Button>
+              <Button type="button" variant="secondary" onClick={restockPrizes}>
+                Repor estoque
+              </Button>
+
+            </div>
           </CardHeader>
+
           <CardContent className="space-y-4">
             {form.prizes.map((prize, index) => (
               <div key={prize.id ?? `new-${index}`} className="rounded-xl border border-border/60 bg-background/40 p-4">
@@ -368,6 +409,37 @@ function EditScratchCardPage() {
   function updateForm<Key extends keyof CardForm>(key: Key, value: CardForm[Key]) {
     setForm((current) => current ? { ...current, [key]: value } : current);
   }
+
+  function addPrizes(amount: number) {
+    setForm((current) => {
+      if (!current) return current;
+      const extras = Array.from({ length: amount }, (_, offset) => emptyPrize(current.prizes.length + offset + 1));
+      return { ...current, prizes: [...current.prizes, ...extras] };
+    });
+  }
+
+  function restockPrizes() {
+    setForm((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        prizes: current.prizes.map((prize) => ({
+          ...prize,
+          quantity_remaining: Math.max(1, Math.round(safeNumber(prize.quantity_total))),
+        })),
+      };
+    });
+  }
+
+  function distributeProbabilities() {
+
+    setForm((current) => {
+      if (!current || current.prizes.length === 0) return current;
+      const share = Number((1 / current.prizes.length).toFixed(4));
+      return { ...current, prizes: current.prizes.map((prize) => ({ ...prize, probability: share })) };
+    });
+  }
+
 
   function updatePrize<Key extends keyof PrizeForm>(index: number, key: Key, value: PrizeForm[Key]) {
     setForm((current) => {

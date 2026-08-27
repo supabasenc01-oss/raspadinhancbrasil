@@ -41,13 +41,21 @@ function ScratchCardDetailPage() {
   const { user, isAuthenticated } = useAuth();
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
 
-  const { data: balanceData, refetch: refetchBalance } = useQuery({
-    queryKey: ['wallet-balance', user?.id],
-    queryFn: () => callEdgeFunction<{ balance: number }>('get-wallet-balance'),
+  const { data: creditsBalance = 0, refetch: refetchBalance } = useQuery({
+    queryKey: ['scratch-credits', user?.id],
+    queryFn: async () => {
+      const { data, error: creditsError } = await supabase
+        .from('scratch_credits')
+        .select('balance')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      if (creditsError) throw creditsError;
+      return Number(data?.balance ?? 0);
+    },
     enabled: !!user?.id,
-    staleTime: 1000 * 30, // 30 seconds
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 15,
   });
+
   
   const [gameState, setGameState] = useState<"IDLE" | "PLAYING" | "SCRATCHING" | "REVEALED">("IDLE");
   const [isAutoRevealing, setIsAutoRevealing] = useState(false);
@@ -180,24 +188,28 @@ function ScratchCardDetailPage() {
                   <div>
                     <h2 className="text-2xl font-bold">{card.name}</h2>
                     <p className="text-muted-foreground mt-2">
-                      {card.is_free ? "Raspadinha Grátis!" : `Valor por jogada: ${formatCurrency(card.price)}`}
+                      {card.is_free
+                        ? "Raspadinha Grátis!"
+                        : "Cada raspagem consome 1 raspadinha liberada pelo seu cupom fiscal."}
                     </p>
                   </div>
                   {isAuthenticated ? (
                     <div className="space-y-4 w-full">
                       <div className="flex items-center justify-center gap-2 p-2 rounded-xl bg-surface border border-border/50">
                         <Wallet className="size-4 text-primary" />
-                        <span className="text-sm font-bold">{formatCurrency(balanceData?.balance || 0)}</span>
+                        <span className="text-sm font-bold">{creditsBalance} raspadinha(s) liberada(s)</span>
                       </div>
-                      
-                      {!card.is_free && (balanceData?.balance || 0) < card.price ? (
+
+                      {!card.is_free && creditsBalance < 1 ? (
                         <div className="space-y-3">
                           <Alert variant="destructive" className="text-left py-2 px-3">
                             <AlertCircle className="size-4" />
-                            <AlertDescription className="text-[10px]">Saldo insuficiente para jogar.</AlertDescription>
+                            <AlertDescription className="text-[10px]">
+                              Você não tem raspadinhas liberadas. Envie seu cupom fiscal e aguarde a aprovação (a cada R$ 100 você libera 2 raspadinhas).
+                            </AlertDescription>
                           </Alert>
                           <Button asChild className="w-full h-14 font-black" variant="secondary">
-                            <Link to="/carteira/adicionar">ADICIONAR SALDO</Link>
+                            <Link to="/cupons">ENVIAR CUPOM FISCAL</Link>
                           </Button>
                         </div>
                       ) : (
@@ -212,10 +224,11 @@ function ScratchCardDetailPage() {
                           ) : (
                             <Zap className="size-6 mr-2" />
                           )}
-                          {card.is_free ? "RASPAR AGORA" : "COMPRAR E RASPAR"}
+                          RASPAR AGORA
                         </Button>
                       )}
                     </div>
+
                   ) : (
                     <Button asChild size="lg" className="w-full bg-gradient-brand">
                       <Link to="/login" search={{ redirect: `/raspadinha/${slug}` }}>FAZER LOGIN PARA JOGAR</Link>
