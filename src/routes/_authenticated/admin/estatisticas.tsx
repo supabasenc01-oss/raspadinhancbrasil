@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { BarChart3, Ticket, Trophy, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import {
@@ -14,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
+import { storesQuery } from "@/lib/stores";
 
 export const Route = createFileRoute("/_authenticated/admin/estatisticas")({
   head: () => ({
@@ -29,6 +32,21 @@ export const Route = createFileRoute("/_authenticated/admin/estatisticas")({
 });
 
 function AdminStatsPage() {
+  const [storeFilter, setStoreFilter] = useState("ALL");
+  const { data: stores } = useQuery(storesQuery);
+
+  const { data: cardsIndex } = useQuery({
+    queryKey: ["admin", "cards-store-index"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scratch_cards").select("id, store_id");
+      if (error) throw error;
+      return new Map((data ?? []).map((row: any) => [row.id, row.store_id as string | null]));
+    },
+  });
+
+  const inStore = (cardId: string | null | undefined) =>
+    storeFilter === "ALL" || (cardId ? cardsIndex?.get(cardId) === storeFilter : false);
+
   const { data: cardStats, isLoading: loadingCards } = useQuery({
     queryKey: ["admin", "scratch-card-stats"],
     queryFn: async () => {
@@ -71,7 +89,10 @@ function AdminStatsPage() {
     },
   });
 
-  const totals = (cardStats ?? []).reduce(
+  const visibleCardStats = (cardStats ?? []).filter((c: any) => inStore(c.scratch_card_id));
+  const visiblePlays = (plays ?? []).filter((p: any) => inStore(p.scratch_card_id));
+
+  const totals = visibleCardStats.reduce(
     (acc, c: any) => ({
       plays: acc.plays + Number(c.total_plays ?? 0),
       wins: acc.wins + Number(c.total_wins ?? 0),
@@ -86,6 +107,29 @@ function AdminStatsPage() {
       description="Quantas raspagens foram feitas, quantos prêmios foram entregues e por quem."
     >
       <div className="space-y-8">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            Filial
+          </span>
+          <Button
+            size="sm"
+            variant={storeFilter === "ALL" ? "default" : "outline"}
+            onClick={() => setStoreFilter("ALL")}
+          >
+            Todas
+          </Button>
+          {(stores ?? []).map((store) => (
+            <Button
+              key={store.id}
+              size="sm"
+              variant={storeFilter === store.id ? "default" : "outline"}
+              onClick={() => setStoreFilter(store.id)}
+            >
+              {store.name}
+            </Button>
+          ))}
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard icon={Ticket} label="Raspagens totais" value={String(totals.plays)} />
           <StatCard icon={Trophy} label="Prêmios entregues" value={String(totals.wins)} />
@@ -111,8 +155,8 @@ function AdminStatsPage() {
               <TableBody>
                 {loadingCards ? (
                   <SkeletonRows cols={6} />
-                ) : (cardStats ?? []).length > 0 ? (
-                  cardStats!.map((c: any) => (
+                ) : visibleCardStats.length > 0 ? (
+                  visibleCardStats.map((c: any) => (
                     <TableRow key={c.scratch_card_id}>
                       <TableCell className="font-bold text-sm">{c.card_name}</TableCell>
                       <TableCell className="font-black">{c.total_plays}</TableCell>
@@ -213,8 +257,8 @@ function AdminStatsPage() {
               <TableBody>
                 {loadingPlays ? (
                   <SkeletonRows cols={6} />
-                ) : (plays ?? []).length > 0 ? (
-                  plays!.map((p: any) => (
+                ) : visiblePlays.length > 0 ? (
+                  visiblePlays.map((p: any) => (
                     <TableRow key={p.id}>
                       <TableCell className="text-[10px] text-muted-foreground">
                         {formatDate(p.created_at)}

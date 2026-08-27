@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { formatCurrency, slugify } from "@/lib/format";
+import { storesQuery } from "@/lib/stores";
 
 type ScratchStatus = Database["public"]["Enums"]["scratch_card_status"];
 type PrizeForm = {
@@ -39,6 +40,7 @@ type CardForm = {
   price: number;
   is_free: boolean;
   status: ScratchStatus;
+  store_id: string;
   is_featured: boolean;
   image_url: string;
   background_url: string;
@@ -86,6 +88,7 @@ function EditScratchCardPage() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<CardForm | null>(null);
   const [loadedId, setLoadedId] = useState<string | null>(null);
+  const { data: stores } = useQuery(storesQuery);
 
   const { data: card, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["admin", "scratch-card", id],
@@ -128,6 +131,7 @@ function EditScratchCardPage() {
       price: Number(card.price ?? 0),
       is_free: Boolean(card.is_free),
       status: card.status,
+      store_id: card.store_id ?? "",
       is_featured: Boolean(card.is_featured),
       image_url: card.image_url ?? "",
       background_url: card.background_url ?? "",
@@ -157,6 +161,7 @@ function EditScratchCardPage() {
           price: safeNumber(values.price),
           is_free: values.is_free,
           status: values.status,
+          store_id: values.store_id || null,
           is_featured: values.status === "ACTIVE" ? values.is_featured : false,
           image_url: values.image_url.trim() || null,
           background_url: values.background_url.trim() || null,
@@ -266,7 +271,7 @@ function EditScratchCardPage() {
               <Textarea id="scratch_description" value={form.description} onChange={(event) => updateForm("description", event.target.value)} />
             </Field>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Field label="Preço por jogada" htmlFor="scratch_price">
                 <Input id="scratch_price" type="number" min="0" step="0.01" value={form.price} onChange={(event) => updateForm("price", toNumber(event.target.value))} />
               </Field>
@@ -276,6 +281,17 @@ function EditScratchCardPage() {
                   <SelectContent>
                     {STATUS_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="Filial (loja)" htmlFor="scratch_store">
+                <Select value={form.store_id || "none"} onValueChange={(value) => updateForm("store_id", value === "none" ? "" : value)}>
+                  <SelectTrigger id="scratch_store"><SelectValue placeholder="Selecione a filial" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sem filial definida</SelectItem>
+                    {(stores ?? []).map((store) => (
+                      <SelectItem key={store.id} value={store.id}>{store.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

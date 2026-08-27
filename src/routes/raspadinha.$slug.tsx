@@ -30,6 +30,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { callEdgeFunction } from "@/lib/edge-functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useSettings } from "@/hooks/useSettings";
+import { storesQuery, storeName } from "@/lib/stores";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
   component: ScratchCardDetailPage,
@@ -40,19 +42,24 @@ function ScratchCardDetailPage() {
   const hydrated = useHydrated();
   const { user, isAuthenticated } = useAuth();
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
+  const { showPublicPrizes } = useSettings();
+  const { data: stores } = useQuery(storesQuery);
+  const cardStoreId = (card as any)?.store_id as string | null | undefined;
+  const cardStoreName = cardStoreId ? storeName(stores, cardStoreId) : null;
 
   const { data: creditsBalance = 0, refetch: refetchBalance } = useQuery({
-    queryKey: ['scratch-credits', user?.id],
+    queryKey: ['scratch-credits', user?.id, cardStoreId ?? 'no-store'],
     queryFn: async () => {
-      const { data, error: creditsError } = await supabase
+      let query = supabase
         .from('scratch_credits')
-        .select('balance')
-        .eq('user_id', user!.id)
-        .maybeSingle();
+        .select('balance, store_id')
+        .eq('user_id', user!.id);
+      if (cardStoreId) query = query.eq('store_id', cardStoreId);
+      const { data, error: creditsError } = await query;
       if (creditsError) throw creditsError;
-      return Number(data?.balance ?? 0);
+      return (data ?? []).reduce((sum: number, row: any) => sum + Number(row.balance ?? 0), 0);
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && !!card,
     staleTime: 1000 * 15,
   });
 
@@ -190,14 +197,17 @@ function ScratchCardDetailPage() {
                     <p className="text-muted-foreground mt-2">
                       {card.is_free
                         ? "Raspadinha Grátis!"
-                        : "Cada raspagem consome 1 raspadinha liberada pelo seu cupom fiscal."}
+                        : `Cada raspagem consome 1 raspadinha liberada pelo cupom fiscal aprovado${cardStoreName ? ` da ${cardStoreName}` : ""}.`}
                     </p>
                   </div>
                   {isAuthenticated ? (
                     <div className="space-y-4 w-full">
                       <div className="flex items-center justify-center gap-2 p-2 rounded-xl bg-surface border border-border/50">
                         <Wallet className="size-4 text-primary" />
-                        <span className="text-sm font-bold">{creditsBalance} raspadinha(s) liberada(s)</span>
+                        <span className="text-sm font-bold">
+                          {creditsBalance} raspadinha(s) liberada(s)
+                          {cardStoreName ? ` — ${cardStoreName}` : ""}
+                        </span>
                       </div>
 
                       {!card.is_free && creditsBalance < 1 ? (
@@ -205,7 +215,9 @@ function ScratchCardDetailPage() {
                           <Alert variant="destructive" className="text-left py-2 px-3">
                             <AlertCircle className="size-4" />
                             <AlertDescription className="text-[10px]">
-                              Você não tem raspadinhas liberadas. Envie seu cupom fiscal e aguarde a aprovação (a cada R$ 100 você libera 2 raspadinhas).
+                              {cardStoreName
+                                ? `A ${cardStoreName} precisa validar seu cupom fiscal antes de você raspar. Envie o cupom desta filial e aguarde a aprovação (a cada R$ 100 você libera 2 raspadinhas). Cada cupom vale uma única vez.`
+                                : "Você não tem raspadinhas liberadas. Envie seu cupom fiscal e aguarde a aprovação (a cada R$ 100 você libera 2 raspadinhas). Cada cupom vale uma única vez."}
                             </AlertDescription>
                           </Alert>
                           <Button asChild className="w-full h-14 font-black" variant="secondary">
@@ -368,6 +380,7 @@ function ScratchCardDetailPage() {
                 </p>
               </div>
 
+              {showPublicPrizes && (
               <div className="space-y-4">
                 <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                   <Gift className="size-4" />
@@ -388,6 +401,7 @@ function ScratchCardDetailPage() {
                   ))}
                 </div>
               </div>
+              )}
 
               <div className="space-y-4 pt-6 border-t border-border/50">
                 <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">

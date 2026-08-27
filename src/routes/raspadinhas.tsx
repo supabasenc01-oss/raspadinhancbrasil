@@ -16,6 +16,7 @@ import { activeScratchCardsQuery } from '@/lib/queries';
 import { ScratchCardTile } from '@/components/scratch/ScratchCardTile';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { storesQuery } from '@/lib/stores';
 
 export const Route = createFileRoute('/raspadinhas')({
   component: ScratchCardsCatalogPage,
@@ -23,10 +24,13 @@ export const Route = createFileRoute('/raspadinhas')({
 
 function ScratchCardsCatalogPage() {
   const { data: cards, isLoading } = useQuery(activeScratchCardsQuery);
+  const { data: stores } = useQuery(storesQuery);
   const [searchTerm, setSearchTerm] = useState('');
+  const [storeFilter, setStoreFilter] = useState('ALL');
 
-  const filteredCards = cards?.filter(card => 
-    card.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCards = cards?.filter(card =>
+    card.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (storeFilter === 'ALL' || (card as any).store_id === storeFilter)
   );
 
   return (
@@ -60,12 +64,27 @@ function ScratchCardsCatalogPage() {
           </div>
         </div>
 
-        {/* Categories Bar */}
+        {/* Filiais */}
         <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
-          <Button variant="default" size="sm" className="rounded-full px-6">Todas</Button>
-          <Button variant="outline" size="sm" className="rounded-full px-6 border-border/50">Grátis</Button>
-          <Button variant="outline" size="sm" className="rounded-full px-6 border-border/50">Mais Jogadas</Button>
-          <Button variant="outline" size="sm" className="rounded-full px-6 border-border/50">Grandes Prêmios</Button>
+          <Button
+            variant={storeFilter === 'ALL' ? 'default' : 'outline'}
+            size="sm"
+            className="rounded-full px-6"
+            onClick={() => setStoreFilter('ALL')}
+          >
+            Todas as filiais
+          </Button>
+          {(stores ?? []).map((store) => (
+            <Button
+              key={store.id}
+              variant={storeFilter === store.id ? 'default' : 'outline'}
+              size="sm"
+              className="rounded-full px-6 border-border/50"
+              onClick={() => setStoreFilter(store.id)}
+            >
+              {store.name}
+            </Button>
+          ))}
         </div>
 
         {isLoading ? (

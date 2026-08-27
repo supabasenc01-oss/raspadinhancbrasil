@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +20,7 @@ import {
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { storesQuery } from "@/lib/stores";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -51,6 +53,7 @@ const formSchema = z.object({
   price: z.number().min(0),
   is_free: z.boolean().default(false),
   status: z.enum(["ACTIVE", "DRAFT", "INACTIVE"]).default("DRAFT"),
+  store_id: z.string().optional().nullable(),
   featured: z.boolean().default(false),
   image_url: z.string().optional().nullable(),
   thumbnail_url: z.string().optional().nullable(),
@@ -75,6 +78,7 @@ const STEPS = [
 function NewScratchCardWizard() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
+  const { data: stores } = useQuery(storesQuery);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
@@ -85,6 +89,7 @@ function NewScratchCardWizard() {
       price: 0,
       is_free: false,
       status: "DRAFT",
+      store_id: "",
       featured: false,
       image_url: "",
       thumbnail_url: "",
@@ -177,6 +182,7 @@ function NewScratchCardWizard() {
           price: values.price,
           is_free: values.is_free,
           status: values.status as any,
+          store_id: values.store_id || null,
           image_url: values.image_url || null,
           thumbnail_url: values.thumbnail_url || null,
           scratch_image_url: values.scratch_image_url || null,
@@ -279,6 +285,34 @@ function NewScratchCardWizard() {
                       <FormControl>
                         <Textarea placeholder="Explique como o jogo funciona..." {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control as any}
+                  name="store_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Filial (loja)</FormLabel>
+                      <FormControl>
+                        <select
+                          className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                          value={field.value ?? ""}
+                          onChange={(event) => field.onChange(event.target.value)}
+                        >
+                          <option value="">Selecione a filial…</option>
+                          {(stores ?? []).map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.name}
+                            </option>
+                          ))}
+                        </select>
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">
+                        As raspadinhas só podem ser jogadas com cupons fiscais aprovados desta
+                        filial.
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}

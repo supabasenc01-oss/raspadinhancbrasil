@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { storesQuery, storeName } from "@/lib/stores";
 
 export const Route = createFileRoute("/_authenticated/cupons")({
   head: () => ({
@@ -47,6 +48,9 @@ function ReceiptsPage() {
   const [value, setValue] = useState("");
   const [purchaseDate, setPurchaseDate] = useState("");
   const [receiptNumber, setReceiptNumber] = useState("");
+  const [storeId, setStoreId] = useState("");
+
+  const { data: stores } = useQuery(storesQuery);
 
   const { data: settings } = useQuery({
     queryKey: ["settings", "receipts"],
@@ -65,17 +69,18 @@ function ReceiptsPage() {
   });
 
   const { data: credits } = useQuery({
-    queryKey: ["scratch-credits", user?.id],
+    queryKey: ["scratch-credits", "by-store", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("scratch_credits")
-        .select("balance")
-        .eq("user_id", user!.id)
-        .maybeSingle();
-      return data?.balance ?? 0;
+        .select("balance, store_id")
+        .eq("user_id", user!.id);
+      return (data ?? []) as { balance: number; store_id: string | null }[];
     },
   });
+
+  const totalCredits = (credits ?? []).reduce((sum, row) => sum + Number(row.balance ?? 0), 0);
 
   const { data: receipts, isLoading } = useQuery({
     queryKey: ["receipts", "mine", user?.id],
@@ -93,6 +98,8 @@ function ReceiptsPage() {
   const submit = useMutation({
     mutationFn: async () => {
       if (!file) throw new Error("Selecione a foto do cupom fiscal.");
+      if (!storeId) throw new Error("Selecione a filial onde você fez a compra.");
+      if (!receiptNumber.trim()) throw new Error("Informe o número do cupom fiscal.");
       if (!user?.id) throw new Error("Sessão expirada.");
       const parsedValue = Number(value.replace(",", "."));
       if (!parsedValue || parsedValue <= 0) throw new Error("Informe o valor total da compra.");
@@ -111,13 +118,14 @@ function ReceiptsPage() {
         store_name: store || null,
         purchase_value: parsedValue,
         purchase_date: purchaseDate || null,
-        receipt_number: receiptNumber || null,
+        receipt_number: receiptNumber.trim(),
+        store_id: storeId,
         status: "PENDING",
       });
       if (error) {
         throw new Error(
-          error.code === "23505" || error.message.includes("duplicate")
-            ? "Este cupom fiscal já foi enviado."
+          error.code === "23505" || error.code === "23514" || error.message.includes("duplicate") || error.message.includes("unique")
+            ? "Este cupom fiscal já foi utilizado. Cada cupom pode ser usado uma única vez, em qualquer filial."
             : error.message,
         );
       }
@@ -129,7 +137,9 @@ function ReceiptsPage() {
       setValue("");
       setPurchaseDate("");
       setReceiptNumber("");
+      setStoreId("");
       queryClient.invalidateQueries({ queryKey: ["receipts", "mine"] });
+      queryClient.invalidateQueries({ queryKey: ["scratch-credits"] });
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -165,7 +175,13 @@ function ReceiptsPage() {
               <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Raspadinhas liberadas
               </p>
-              <p className="text-2xl font-black">{credits ?? 0}</p>
+              <p className="text-2xl font-black">{totalCredits}</p>
+              <p className="text-[10px] text-muted-foreground">
+                {(credits ?? [])
+                  .filter((row) => Number(row.balance) > 0)
+                  .map((row) => `${storeName(stores, row.store_id)}: ${row.balance}`)
+                  .join(" · ") || "Nenhuma filial com raspadinhas liberadas"}
+              </p>
             </div>
           </div>
           <Button asChild variant="outline">
@@ -214,16 +230,26 @@ function ReceiptsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="receipt-store">Loja / unidade</Label>
-              <Input
+              <Label htmlFor="receipt-store">Filial onde comprou *</Label>
+              <select
                 id="receipt-store"
-                placeholder="Stock Atacarejo — unidade"
-                value={store}
-                onChange={(event) => setStore(event.target.value)}
-              />
+                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                value={storeId}
+                onChange={(event) => {
+                  setStoreId(event.target.value);
+                  setStore(storeName(stores, event.target.value));
+                }}
+              >
+                <option value="">Selecione a filial…</option>
+                {(stores ?? []).map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="receipt-number">Número do cupom</Label>
+              <Label htmlFor="receipt-number">Número do cupom *</Label>
               <Input
                 id="receipt-number"
                 placeholder="Ex: 000123456"
@@ -232,6 +258,12 @@ function ReceiptsPage() {
               />
             </div>
           </div>
+
+          <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
+            Cada cupom fiscal pode ser usado <strong>uma única vez</strong> — não é válido em outra
+            filial nem em outra raspadinha. As raspadinhas liberadas valem apenas para as
+            raspadinhas da filial informada.
+          </p>
 
           {estimated > 0 && (
             <p className="text-xs font-bold text-primary">

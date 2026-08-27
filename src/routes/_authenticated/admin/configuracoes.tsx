@@ -16,7 +16,11 @@ import {
   Loader2,
   Sparkles,
   Palette,
-  KeyRound
+  KeyRound,
+  Store as StoreIcon,
+  Plus,
+  Trash2,
+  Receipt
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -32,6 +36,7 @@ import { callEdgeFunction } from "@/lib/edge-functions";
 import { uploadPlatformFile } from "@/lib/storage";
 import { useFileUrl } from "@/hooks/useFileUrl";
 import { supabase } from "@/integrations/supabase/client";
+import { storesQuery } from "@/lib/stores";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -117,16 +122,39 @@ function AdminSettingsPage() {
     },
   });
 
+  const receiptsConfig = (() => {
+    try {
+      const parsed = JSON.parse(values["receipts"] || "{}");
+      return typeof parsed === "object" && parsed && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {} as Record<string, unknown>;
+    }
+  })() as Record<string, any>;
+
+  const updateReceiptsConfig = (key: string, value: unknown) => {
+    const next = { ...receiptsConfig, [key]: value };
+    setValues((prev) => ({ ...prev, receipts: JSON.stringify(next) }));
+  };
+
   const handleChange = (key: string, value: string) => {
     setValues(prev => ({ ...prev, [key]: value }));
   };
 
   const handleSave = () => {
     // Stringify simple values for JSONB storage
-    const data = Object.entries(values).map(([key, value]) => ({ 
-      key, 
-      value: JSON.stringify(value) 
-    }));
+    const data = Object.entries(values).map(([key, value]) => {
+      const trimmed = (value ?? "").trim();
+      // Configurações que já são JSON (objetos/arrays) são salvas sem re-encapsular em string.
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        try {
+          JSON.parse(trimmed);
+          return { key, value: trimmed };
+        } catch {
+          // valor inválido, salva como texto
+        }
+      }
+      return { key, value: JSON.stringify(value) };
+    });
     mutation.mutate(data);
   };
 
@@ -236,6 +264,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
           <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
           <TabsTrigger value="colors" className="gap-2"><Palette className="size-4" /> Cores & Identidade</TabsTrigger>
+          <TabsTrigger value="stores" className="gap-2"><StoreIcon className="size-4" /> Filiais & Cupons</TabsTrigger>
           <TabsTrigger value="account" className="gap-2"><KeyRound className="size-4" /> Conta</TabsTrigger>
         </TabsList>
 
@@ -573,6 +602,7 @@ function AdminSettingsPage() {
                 { key: "show_app_download", label: "Faixa superior promocional (Créditos extras / App)" },
                 { key: "show_floating_bubbles", label: "Balões de notificação de participação (canto da tela)" },
                 { key: "show_demo_highlights", label: "Destaques da demonstração (Prêmios VIP / Pagamento Express)" },
+                { key: "show_public_prizes", label: "Mostrar lista de prêmios disponíveis para o usuário" },
               ].map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
                   <div className="space-y-0.5">
@@ -763,6 +793,66 @@ function AdminSettingsPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="stores">
+          <StoresManager />
+
+          <Card className="mt-6 bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Receipt className="size-4" /> Regra de liberação por cupom fiscal
+              </CardTitle>
+              <CardDescription>
+                Defina quantas raspadinhas o cliente libera por valor gasto. A liberação continua
+                dependendo da aprovação manual do cupom pela filial.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="receipt_step">Valor da faixa (R$)</Label>
+                <Input
+                  id="receipt_step"
+                  type="number"
+                  min="1"
+                  value={receiptsConfig["valuePerCredit"] ?? 100}
+                  onChange={(e) => updateReceiptsConfig("valuePerCredit", Number(e.target.value) || 1)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="receipt_per_step">Raspadinhas por faixa</Label>
+                <Input
+                  id="receipt_per_step"
+                  type="number"
+                  min="1"
+                  value={receiptsConfig["creditsPerStep"] ?? 2}
+                  onChange={(e) => updateReceiptsConfig("creditsPerStep", Number(e.target.value) || 1)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="receipt_max">Limite por cupom</Label>
+                <Input
+                  id="receipt_max"
+                  type="number"
+                  min="1"
+                  value={receiptsConfig["maxCreditsPerReceipt"] ?? 50}
+                  onChange={(e) => updateReceiptsConfig("maxCreditsPerReceipt", Number(e.target.value) || 1)}
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-3">
+                <Label htmlFor="receipt_instructions">Instruções exibidas ao cliente</Label>
+                <Textarea
+                  id="receipt_instructions"
+                  value={receiptsConfig["instructions"] ?? ""}
+                  onChange={(e) => updateReceiptsConfig("instructions", e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Cada cupom fiscal só pode ser usado uma única vez, em qualquer filial — essa
+                  validação é feita automaticamente pelo sistema.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="account">
           <Card className="bg-surface border-border/50">
             <CardHeader>
@@ -841,5 +931,170 @@ function FaviconPreview({ url, onRemove }: { url: string; onRemove: () => void }
         Substituir
       </button>
     </>
+  );
+}
+
+function StoresManager() {
+  const queryClient = useQueryClient();
+  const { data: stores, isLoading } = useQuery(storesQuery);
+  const [drafts, setDrafts] = useState<Record<string, { name: string; code: string }>>({});
+  const [newStore, setNewStore] = useState({ name: "", code: "" });
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["stores"] });
+
+  const saveStore = useMutation({
+    mutationFn: async (payload: { id: string; name: string; code: string }) => {
+      const { error } = await supabase
+        .from("stores")
+        .update({ name: payload.name.trim(), code: payload.code.trim() })
+        .eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filial atualizada!");
+      invalidate();
+    },
+    onError: (error: any) => toast.error(error.message || "Erro ao salvar filial"),
+  });
+
+  const toggleStore = useMutation({
+    mutationFn: async (payload: { id: string; is_active: boolean }) => {
+      const { error } = await supabase
+        .from("stores")
+        .update({ is_active: payload.is_active })
+        .eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+    onError: (error: any) => toast.error(error.message || "Erro ao atualizar filial"),
+  });
+
+  const createStore = useMutation({
+    mutationFn: async () => {
+      if (!newStore.name.trim() || !newStore.code.trim()) {
+        throw new Error("Informe nome e código da filial.");
+      }
+      const { error } = await supabase.from("stores").insert({
+        name: newStore.name.trim(),
+        code: newStore.code.trim(),
+        sort_order: (stores?.length ?? 0) + 1,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filial criada!");
+      setNewStore({ name: "", code: "" });
+      invalidate();
+    },
+    onError: (error: any) => toast.error(error.message || "Erro ao criar filial"),
+  });
+
+  const removeStore = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("stores").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filial removida.");
+      invalidate();
+    },
+    onError: () =>
+      toast.error("Não foi possível remover — desative a filial se ela já possui cupons ou raspadinhas."),
+  });
+
+  return (
+    <Card className="bg-surface border-border/50">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <StoreIcon className="size-4" /> Filiais
+        </CardTitle>
+        <CardDescription>
+          Cada raspadinha e cada cupom fiscal pertence a uma filial. Os créditos liberados valem
+          somente na filial do cupom aprovado.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isLoading ? (
+          <div className="h-24 animate-pulse rounded-xl bg-muted/20" />
+        ) : (
+          (stores ?? []).map((store) => {
+            const draft = drafts[store.id] ?? { name: store.name, code: store.code };
+            return (
+              <div
+                key={store.id}
+                className="grid gap-3 rounded-xl border border-border/50 p-4 sm:grid-cols-[1fr_140px_auto_auto_auto] sm:items-end"
+              >
+                <div className="space-y-1">
+                  <Label htmlFor={`store_name_${store.id}`}>Nome da filial</Label>
+                  <Input
+                    id={`store_name_${store.id}`}
+                    value={draft.name}
+                    onChange={(e) =>
+                      setDrafts((prev) => ({ ...prev, [store.id]: { ...draft, name: e.target.value } }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor={`store_code_${store.id}`}>Código</Label>
+                  <Input
+                    id={`store_code_${store.id}`}
+                    value={draft.code}
+                    onChange={(e) =>
+                      setDrafts((prev) => ({ ...prev, [store.id]: { ...draft, code: e.target.value } }))
+                    }
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => saveStore.mutate({ id: store.id, ...draft })}
+                  disabled={saveStore.isPending}
+                >
+                  <Save className="mr-2 size-4" /> Salvar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toggleStore.mutate({ id: store.id, is_active: !store.is_active })}
+                >
+                  {store.is_active ? "Desativar" : "Ativar"}
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="border-red-500/40 text-red-500"
+                  onClick={() => removeStore.mutate(store.id)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            );
+          })
+        )}
+
+        <div className="grid gap-3 rounded-xl border border-dashed border-border p-4 sm:grid-cols-[1fr_140px_auto] sm:items-end">
+          <div className="space-y-1">
+            <Label htmlFor="new_store_name">Nova filial</Label>
+            <Input
+              id="new_store_name"
+              placeholder="Ex: Stock Atacarejo — Centro"
+              value={newStore.name}
+              onChange={(e) => setNewStore((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="new_store_code">Código</Label>
+            <Input
+              id="new_store_code"
+              placeholder="LOJA-D"
+              value={newStore.code}
+              onChange={(e) => setNewStore((prev) => ({ ...prev, code: e.target.value }))}
+            />
+          </div>
+          <Button onClick={() => createStore.mutate()} disabled={createStore.isPending}>
+            <Plus className="mr-2 size-4" /> Adicionar
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

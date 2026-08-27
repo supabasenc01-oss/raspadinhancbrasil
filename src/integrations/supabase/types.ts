@@ -266,6 +266,7 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
+          store_id: string | null
           store_name: string | null
           updated_at: string
           user_id: string
@@ -282,6 +283,7 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          store_id?: string | null
           store_name?: string | null
           updated_at?: string
           user_id: string
@@ -298,11 +300,20 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          store_id?: string | null
           store_name?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "receipts_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       roles: {
         Row: {
@@ -405,6 +416,7 @@ export type Database = {
           slug: string
           starts_at: string | null
           status: Database["public"]["Enums"]["scratch_card_status"]
+          store_id: string | null
           thumbnail_url: string | null
           updated_at: string
         }
@@ -425,6 +437,7 @@ export type Database = {
           slug: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
+          store_id?: string | null
           thumbnail_url?: string | null
           updated_at?: string
         }
@@ -445,31 +458,51 @@ export type Database = {
           slug?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["scratch_card_status"]
+          store_id?: string | null
           thumbnail_url?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "scratch_cards_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scratch_credits: {
         Row: {
           balance: number
           created_at: string
+          store_id: string
           updated_at: string
           user_id: string
         }
         Insert: {
           balance?: number
           created_at?: string
+          store_id: string
           updated_at?: string
           user_id: string
         }
         Update: {
           balance?: number
           created_at?: string
+          store_id?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "scratch_credits_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scratch_plays: {
         Row: {
@@ -514,6 +547,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stores: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       system_settings: {
         Row: {
