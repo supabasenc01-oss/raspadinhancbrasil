@@ -86,5 +86,6 @@ export function useSettings() {
     appBannerText: getSetting("app_banner_text", ""),
     appBannerCta: getSetting("app_banner_cta", "Baixar"),
     appBannerLink: getSetting("app_banner_link", ""),
+    showPublicPrizes: getSetting("show_public_prizes", "true") === "true",
   };
 }

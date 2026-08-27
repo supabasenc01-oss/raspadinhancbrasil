@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Clock, Receipt, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -9,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { storesQuery, storeName } from "@/lib/stores";
 
 export const Route = createFileRoute("/cadastro")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => {
@@ -45,9 +47,11 @@ function SignUpPage() {
     password: "",
     receiptNumber: "",
     storeName: "",
+    storeId: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [awaitingReview, setAwaitingReview] = useState(false);
+  const { data: stores } = useQuery(storesQuery);
 
   function update(field: keyof typeof form, value: string) {
     setForm((previous) => ({ ...previous, [field]: value }));
@@ -59,8 +63,8 @@ function SignUpPage() {
       toast.error("A senha deve ter pelo menos 8 caracteres.");
       return;
     }
-    if (!form.receiptNumber.trim() || !form.storeName.trim()) {
-      toast.error("Informe o número do cupom fiscal e a loja onde você comprou.");
+    if (!form.receiptNumber.trim() || !form.storeId) {
+      toast.error("Informe o número do cupom fiscal e selecione a filial onde você comprou.");
       return;
     }
     setSubmitting(true);
@@ -88,15 +92,19 @@ function SignUpPage() {
       const { error: receiptError } = await supabase.from("receipts").insert({
         user_id: user.id,
         image_url: "PENDENTE_CADASTRO",
-        store_name: form.storeName.trim(),
+        store_name: storeName(stores, form.storeId),
+        store_id: form.storeId,
         receipt_number: form.receiptNumber.trim(),
         purchase_value: 0,
         status: "PENDING",
       });
       if (receiptError) {
         toast.error("Conta criada, mas não registramos o cupom fiscal", {
-          description: receiptError.message.includes("duplicate")
-            ? "Este número de cupom fiscal já foi cadastrado."
+          description:
+            receiptError.code === "23505" ||
+            receiptError.message.includes("duplicate") ||
+            receiptError.message.includes("unique")
+            ? "Este cupom fiscal já foi utilizado — cada cupom vale uma única vez, em qualquer filial."
             : receiptError.message,
         });
       }
@@ -206,15 +214,24 @@ function SignUpPage() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="storeName">Loja onde você comprou *</Label>
-          <Input
+          <Label htmlFor="storeName">Filial onde você comprou *</Label>
+          <select
             id="storeName"
             required
-            maxLength={120}
-            value={form.storeName}
-            onChange={(event) => update("storeName", event.target.value)}
-            placeholder="Ex: Stock Atacarejo — Centro"
-          />
+            className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+            value={form.storeId}
+            onChange={(event) => {
+              update("storeId", event.target.value);
+              update("storeName", storeName(stores, event.target.value));
+            }}
+          >
+            <option value="">Selecione a filial…</option>
+            {(stores ?? []).map((store) => (
+              <option key={store.id} value={store.id}>
+                {store.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Senha</Label>
@@ -231,8 +248,9 @@ function SignUpPage() {
         </div>
 
         <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
-          O valor do seu cupom fiscal será conferido pela nossa equipe no painel antes da liberação
-          das raspadinhas.
+          O valor do seu cupom fiscal será conferido pela filial escolhida antes da liberação das
+          raspadinhas. Cada cupom fiscal pode ser usado uma única vez, e não é válido em outra
+          filial.
         </p>
 
         <Button

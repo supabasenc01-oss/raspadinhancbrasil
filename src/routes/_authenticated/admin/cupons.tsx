@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { resolveFileUrl } from "@/lib/storage";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { storesQuery, storeName } from "@/lib/stores";
 
 export const Route = createFileRoute("/_authenticated/admin/cupons")({
   head: () => ({
@@ -43,6 +44,7 @@ type ReceiptRow = {
   receipt_number: string | null;
   status: string;
   credits_granted: number;
+  store_id: string | null;
   review_notes: string | null;
   created_at: string;
 };
@@ -61,6 +63,9 @@ function AdminReceiptsPage() {
   const [notes, setNotes] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [storeFilter, setStoreFilter] = useState("ALL");
+
+  const { data: stores } = useQuery(storesQuery);
 
   const { data: receipts, isLoading } = useQuery({
     queryKey: ["admin", "receipts"],
@@ -96,6 +101,10 @@ function AdminReceiptsPage() {
     setNotes("");
     resolveFileUrl(selected.image_url).then(setImageUrl);
   }, [selected, perCredit]);
+
+  const visibleReceipts = (receipts ?? []).filter(
+    (receipt) => storeFilter === "ALL" || receipt.store_id === storeFilter,
+  );
 
   const suggestedCredits = Math.max(
     0,
@@ -140,6 +149,29 @@ function AdminReceiptsPage() {
       title="Cupons fiscais"
       description="Analise as fotos enviadas e libere manualmente as raspadinhas de cada usuário."
     >
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          Filial
+        </span>
+        <Button
+          size="sm"
+          variant={storeFilter === "ALL" ? "default" : "outline"}
+          onClick={() => setStoreFilter("ALL")}
+        >
+          Todas
+        </Button>
+        {(stores ?? []).map((store) => (
+          <Button
+            key={store.id}
+            size="sm"
+            variant={storeFilter === store.id ? "default" : "outline"}
+            onClick={() => setStoreFilter(store.id)}
+          >
+            {store.name}
+          </Button>
+        ))}
+      </div>
+
       <div className="surface-card overflow-hidden">
         <Table>
           <TableHeader>
@@ -159,8 +191,8 @@ function AdminReceiptsPage() {
                   <TableCell colSpan={6} className="h-16 animate-pulse bg-muted/20" />
                 </TableRow>
               ))
-            ) : receipts && receipts.length > 0 ? (
-              receipts.map((receipt) => (
+            ) : visibleReceipts.length > 0 ? (
+              visibleReceipts.map((receipt) => (
                 <TableRow key={receipt.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -176,7 +208,7 @@ function AdminReceiptsPage() {
                     {formatCurrency(receipt.purchase_value)}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    {receipt.store_name || "—"}
+                    {receipt.store_id ? storeName(stores, receipt.store_id) : receipt.store_name || "—"}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {formatDate(receipt.created_at)}
@@ -228,8 +260,10 @@ function AdminReceiptsPage() {
                   <strong>{selected.receipt_number ?? "—"}</strong>
                 </p>
                 <p>
-                  <span className="text-muted-foreground">Loja: </span>
-                  <strong>{selected.store_name ?? "—"}</strong>
+                  <span className="text-muted-foreground">Filial: </span>
+                  <strong>
+                    {selected.store_id ? storeName(stores, selected.store_id) : selected.store_name ?? "—"}
+                  </strong>
                 </p>
               </div>
 
@@ -279,7 +313,8 @@ function AdminReceiptsPage() {
                       onChange={(event) => setCredits(event.target.value)}
                     />
                     <p className="text-[10px] text-muted-foreground">
-                      Regra atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
+                      As raspadinhas liberadas valem apenas para as raspadinhas desta filial. Regra
+                      atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
                     </p>
                   </div>
                   <div className="space-y-2">

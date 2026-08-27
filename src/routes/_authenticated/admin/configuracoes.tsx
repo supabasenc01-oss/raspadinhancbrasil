@@ -16,7 +16,11 @@ import {
   Loader2,
   Sparkles,
   Palette,
-  KeyRound
+  KeyRound,
+  Store as StoreIcon,
+  Plus,
+  Trash2,
+  Receipt
 } from "lucide-react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -32,6 +36,7 @@ import { callEdgeFunction } from "@/lib/edge-functions";
 import { uploadPlatformFile } from "@/lib/storage";
 import { useFileUrl } from "@/hooks/useFileUrl";
 import { supabase } from "@/integrations/supabase/client";
+import { storesQuery } from "@/lib/stores";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -117,16 +122,39 @@ function AdminSettingsPage() {
     },
   });
 
+  const receiptsConfig = (() => {
+    try {
+      const parsed = JSON.parse(values["receipts"] || "{}");
+      return typeof parsed === "object" && parsed && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {} as Record<string, unknown>;
+    }
+  })() as Record<string, any>;
+
+  const updateReceiptsConfig = (key: string, value: unknown) => {
+    const next = { ...receiptsConfig, [key]: value };
+    setValues((prev) => ({ ...prev, receipts: JSON.stringify(next) }));
+  };
+
   const handleChange = (key: string, value: string) => {
     setValues(prev => ({ ...prev, [key]: value }));
   };
 
   const handleSave = () => {
     // Stringify simple values for JSONB storage
-    const data = Object.entries(values).map(([key, value]) => ({ 
-      key, 
-      value: JSON.stringify(value) 
-    }));
+    const data = Object.entries(values).map(([key, value]) => {
+      const trimmed = (value ?? "").trim();
+      // Configurações que já são JSON (objetos/arrays) são salvas sem re-encapsular em string.
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        try {
+          JSON.parse(trimmed);
+          return { key, value: trimmed };
+        } catch {
+          // valor inválido, salva como texto
+        }
+      }
+      return { key, value: JSON.stringify(value) };
+    });
     mutation.mutate(data);
   };
 
@@ -236,6 +264,7 @@ function AdminSettingsPage() {
           <TabsTrigger value="layout" className="gap-2"><Layout className="size-4" /> Layout Home</TabsTrigger>
           <TabsTrigger value="scratch" className="gap-2"><Sparkles className="size-4" /> Raspagem</TabsTrigger>
           <TabsTrigger value="colors" className="gap-2"><Palette className="size-4" /> Cores & Identidade</TabsTrigger>
+          <TabsTrigger value="stores" className="gap-2"><StoreIcon className="size-4" /> Filiais & Cupons</TabsTrigger>
           <TabsTrigger value="account" className="gap-2"><KeyRound className="size-4" /> Conta</TabsTrigger>
         </TabsList>
 
@@ -573,6 +602,7 @@ function AdminSettingsPage() {
                 { key: "show_app_download", label: "Faixa superior promocional (Créditos extras / App)" },
                 { key: "show_floating_bubbles", label: "Balões de notificação de participação (canto da tela)" },
                 { key: "show_demo_highlights", label: "Destaques da demonstração (Prêmios VIP / Pagamento Express)" },
+                { key: "show_public_prizes", label: "Mostrar lista de prêmios disponíveis para o usuário" },
               ].map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
                   <div className="space-y-0.5">
@@ -758,6 +788,66 @@ function AdminSettingsPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="stores">
+          <StoresManager />
+
+          <Card className="mt-6 bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Receipt className="size-4" /> Regra de liberação por cupom fiscal
+              </CardTitle>
+              <CardDescription>
+                Defina quantas raspadinhas o cliente libera por valor gasto. A liberação continua
+                dependendo da aprovação manual do cupom pela filial.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="receipt_step">Valor da faixa (R$)</Label>
+                <Input
+                  id="receipt_step"
+                  type="number"
+                  min="1"
+                  value={receiptsConfig["valuePerCredit"] ?? 100}
+                  onChange={(e) => updateReceiptsConfig("valuePerCredit", Number(e.target.value) || 1)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="receipt_per_step">Raspadinhas por faixa</Label>
+                <Input
+                  id="receipt_per_step"
+                  type="number"
+                  min="1"
+                  value={receiptsConfig["creditsPerStep"] ?? 2}
+                  onChange={(e) => updateReceiptsConfig("creditsPerStep", Number(e.target.value) || 1)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="receipt_max">Limite por cupom</Label>
+                <Input
+                  id="receipt_max"
+                  type="number"
+                  min="1"
+                  value={receiptsConfig["maxCreditsPerReceipt"] ?? 50}
+                  onChange={(e) => updateReceiptsConfig("maxCreditsPerReceipt", Number(e.target.value) || 1)}
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-3">
+                <Label htmlFor="receipt_instructions">Instruções exibidas ao cliente</Label>
+                <Textarea
+                  id="receipt_instructions"
+                  value={receiptsConfig["instructions"] ?? ""}
+                  onChange={(e) => updateReceiptsConfig("instructions", e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Cada cupom fiscal só pode ser usado uma única vez, em qualquer filial — essa
+                  validação é feita automaticamente pelo sistema.
+                </p>
               </div>
             </CardContent>
           </Card>
