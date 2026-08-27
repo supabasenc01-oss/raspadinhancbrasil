@@ -326,12 +326,24 @@ function EditScratchCardPage() {
           <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Prêmios e probabilidades</CardTitle>
-              <CardDescription>Probabilidade total: {(totalProbability * 100).toFixed(2)}% • Preço atual: {formatCurrency(form.price)}</CardDescription>
+              <CardDescription>
+                {form.prizes.length} prêmio(s) • Probabilidade total: {(totalProbability * 100).toFixed(2)}%
+                {totalProbability > 1 ? " (acima de 100%, ajuste antes de salvar)" : ""}
+              </CardDescription>
             </div>
-            <Button type="button" variant="outline" onClick={() => updateForm("prizes", [...form.prizes, emptyPrize(form.prizes.length + 1)])}>
-              <Plus className="mr-2 size-4" /> Adicionar prêmio
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={() => addPrizes(1)}>
+                <Plus className="mr-2 size-4" /> Adicionar prêmio
+              </Button>
+              <Button type="button" variant="outline" onClick={() => addPrizes(10)}>
+                <Plus className="mr-2 size-4" /> +10 prêmios
+              </Button>
+              <Button type="button" variant="secondary" onClick={distributeProbabilities}>
+                Distribuir probabilidades
+              </Button>
+            </div>
           </CardHeader>
+
           <CardContent className="space-y-4">
             {form.prizes.map((prize, index) => (
               <div key={prize.id ?? `new-${index}`} className="rounded-xl border border-border/60 bg-background/40 p-4">
