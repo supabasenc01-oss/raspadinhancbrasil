@@ -766,6 +766,52 @@ function AdminSettingsPage() {
                 </div>
                 
                 <div className="space-y-4">
+                  <Label>Imagem padrão revelada</Label>
+                  <div className="flex flex-col gap-4">
+                    <div className="aspect-video w-full rounded-2xl bg-muted/50 border-2 border-dashed border-border flex flex-col items-center justify-center p-4 relative overflow-hidden group">
+                      {values["default_reveal_bg_url"] ? (
+                        <LogoPreview url={values["default_reveal_bg_url"]} onRemove={() => handleChange("default_reveal_bg_url", "")} />
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <ImageIcon className="size-8" />
+                          <span className="text-center text-xs">Usada quando o prêmio não tem imagem</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={values["default_reveal_bg_url"] || ""}
+                        onChange={(e) => handleChange("default_reveal_bg_url", e.target.value)}
+                        placeholder="URL da imagem padrão de fundo"
+                        className="flex-1"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-10 relative"
+                        disabled={isUploading === 'default_reveal_bg_url'}
+                      >
+                        {isUploading === 'default_reveal_bg_url' ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <Upload className="size-4" />
+                        )}
+                        <input
+                          type="file"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(e, 'default_reveal_bg_url')}
+                          disabled={isUploading === 'default_reveal_bg_url'}
+                        />
+                      </Button>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      Aparece atrás da raspagem quando a raspadinha ou o prêmio não tem imagem própria.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
                   <div className="grid gap-2">
                     <Label htmlFor="scratch_threshold">Limiar de Revelação (%)</Label>
                     <div className="flex items-center gap-4">
