@@ -199,17 +199,35 @@ function EditScratchCardPage() {
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "scratch-cards"] });
-      queryClient.invalidateQueries({ queryKey: ["admin", "scratch-card", id] });
       queryClient.invalidateQueries({ queryKey: ["scratch-cards"] });
       toast.success("Raspadinha atualizada com sucesso!");
-      navigate({ to: "/admin/raspadinhas" });
+      // Recarrega os prêmios (com os novos ids) mantendo o admin na tela de edição.
+      setLoadedId(null);
+      await queryClient.invalidateQueries({ queryKey: ["admin", "scratch-card", id] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Não foi possível salvar a raspadinha.");
     },
   });
+
+  if (error) {
+    return (
+      <AdminShell title="Editar Raspadinha">
+        <div className="surface-card space-y-4 p-6 text-center">
+          <p className="font-bold">Não foi possível abrir esta raspadinha</p>
+          <p className="text-sm text-muted-foreground">{(error as Error).message}</p>
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => refetch()} disabled={isFetching}>
+              Tentar novamente
+            </Button>
+            <Button onClick={() => navigate({ to: "/admin/raspadinhas" })}>Voltar</Button>
+          </div>
+        </div>
+      </AdminShell>
+    );
+  }
 
   if (isLoading || !form) {
     return (
@@ -218,6 +236,7 @@ function EditScratchCardPage() {
       </AdminShell>
     );
   }
+
 
   const totalProbability = form.prizes.reduce((total, prize) => total + safeNumber(prize.probability), 0);
 
