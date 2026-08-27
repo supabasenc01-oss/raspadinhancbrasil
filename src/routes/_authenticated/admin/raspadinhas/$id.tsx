@@ -406,6 +406,23 @@ function EditScratchCardPage() {
     setForm((current) => current ? { ...current, [key]: value } : current);
   }
 
+  function addPrizes(amount: number) {
+    setForm((current) => {
+      if (!current) return current;
+      const extras = Array.from({ length: amount }, (_, offset) => emptyPrize(current.prizes.length + offset + 1));
+      return { ...current, prizes: [...current.prizes, ...extras] };
+    });
+  }
+
+  function distributeProbabilities() {
+    setForm((current) => {
+      if (!current || current.prizes.length === 0) return current;
+      const share = Number((1 / current.prizes.length).toFixed(4));
+      return { ...current, prizes: current.prizes.map((prize) => ({ ...prize, probability: share })) };
+    });
+  }
+
+
   function updatePrize<Key extends keyof PrizeForm>(index: number, key: Key, value: PrizeForm[Key]) {
     setForm((current) => {
       if (!current) return current;
