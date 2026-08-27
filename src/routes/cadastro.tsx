@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Clock, Receipt, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { AuthCard } from "@/components/layout/AuthCard";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/cadastro")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => {
@@ -16,13 +18,19 @@ export const Route = createFileRoute("/cadastro")({
   },
   head: () => ({
     meta: [
-      { title: "Criar conta — RaspaPremium" },
+      { title: "Criar conta — Stock Atacarejo Raspadinhas" },
       {
         name: "description",
-        content: "Crie sua conta gratuita na RaspaPremium e acompanhe suas raspadinhas.",
+        content:
+          "Cadastre-se informando o número do cupom fiscal e a loja onde comprou para liberar suas raspadinhas.",
       },
-      { property: "og:title", content: "Criar conta — RaspaPremium" },
-      { property: "og:description", content: "Crie sua conta gratuita na RaspaPremium." },
+      { property: "og:title", content: "Criar conta — Stock Atacarejo Raspadinhas" },
+      {
+        property: "og:description",
+        content: "Cadastre-se com seu cupom fiscal e aguarde a liberação das raspadinhas.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SignUpPage,
@@ -30,10 +38,16 @@ export const Route = createFileRoute("/cadastro")({
 
 function SignUpPage() {
   const { signUp, signInWithGoogle } = useAuth();
-  const navigate = useNavigate();
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", password: "" });
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    receiptNumber: "",
+    storeName: "",
+  });
   const [submitting, setSubmitting] = useState(false);
-  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [awaitingReview, setAwaitingReview] = useState(false);
 
   function update(field: keyof typeof form, value: string) {
     setForm((previous) => ({ ...previous, [field]: value }));
@@ -45,6 +59,10 @@ function SignUpPage() {
       toast.error("A senha deve ter pelo menos 8 caracteres.");
       return;
     }
+    if (!form.receiptNumber.trim() || !form.storeName.trim()) {
+      toast.error("Informe o número do cupom fiscal e a loja onde você comprou.");
+      return;
+    }
     setSubmitting(true);
     const { error } = await signUp({
       email: form.email.trim(),
@@ -52,9 +70,9 @@ function SignUpPage() {
       fullName: form.fullName.trim(),
       phone: form.phone.trim(),
     });
-    setSubmitting(false);
 
     if (error) {
+      setSubmitting(false);
       const message = error.toLowerCase().includes("user already registered")
         ? "Este e-mail já está cadastrado."
         : error;
@@ -62,15 +80,78 @@ function SignUpPage() {
       return;
     }
 
-    toast.success("Conta criada com sucesso!");
-    const search = Route.useSearch() as { redirect?: string };
-    navigate({ to: search.redirect || "/dashboard", replace: true });
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { error: receiptError } = await supabase.from("receipts").insert({
+        user_id: user.id,
+        image_url: "PENDENTE_CADASTRO",
+        store_name: form.storeName.trim(),
+        receipt_number: form.receiptNumber.trim(),
+        purchase_value: 0,
+        status: "PENDING",
+      });
+      if (receiptError) {
+        toast.error("Conta criada, mas não registramos o cupom fiscal", {
+          description: receiptError.message.includes("duplicate")
+            ? "Este número de cupom fiscal já foi cadastrado."
+            : receiptError.message,
+        });
+      }
+    }
+
+    setSubmitting(false);
+    setAwaitingReview(true);
+  }
+
+  if (awaitingReview) {
+    return (
+      <AuthCard
+        title="Cadastro enviado para análise"
+        description="Seu cupom fiscal precisa ser verificado pela nossa equipe."
+      >
+        <div className="space-y-6 text-center">
+          <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <Clock className="size-8" />
+          </div>
+          <h2 className="text-2xl font-display font-black leading-tight">
+            AGUARDE A LIBERAÇÃO DO SEU CUPOM FISCAL
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Recebemos o cupom <strong>{form.receiptNumber}</strong> da loja{" "}
+            <strong>{form.storeName}</strong>. Nossa equipe vai conferir o valor da compra no painel
+            e liberar suas raspadinhas. Você poderá raspar somente após essa verificação.
+          </p>
+          <div className="space-y-3 rounded-xl border border-border bg-surface p-4 text-left text-xs text-muted-foreground">
+            <p className="flex items-start gap-2">
+              <Receipt className="mt-0.5 size-4 shrink-0 text-primary" />
+              Guarde o cupom fiscal original — ele pode ser solicitado na conferência.
+            </p>
+            <p className="flex items-start gap-2">
+              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+              Assim que o valor for confirmado, as raspadinhas aparecem na sua conta
+              automaticamente.
+            </p>
+          </div>
+          <div className="grid gap-2">
+            <Button asChild className="w-full bg-gradient-brand text-primary-foreground">
+              <Link to="/cupons">Acompanhar meu cupom fiscal</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/">Voltar para o início</Link>
+            </Button>
+          </div>
+        </div>
+      </AuthCard>
+    );
   }
 
   return (
     <AuthCard
       title="Criar sua conta"
-      description="Leva menos de um minuto. Você poderá completar seu perfil depois."
+      description="Informe seus dados e o cupom fiscal da sua compra para pré-aprovação."
       footer={
         <>
           Já tem conta?{" "}
@@ -114,6 +195,28 @@ function SignUpPage() {
           />
         </div>
         <div className="space-y-2">
+          <Label htmlFor="receiptNumber">Número do cupom fiscal *</Label>
+          <Input
+            id="receiptNumber"
+            required
+            maxLength={60}
+            value={form.receiptNumber}
+            onChange={(event) => update("receiptNumber", event.target.value)}
+            placeholder="Ex: 000123456"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="storeName">Loja onde você comprou *</Label>
+          <Input
+            id="storeName"
+            required
+            maxLength={120}
+            value={form.storeName}
+            onChange={(event) => update("storeName", event.target.value)}
+            placeholder="Ex: Stock Atacarejo — Centro"
+          />
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="password">Senha</Label>
           <Input
             id="password"
@@ -126,6 +229,20 @@ function SignUpPage() {
             placeholder="Mínimo de 8 caracteres"
           />
         </div>
+
+        <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
+          O valor do seu cupom fiscal será conferido pela nossa equipe no painel antes da liberação
+          das raspadinhas.
+        </p>
+
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="w-full bg-gradient-brand text-primary-foreground"
+        >
+          {submitting ? "Criando conta..." : "Criar conta e enviar cupom"}
+        </Button>
+
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-border" />
@@ -162,13 +279,6 @@ function SignUpPage() {
           Google
         </Button>
 
-        <Button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-gradient-brand text-primary-foreground"
-        >
-          {submitting ? "Criando conta..." : "Criar conta"}
-        </Button>
         <p className="text-xs text-muted-foreground">
           Ao continuar você concorda com os{" "}
           <Link to="/termos" className="text-primary hover:underline">
