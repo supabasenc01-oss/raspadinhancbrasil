@@ -418,7 +418,21 @@ function EditScratchCardPage() {
     });
   }
 
+  function restockPrizes() {
+    setForm((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        prizes: current.prizes.map((prize) => ({
+          ...prize,
+          quantity_remaining: Math.max(1, Math.round(safeNumber(prize.quantity_total))),
+        })),
+      };
+    });
+  }
+
   function distributeProbabilities() {
+
     setForm((current) => {
       if (!current || current.prizes.length === 0) return current;
       const share = Number((1 / current.prizes.length).toFixed(4));
