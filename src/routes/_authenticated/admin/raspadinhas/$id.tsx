@@ -382,8 +382,20 @@ function EditScratchCardPage() {
                   <Field label="Valor" htmlFor={`prize_value_${index}`}>
                     <Input id={`prize_value_${index}`} type="number" min="0" step="0.01" value={prize.value} onChange={(event) => updatePrize(index, "value", toNumber(event.target.value))} />
                   </Field>
-                  <Field label="Prob. 0 a 1" htmlFor={`prize_probability_${index}`}>
-                    <Input id={`prize_probability_${index}`} type="number" min="0" max="1" step="0.0001" value={prize.probability} onChange={(event) => updatePrize(index, "probability", toNumber(event.target.value))} />
+                  <Field label="Chance de ganhar (%)" htmlFor={`prize_probability_${index}`}>
+                    <div className="relative">
+                      <Input
+                        id={`prize_probability_${index}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        className="pr-8"
+                        value={Number((safeNumber(prize.probability) * 100).toFixed(2))}
+                        onChange={(event) => updatePrize(index, "probability", toNumber(event.target.value) / 100)}
+                      />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">%</span>
+                    </div>
                   </Field>
                   <Field label="Total" htmlFor={`prize_total_${index}`}>
                     <Input id={`prize_total_${index}`} type="number" min="1" value={prize.quantity_total} onChange={(event) => updatePrize(index, "quantity_total", toNumber(event.target.value))} />
