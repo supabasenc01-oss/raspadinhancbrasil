@@ -49,6 +49,7 @@ function SignUpPage() {
     storeName: "",
     storeId: "",
   });
+  const [step, setStep] = useState<1 | 2>(1);
   const [submitting, setSubmitting] = useState(false);
   const [awaitingReview, setAwaitingReview] = useState(false);
   const { data: stores } = useQuery(storesQuery);
@@ -158,8 +159,12 @@ function SignUpPage() {
 
   return (
     <AuthCard
-      title="Criar sua conta"
-      description="Informe seus dados e o cupom fiscal da sua compra para pré-aprovação."
+      title={step === 1 ? "Criar sua conta — dados pessoais" : "Criar sua conta — cupom fiscal"}
+      description={
+        step === 1
+          ? "Passo 1 de 2: preencha seus dados pessoais."
+          : "Passo 2 de 2: informe o cupom fiscal e a filial onde você comprou."
+      }
       footer={
         <>
           Já tem conta?{" "}
