@@ -41,13 +41,21 @@ function ScratchCardDetailPage() {
   const { user, isAuthenticated } = useAuth();
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
 
-  const { data: balanceData, refetch: refetchBalance } = useQuery({
-    queryKey: ['wallet-balance', user?.id],
-    queryFn: () => callEdgeFunction<{ balance: number }>('get-wallet-balance'),
+  const { data: creditsBalance = 0, refetch: refetchBalance } = useQuery({
+    queryKey: ['scratch-credits', user?.id],
+    queryFn: async () => {
+      const { data, error: creditsError } = await supabase
+        .from('scratch_credits')
+        .select('balance')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      if (creditsError) throw creditsError;
+      return Number(data?.balance ?? 0);
+    },
     enabled: !!user?.id,
-    staleTime: 1000 * 30, // 30 seconds
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 15,
   });
+
   
   const [gameState, setGameState] = useState<"IDLE" | "PLAYING" | "SCRATCHING" | "REVEALED">("IDLE");
   const [isAutoRevealing, setIsAutoRevealing] = useState(false);
