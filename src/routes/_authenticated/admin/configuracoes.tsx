@@ -933,3 +933,168 @@ function FaviconPreview({ url, onRemove }: { url: string; onRemove: () => void }
     </>
   );
 }
+
+function StoresManager() {
+  const queryClient = useQueryClient();
+  const { data: stores, isLoading } = useQuery(storesQuery);
+  const [drafts, setDrafts] = useState<Record<string, { name: string; code: string }>>({});
+  const [newStore, setNewStore] = useState({ name: "", code: "" });
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["stores"] });
+
+  const saveStore = useMutation({
+    mutationFn: async (payload: { id: string; name: string; code: string }) => {
+      const { error } = await supabase
+        .from("stores")
+        .update({ name: payload.name.trim(), code: payload.code.trim() })
+        .eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filial atualizada!");
+      invalidate();
+    },
+    onError: (error: any) => toast.error(error.message || "Erro ao salvar filial"),
+  });
+
+  const toggleStore = useMutation({
+    mutationFn: async (payload: { id: string; is_active: boolean }) => {
+      const { error } = await supabase
+        .from("stores")
+        .update({ is_active: payload.is_active })
+        .eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+    onError: (error: any) => toast.error(error.message || "Erro ao atualizar filial"),
+  });
+
+  const createStore = useMutation({
+    mutationFn: async () => {
+      if (!newStore.name.trim() || !newStore.code.trim()) {
+        throw new Error("Informe nome e código da filial.");
+      }
+      const { error } = await supabase.from("stores").insert({
+        name: newStore.name.trim(),
+        code: newStore.code.trim(),
+        sort_order: (stores?.length ?? 0) + 1,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filial criada!");
+      setNewStore({ name: "", code: "" });
+      invalidate();
+    },
+    onError: (error: any) => toast.error(error.message || "Erro ao criar filial"),
+  });
+
+  const removeStore = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("stores").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filial removida.");
+      invalidate();
+    },
+    onError: () =>
+      toast.error("Não foi possível remover — desative a filial se ela já possui cupons ou raspadinhas."),
+  });
+
+  return (
+    <Card className="bg-surface border-border/50">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <StoreIcon className="size-4" /> Filiais
+        </CardTitle>
+        <CardDescription>
+          Cada raspadinha e cada cupom fiscal pertence a uma filial. Os créditos liberados valem
+          somente na filial do cupom aprovado.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isLoading ? (
+          <div className="h-24 animate-pulse rounded-xl bg-muted/20" />
+        ) : (
+          (stores ?? []).map((store) => {
+            const draft = drafts[store.id] ?? { name: store.name, code: store.code };
+            return (
+              <div
+                key={store.id}
+                className="grid gap-3 rounded-xl border border-border/50 p-4 sm:grid-cols-[1fr_140px_auto_auto_auto] sm:items-end"
+              >
+                <div className="space-y-1">
+                  <Label htmlFor={`store_name_${store.id}`}>Nome da filial</Label>
+                  <Input
+                    id={`store_name_${store.id}`}
+                    value={draft.name}
+                    onChange={(e) =>
+                      setDrafts((prev) => ({ ...prev, [store.id]: { ...draft, name: e.target.value } }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor={`store_code_${store.id}`}>Código</Label>
+                  <Input
+                    id={`store_code_${store.id}`}
+                    value={draft.code}
+                    onChange={(e) =>
+                      setDrafts((prev) => ({ ...prev, [store.id]: { ...draft, code: e.target.value } }))
+                    }
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => saveStore.mutate({ id: store.id, ...draft })}
+                  disabled={saveStore.isPending}
+                >
+                  <Save className="mr-2 size-4" /> Salvar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toggleStore.mutate({ id: store.id, is_active: !store.is_active })}
+                >
+                  {store.is_active ? "Desativar" : "Ativar"}
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="border-red-500/40 text-red-500"
+                  onClick={() => removeStore.mutate(store.id)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            );
+          })
+        )}
+
+        <div className="grid gap-3 rounded-xl border border-dashed border-border p-4 sm:grid-cols-[1fr_140px_auto] sm:items-end">
+          <div className="space-y-1">
+            <Label htmlFor="new_store_name">Nova filial</Label>
+            <Input
+              id="new_store_name"
+              placeholder="Ex: Stock Atacarejo — Centro"
+              value={newStore.name}
+              onChange={(e) => setNewStore((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="new_store_code">Código</Label>
+            <Input
+              id="new_store_code"
+              placeholder="LOJA-D"
+              value={newStore.code}
+              onChange={(e) => setNewStore((prev) => ({ ...prev, code: e.target.value }))}
+            />
+          </div>
+          <Button onClick={() => createStore.mutate()} disabled={createStore.isPending}>
+            <Plus className="mr-2 size-4" /> Adicionar
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
