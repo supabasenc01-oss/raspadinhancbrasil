@@ -471,6 +471,50 @@ export type Database = {
         }
         Relationships: []
       }
+      scratch_plays: {
+        Row: {
+          created_at: string
+          id: string
+          prize_id: string | null
+          prize_title: string | null
+          prize_value: number
+          result_type: string
+          scratch_card_id: string
+          used_credit: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prize_id?: string | null
+          prize_title?: string | null
+          prize_value?: number
+          result_type: string
+          scratch_card_id: string
+          used_credit?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prize_id?: string | null
+          prize_title?: string | null
+          prize_value?: number
+          result_type?: string
+          scratch_card_id?: string
+          used_credit?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scratch_plays_scratch_card_id_fkey"
+            columns: ["scratch_card_id"]
+            isOneToOne: false
+            referencedRelation: "scratch_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_settings: {
         Row: {
           created_at: string
@@ -735,6 +779,31 @@ export type Database = {
           _receipt_id: string
         }
         Returns: Json
+      }
+      scratch_card_stats: {
+        Args: never
+        Returns: {
+          card_name: string
+          last_play_at: string
+          prizes_remaining: number
+          prizes_total: number
+          scratch_card_id: string
+          total_plays: number
+          total_prize_value: number
+          total_wins: number
+        }[]
+      }
+      scratch_user_stats: {
+        Args: never
+        Returns: {
+          email: string
+          full_name: string
+          last_play_at: string
+          total_plays: number
+          total_prize_value: number
+          total_wins: number
+          user_id: string
+        }[]
       }
     }
     Enums: {

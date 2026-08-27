@@ -253,6 +253,40 @@ function ScratchCardDetailPage() {
                     )}
                   </div>
 
+                  {/* Faixa de resultado logo abaixo da raspagem */}
+                  {gameState === "REVEALED" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="w-full max-w-[min(450px,92vw)] mx-auto"
+                    >
+                      {gameResult?.result_type === "WIN" ? (
+                        <div className="rounded-2xl border border-success/40 bg-success/10 px-4 py-3 text-center">
+                          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-success">
+                            Você ganhou!
+                          </div>
+                          <div className="mt-1 text-lg font-black leading-tight">
+                            {gameResult.prize?.title}
+                          </div>
+                          {(gameResult.prize?.value ?? 0) > 0 && (
+                            <div className="text-sm font-black text-primary">
+                              {formatCurrency(gameResult.prize?.value ?? 0)}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-border/60 bg-surface/60 px-4 py-3 text-center">
+                          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                            Não foi desta vez
+                          </div>
+                          <div className="mt-1 text-sm text-muted-foreground">
+                            Nenhum prêmio nesta raspadinha.
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
                   {gameState === "SCRATCHING" && (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button 

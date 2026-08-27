@@ -35,20 +35,22 @@ function DashboardPage() {
         .select(`
           id,
           prize_title,
-          won_at,
+          prize_value,
+          created_at,
           scratch_cards (
-            title
+            name
           )
         `)
         .eq('user_id', user?.id || '')
-        .order('won_at', { ascending: false });
-      
+        .order('created_at', { ascending: false });
+
       if (error) throw error;
       return data as unknown as Array<{
         id: string;
         prize_title: string;
-        won_at: string;
-        scratch_cards: { title: string } | null;
+        prize_value: number;
+        created_at: string;
+        scratch_cards: { name: string } | null;
       }>;
     },
     enabled: !!user?.id,
@@ -111,7 +113,7 @@ function DashboardPage() {
                   <div key={prize.id} className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex flex-col gap-2">
                     <div className="flex justify-between items-start">
                       <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                        {prize.scratch_cards?.title ?? "Raspadinha"}
+                        {prize.scratch_cards?.name ?? "Raspadinha"}
                       </span>
                       <Badge className="bg-green-500 text-white border-none text-[10px]">GANHOU</Badge>
                     </div>
@@ -119,7 +121,7 @@ function DashboardPage() {
                       {prize.prize_title}
                     </div>
                     <div className="text-[10px] text-muted-foreground">
-                      {new Date(prize.won_at).toLocaleDateString('pt-BR')}
+                      {new Date(prize.created_at).toLocaleDateString('pt-BR')}
                     </div>
                   </div>
                 ))}

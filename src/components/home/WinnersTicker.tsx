@@ -54,6 +54,7 @@ export function WinnersTicker({ winners }: { winners?: Winner[] | null | undefin
                     {winner.display_name || winner.winner_name}
                   </span>
                   <span className="text-xs text-muted-foreground">ganhou</span>
+                  <span className="text-sm font-black text-accent">{winner.prize_title}</span>
                   <span className="text-sm font-black text-primary">
                     R$ {winner.amount || winner.prize_value}
                   </span>
