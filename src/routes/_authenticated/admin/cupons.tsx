@@ -57,6 +57,7 @@ function AdminReceiptsPage() {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<ReceiptRow | null>(null);
   const [credits, setCredits] = useState("1");
+  const [confirmedValue, setConfirmedValue] = useState("");
   const [notes, setNotes] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
