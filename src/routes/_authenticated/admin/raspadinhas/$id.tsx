@@ -85,16 +85,18 @@ function EditScratchCardPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<CardForm | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
 
-  const { data: card, isLoading } = useQuery({
+  const { data: card, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["admin", "scratch-card", id],
+    retry: 1,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error: queryError } = await supabase
         .from("scratch_cards")
         .select("*, scratch_card_prizes(*)")
         .eq("id", id)
         .maybeSingle();
-      if (error) throw error;
+      if (queryError) throw queryError;
       if (!data) throw new Error("Raspadinha não encontrada.");
       return data;
     },
@@ -102,6 +104,8 @@ function EditScratchCardPage() {
 
   useEffect(() => {
     if (!card) return;
+    // Só inicializa uma vez por raspadinha, para não descartar edições em andamento.
+    if (loadedId === card.id) return;
 
     const prizes = [...(card.scratch_card_prizes ?? [])]
       .sort((first, second) => first.created_at.localeCompare(second.created_at))
@@ -131,7 +135,9 @@ function EditScratchCardPage() {
       thumbnail_url: card.thumbnail_url ?? "",
       prizes: prizes.length > 0 ? prizes : [emptyPrize(1)],
     });
-  }, [card]);
+    setLoadedId(card.id);
+  }, [card, loadedId]);
+
 
   const saveMutation = useMutation({
     mutationFn: async (values: CardForm) => {
