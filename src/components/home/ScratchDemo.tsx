@@ -75,27 +75,29 @@ export function ScratchDemo() {
               Experimente agora o motor de raspagem mais tecnológico do Brasil. Rápido, intuitivo e 100% transparente.
             </p>
 
+            {showDemoHighlights && (
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <div className="flex items-center gap-4 p-5 rounded-3xl bg-surface/40 backdrop-blur-md border border-white/5 hover:border-primary/30 transition-colors group">
                 <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                   <Trophy className="size-7" />
                 </div>
                 <div>
-                  <div className="font-black text-lg uppercase tracking-tight">Prêmios VIP</div>
-                  <div className="text-sm text-muted-foreground font-medium">PIX e Itens Exclusivos</div>
+                  <div className="font-black text-lg uppercase tracking-tight">{demoHighlight1Title}</div>
+                  <div className="text-sm text-muted-foreground font-medium">{demoHighlight1Subtitle}</div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-4 p-5 rounded-3xl bg-surface/40 backdrop-blur-md border border-white/5 hover:border-success/30 transition-colors group">
                 <div className="size-14 rounded-2xl bg-success/10 flex items-center justify-center text-success group-hover:scale-110 transition-transform">
                   <Zap className="size-7" />
                 </div>
                 <div>
-                  <div className="font-black text-lg uppercase tracking-tight">Pagamento Express</div>
-                  <div className="text-sm text-muted-foreground font-medium">Receba via PIX na hora</div>
+                  <div className="font-black text-lg uppercase tracking-tight">{demoHighlight2Title}</div>
+                  <div className="text-sm text-muted-foreground font-medium">{demoHighlight2Subtitle}</div>
                 </div>
               </div>
             </div>
+            )}
           </motion.div>
 
           <motion.div 
