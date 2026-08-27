@@ -31,6 +31,7 @@ const ADMIN_NAV = [
   { to: "/admin/usuarios", label: "Usuários", icon: Users },
   { to: "/admin/banners", label: "Banners", icon: Image },
   { to: "/admin/ganhadores", label: "Ganhadores", icon: Trophy },
+  { to: "/admin/estatisticas", label: "Estatísticas", icon: BarChart3 },
   { to: "/admin/financeiro", label: "Financeiro", icon: Banknote },
   { to: "/admin/relatorios", label: "Relatórios", icon: BarChart3 },
   { to: "/admin/logs", label: "Logs", icon: ScrollText },

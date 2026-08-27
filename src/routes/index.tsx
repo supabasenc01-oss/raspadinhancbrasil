@@ -197,16 +197,18 @@ function HomePage() {
                   <div className="size-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
                     <History className="size-5" />
                   </div>
-                  <div>
-                    <div className="font-bold">{winner.display_name || winner.winner_name}</div>
+                  <div className="min-w-0">
+                    <div className="truncate font-bold">{winner.display_name || winner.winner_name}</div>
+                    <div className="truncate text-xs font-bold text-accent">
+                      ganhou {winner.prize_title}
+                    </div>
                     <div className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="size-3" /> {new Date(winner.created_at).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   <div className="text-lg font-black text-primary">R$ {winner.amount || winner.prize_value},00</div>
-                  <div className="text-[10px] uppercase tracking-tighter text-muted-foreground">{winner.prize_title}</div>
                 </div>
               </div>
             ))}

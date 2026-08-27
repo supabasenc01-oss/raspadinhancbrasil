@@ -111,23 +111,28 @@ function AdminUsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Wallet className="size-3 text-primary" />
-                        <span className="font-black text-sm">
-                          {formatCurrency(user.wallets?.[0]?.balance ?? 0)}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="size-3 text-primary" />
+                          <span className="font-black text-sm">
+                            {formatCurrency(user.wallet_balance ?? 0)}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">
+                          {user.scratch_credits ?? 0} raspadinha(s) liberada(s)
                         </span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div title="Total Depositado" className="flex items-center gap-1 text-[10px] text-purple-500 font-bold">
-                          <TrendingUp className="size-3" /> DEP
+                        <div title="Raspagens" className="flex items-center gap-1 text-[10px] text-blue-500 font-bold">
+                          <ShoppingBag className="size-3" /> {user.total_plays ?? 0}
                         </div>
-                        <div title="Total Gasto" className="flex items-center gap-1 text-[10px] text-blue-500 font-bold">
-                          <ShoppingBag className="size-3" /> GASTO
+                        <div title="Prêmios ganhos" className="flex items-center gap-1 text-[10px] text-yellow-500 font-bold">
+                          <Trophy className="size-3" /> {user.total_wins ?? 0}
                         </div>
-                        <div title="Total Ganho" className="flex items-center gap-1 text-[10px] text-yellow-500 font-bold">
-                          <Trophy className="size-3" /> GANHO
+                        <div title="Total ganho" className="flex items-center gap-1 text-[10px] text-purple-500 font-bold">
+                          <TrendingUp className="size-3" /> {formatCurrency(user.total_won ?? 0)}
                         </div>
                       </div>
                     </TableCell>
