@@ -26,14 +26,18 @@ export function ScratchArea({
   const [isFinished, setIsFinished] = useState(false);
   
   const coverUrl = useFileUrl(coverImage);
-  const resultUrl = useFileUrl(resultImage);
+  const rawResultUrl = useFileUrl(resultImage);
   const { 
     logoUrl: rawLogoUrl, 
     scratchOverlayLogoUrl: rawScratchLogoUrl,
     scratchOverlayBgColor,
     scratchOverlayText,
-    scratchThreshold
+    scratchThreshold,
+    defaultRevealBgUrl,
   } = useSettings();
+
+  const fallbackRevealUrl = useFileUrl(defaultRevealBgUrl);
+  const resultUrl = rawResultUrl || fallbackRevealUrl;
   
   const logoUrl = useFileUrl(rawScratchLogoUrl || rawLogoUrl);
 
