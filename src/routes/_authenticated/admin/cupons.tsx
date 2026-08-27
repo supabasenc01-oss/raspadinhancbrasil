@@ -256,6 +256,20 @@ function AdminReceiptsPage() {
               {selected.status === "PENDING" ? (
                 <>
                   <div className="space-y-2">
+                    <Label htmlFor="confirmed-value">Valor confirmado da compra *</Label>
+                    <Input
+                      id="confirmed-value"
+                      inputMode="decimal"
+                      value={confirmedValue}
+                      onChange={(event) => setConfirmedValue(event.target.value)}
+                      placeholder="Ex: 250,00"
+                    />
+                    <p className="text-[10px] text-muted-foreground">
+                      Confira o valor no cupom fiscal antes de liberar. Sugestão de raspadinhas:{" "}
+                      {suggestedCredits}.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="credits">Raspadinhas a liberar</Label>
                     <Input
                       id="credits"
