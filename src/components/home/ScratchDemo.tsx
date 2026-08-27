@@ -12,7 +12,16 @@ import { activeScratchCardsQuery } from '@/lib/queries';
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
   const [finished, setFinished] = useState(false);
-  const { logoUrl: rawLogoUrl, siteName, scratchOverlayLogoUrl } = useSettings();
+  const {
+    logoUrl: rawLogoUrl,
+    siteName,
+    scratchOverlayLogoUrl,
+    showDemoHighlights,
+    demoHighlight1Title,
+    demoHighlight1Subtitle,
+    demoHighlight2Title,
+    demoHighlight2Subtitle,
+  } = useSettings();
   const logoUrl = useFileUrl(rawLogoUrl);
 
   // A demo usa a mesma imagem de raspagem configurada nas raspadinhas ativas
