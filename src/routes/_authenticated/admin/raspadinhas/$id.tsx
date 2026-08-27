@@ -341,6 +341,10 @@ function EditScratchCardPage() {
               <Button type="button" variant="secondary" onClick={distributeProbabilities}>
                 Distribuir probabilidades
               </Button>
+              <Button type="button" variant="secondary" onClick={restockPrizes}>
+                Repor estoque
+              </Button>
+
             </div>
           </CardHeader>
 
