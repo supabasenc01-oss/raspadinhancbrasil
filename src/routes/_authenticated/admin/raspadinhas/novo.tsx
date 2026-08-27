@@ -168,7 +168,7 @@ function NewScratchCardWizard() {
     try {
       const totalProb = values.prizes.reduce((sum, p) => sum + p.probability, 0);
       if (totalProb > 1) {
-        toast.error("A soma das probabilidades não pode ser maior que 100% (1.0)");
+        toast.error("A soma das chances de ganhar não pode passar de 100%");
         setCurrentStep(3);
         return;
       }
@@ -525,8 +525,21 @@ function NewScratchCardWizard() {
                           name={`prizes.${index}.probability`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-xs">Prob. (0 a 1)</FormLabel>
-                              <FormControl><Input type="number" step="0.0001" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl>
+                              <FormLabel className="text-xs">Chance de ganhar (%)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    className="pr-8"
+                                    value={Number(((Number(field.value) || 0) * 100).toFixed(2))}
+                                    onChange={e => field.onChange((parseFloat(e.target.value) || 0) / 100)}
+                                  />
+                                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">%</span>
+                                </div>
+                              </FormControl>
                             </FormItem>
                           )}
                         />
@@ -552,9 +565,17 @@ function NewScratchCardWizard() {
                 </div>
 
                 <div className="p-4 rounded-xl bg-accent/5 border border-accent/10 flex items-center gap-3">
-                  <Info className="size-5 text-accent" />
-                  <div className="text-xs text-muted-foreground">
-                    A soma das probabilidades dos prêmios não deve exceder 1.0 (100%). O restante será automaticamente considerado como "Sem Prêmio".
+                  <Info className="size-5 text-accent shrink-0" />
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p>
+                      Preencha a chance em <strong>porcentagem</strong>: <strong>10</strong> = 10 em cada 100
+                      raspagens ganham; <strong>1</strong> = 1 em cada 100; <strong>0,5</strong> = 1 em cada 200.
+                    </p>
+                    <p>
+                      A soma de todos os prêmios não pode passar de <strong>100%</strong>. Soma atual:{" "}
+                      <strong>{(form.watch("prizes").reduce((sum, p) => sum + (Number(p.probability) || 0), 0) * 100).toFixed(2)}%</strong>{" "}
+                      — o restante é a chance de não ganhar nada.
+                    </p>
                   </div>
                 </div>
               </div>
