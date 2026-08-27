@@ -6,7 +6,7 @@ import { useFileUrl } from "@/hooks/useFileUrl";
 
 export function AppDownloadBanner() {
   const [isVisible, setIsVisible] = useState(true);
-  const { logoUrl: rawLogoUrl, siteName } = useSettings();
+  const { logoUrl: rawLogoUrl, siteName, appBannerText, appBannerCta, appBannerLink } = useSettings();
   const logoUrl = useFileUrl(rawLogoUrl);
 
   return (
@@ -24,10 +24,15 @@ export function AppDownloadBanner() {
             ) : (
               <Smartphone className="size-3 sm:size-4" />
             )}
-            Baixe o app oficial da {siteName}!
-            <button className="bg-white text-success px-3 py-1 rounded-full text-[9px] sm:text-xs hover:bg-white/90 transition-colors ml-2">
-              Baixar
-            </button>
+            {appBannerText || `Baixe o app oficial da ${siteName}!`}
+            {appBannerCta ? (
+              <a
+                href={appBannerLink || "#"}
+                className="bg-white text-success px-3 py-1 rounded-full text-[9px] sm:text-xs hover:bg-white/90 transition-colors ml-2"
+              >
+                {appBannerCta}
+              </a>
+            ) : null}
           </div>
           <button 
             onClick={() => setIsVisible(false)}

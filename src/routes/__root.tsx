@@ -150,11 +150,17 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <RootContent />
-        <UserFloatingBubbles />
+        <FloatingBubblesGate />
         <Toaster position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function FloatingBubblesGate() {
+  const { showFloatingBubbles } = useSettings();
+  if (!showFloatingBubbles) return null;
+  return <UserFloatingBubbles />;
 }
 
 function RootContent() {

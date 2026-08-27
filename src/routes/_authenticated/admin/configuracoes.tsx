@@ -570,7 +570,9 @@ function AdminSettingsPage() {
                 { key: "show_how_to_play", label: "Seção 'Como Jogar'" },
                 { key: "show_latest_winners", label: "Bloco de Últimos Ganhadores" },
                 { key: "show_testimonials", label: "Seção de Depoimentos" },
-                { key: "show_app_download", label: "Banner de Download do App" },
+                { key: "show_app_download", label: "Faixa superior promocional (Créditos extras / App)" },
+                { key: "show_floating_bubbles", label: "Balões de notificação de participação (canto da tela)" },
+                { key: "show_demo_highlights", label: "Destaques da demonstração (Prêmios VIP / Pagamento Express)" },
               ].map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
                   <div className="space-y-0.5">
@@ -587,6 +589,78 @@ function AdminSettingsPage() {
                   </div>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          <Card className="mt-6 bg-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Textos da Página Inicial</CardTitle>
+              <CardDescription>Personalize a faixa promocional e os destaques da demonstração.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="app_banner_text">Texto da faixa superior</Label>
+                <Input
+                  id="app_banner_text"
+                  value={values["app_banner_text"] || ""}
+                  onChange={(e) => handleChange("app_banner_text", e.target.value)}
+                  placeholder="Ex: Ganhe créditos extras enviando seu cupom fiscal!"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="app_banner_cta">Texto do botão (vazio = sem botão)</Label>
+                <Input
+                  id="app_banner_cta"
+                  value={values["app_banner_cta"] ?? ""}
+                  onChange={(e) => handleChange("app_banner_cta", e.target.value)}
+                  placeholder="Enviar cupom"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="app_banner_link">Link do botão</Label>
+                <Input
+                  id="app_banner_link"
+                  value={values["app_banner_link"] || ""}
+                  onChange={(e) => handleChange("app_banner_link", e.target.value)}
+                  placeholder="/cupons"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="demo_highlight_1_title">Destaque 1 — título</Label>
+                <Input
+                  id="demo_highlight_1_title"
+                  value={values["demo_highlight_1_title"] || ""}
+                  onChange={(e) => handleChange("demo_highlight_1_title", e.target.value)}
+                  placeholder="Prêmios VIP"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="demo_highlight_1_subtitle">Destaque 1 — descrição</Label>
+                <Input
+                  id="demo_highlight_1_subtitle"
+                  value={values["demo_highlight_1_subtitle"] || ""}
+                  onChange={(e) => handleChange("demo_highlight_1_subtitle", e.target.value)}
+                  placeholder="PIX e Itens Exclusivos"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="demo_highlight_2_title">Destaque 2 — título</Label>
+                <Input
+                  id="demo_highlight_2_title"
+                  value={values["demo_highlight_2_title"] || ""}
+                  onChange={(e) => handleChange("demo_highlight_2_title", e.target.value)}
+                  placeholder="Pagamento Express"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="demo_highlight_2_subtitle">Destaque 2 — descrição</Label>
+                <Input
+                  id="demo_highlight_2_subtitle"
+                  value={values["demo_highlight_2_subtitle"] || ""}
+                  onChange={(e) => handleChange("demo_highlight_2_subtitle", e.target.value)}
+                  placeholder="Receba via PIX na hora"
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

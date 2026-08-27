@@ -77,5 +77,14 @@ export function useSettings() {
     scratchOverlayBgColor: getSetting("scratch_overlay_bg_color", "#0F172A"),
     scratchOverlayText: getSetting("scratch_overlay_text", ""),
     scratchThreshold: Number(getSetting("scratch_threshold", "45")),
+    showFloatingBubbles: getSetting("show_floating_bubbles", "true") === "true",
+    showDemoHighlights: getSetting("show_demo_highlights", "true") === "true",
+    demoHighlight1Title: getSetting("demo_highlight_1_title", "Prêmios VIP"),
+    demoHighlight1Subtitle: getSetting("demo_highlight_1_subtitle", "PIX e Itens Exclusivos"),
+    demoHighlight2Title: getSetting("demo_highlight_2_title", "Pagamento Express"),
+    demoHighlight2Subtitle: getSetting("demo_highlight_2_subtitle", "Receba via PIX na hora"),
+    appBannerText: getSetting("app_banner_text", ""),
+    appBannerCta: getSetting("app_banner_cta", "Baixar"),
+    appBannerLink: getSetting("app_banner_link", ""),
   };
 }
