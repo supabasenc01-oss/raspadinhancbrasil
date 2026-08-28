@@ -323,7 +323,6 @@ function SignUpPage() {
               <Label htmlFor="storeName">Filial onde você comprou *</Label>
               <select
                 id="storeName"
-                required
                 className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
                 value={form.storeId}
                 onChange={(event) => {
