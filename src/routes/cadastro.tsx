@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Clock, Receipt, ShieldCheck } from "lucide-react";
+import { Receipt, ShieldCheck, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 
 import { AuthCard } from "@/components/layout/AuthCard";
@@ -9,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { storesQuery, storeName } from "@/lib/stores";
 
 export const Route = createFileRoute("/cadastro")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => {
@@ -24,12 +21,12 @@ export const Route = createFileRoute("/cadastro")({
       {
         name: "description",
         content:
-          "Cadastre-se informando o número do cupom fiscal e a loja onde comprou para liberar suas raspadinhas.",
+          "Crie sua conta em segundos e comece a participar das raspadinhas do Stock Atacarejo.",
       },
       { property: "og:title", content: "Criar conta — Stock Atacarejo Raspadinhas" },
       {
         property: "og:description",
-        content: "Cadastre-se com seu cupom fiscal e aguarde a liberação das raspadinhas.",
+        content: "Cadastro rápido para participar das raspadinhas do Stock Atacarejo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -45,42 +42,22 @@ function SignUpPage() {
     email: "",
     phone: "",
     password: "",
-    receiptNumber: "",
-    storeName: "",
-    storeId: "",
   });
-  const [step, setStep] = useState<1 | 2>(1);
   const [submitting, setSubmitting] = useState(false);
-  const [awaitingReview, setAwaitingReview] = useState(false);
-  const { data: stores } = useQuery(storesQuery);
+  const [done, setDone] = useState(false);
 
   function update(field: keyof typeof form, value: string) {
     setForm((previous) => ({ ...previous, [field]: value }));
   }
 
-  function goToStep2() {
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     if (!form.fullName.trim() || !form.email.trim()) {
       toast.error("Preencha seu nome completo e e-mail.");
       return;
     }
     if (form.password.length < 8) {
       toast.error("A senha deve ter pelo menos 8 caracteres.");
-      return;
-    }
-    setStep(2);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
-
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (form.password.length < 8) {
-      toast.error("A senha deve ter pelo menos 8 caracteres.");
-      return;
-    }
-    if (!form.receiptNumber.trim() || !form.storeId) {
-      toast.error("Informe o número do cupom fiscal e selecione a filial onde você comprou.");
       return;
     }
     setSubmitting(true);
@@ -90,9 +67,9 @@ function SignUpPage() {
       fullName: form.fullName.trim(),
       phone: form.phone.trim(),
     });
+    setSubmitting(false);
 
     if (error) {
-      setSubmitting(false);
       const message = error.toLowerCase().includes("user already registered")
         ? "Este e-mail já está cadastrado."
         : error;
@@ -100,68 +77,37 @@ function SignUpPage() {
       return;
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      const { error: receiptError } = await supabase.from("receipts").insert({
-        user_id: user.id,
-        image_url: "PENDENTE_CADASTRO",
-        store_name: storeName(stores, form.storeId),
-        store_id: form.storeId,
-        receipt_number: form.receiptNumber.trim(),
-        purchase_value: 0,
-        status: "PENDING",
-      });
-      if (receiptError) {
-        toast.error("Conta criada, mas não registramos o cupom fiscal", {
-          description:
-            receiptError.code === "23505" ||
-            receiptError.message.includes("duplicate") ||
-            receiptError.message.includes("unique")
-            ? "Este cupom fiscal já foi utilizado — cada cupom vale uma única vez, em qualquer filial."
-            : receiptError.message,
-        });
-      }
-    }
-
-    setSubmitting(false);
-    setAwaitingReview(true);
+    setDone(true);
   }
 
-  if (awaitingReview) {
+  if (done) {
     return (
       <AuthCard
-        title="Cadastro enviado para análise"
-        description="Seu cupom fiscal precisa ser verificado pela nossa equipe."
+        title="Conta criada com sucesso"
+        description="Agora você já pode participar das raspadinhas."
       >
         <div className="space-y-6 text-center">
           <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-primary/10 text-primary">
-            <Clock className="size-8" />
+            <PartyPopper className="size-8" />
           </div>
-          <h2 className="text-2xl font-display font-black leading-tight">
-            AGUARDE A LIBERAÇÃO DO SEU CUPOM FISCAL
-          </h2>
           <p className="text-sm text-muted-foreground">
-            Recebemos o cupom <strong>{form.receiptNumber}</strong> da loja{" "}
-            <strong>{form.storeName}</strong>. Nossa equipe vai conferir o valor da compra no painel
-            e liberar suas raspadinhas. Você poderá raspar somente após essa verificação.
+            Bem-vindo, <strong>{form.fullName}</strong>! Para liberar suas raspadinhas, envie o
+            cupom fiscal da sua compra quando quiser jogar.
           </p>
           <div className="space-y-3 rounded-xl border border-border bg-surface p-4 text-left text-xs text-muted-foreground">
             <p className="flex items-start gap-2">
               <Receipt className="mt-0.5 size-4 shrink-0 text-primary" />
-              Guarde o cupom fiscal original — ele pode ser solicitado na conferência.
+              Cada cupom fiscal vale uma única vez, em qualquer filial.
             </p>
             <p className="flex items-start gap-2">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-              Assim que o valor for confirmado, as raspadinhas aparecem na sua conta
+              Após a conferência do valor pela equipe, suas raspadinhas são liberadas
               automaticamente.
             </p>
           </div>
           <div className="grid gap-2">
             <Button asChild className="w-full bg-gradient-brand text-primary-foreground">
-              <Link to="/cupons">Acompanhar meu cupom fiscal</Link>
+              <Link to="/cupons">Enviar cupom fiscal</Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
               <Link to="/">Voltar para o início</Link>
@@ -174,12 +120,8 @@ function SignUpPage() {
 
   return (
     <AuthCard
-      title={step === 1 ? "Criar sua conta — dados pessoais" : "Criar sua conta — cupom fiscal"}
-      description={
-        step === 1
-          ? "Passo 1 de 2: preencha seus dados pessoais."
-          : "Passo 2 de 2: informe o cupom fiscal e a filial onde você comprou."
-      }
+      title="Criar sua conta"
+      description="Preencha seus dados para participar das raspadinhas."
       footer={
         <>
           Já tem conta?{" "}
@@ -189,91 +131,76 @@ function SignUpPage() {
         </>
       }
     >
-      <div className="mb-6 flex items-center gap-2">
-        {[1, 2].map((item) => (
-          <div key={item} className="flex-1 space-y-1">
-            <div
-              className={`h-1.5 rounded-full ${item === step ? "bg-gradient-brand" : "bg-border"}`}
-            />
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${item === step ? "text-primary" : "text-muted-foreground"}`}>
-              {item === 1 ? "1. Dados pessoais" : "2. Cupom e filial"}
-            </p>
-          </div>
-        ))}
-      </div>
-
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {step === 1 ? (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nome completo</Label>
-              <Input
-                id="fullName"
-                required
-                value={form.fullName}
-                onChange={(event) => update("fullName", event.target.value)}
-                placeholder="Seu nome"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={form.email}
-                onChange={(event) => update("email", event.target.value)}
-                placeholder="voce@email.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Telefone (opcional)</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={form.phone}
-                onChange={(event) => update("phone", event.target.value)}
-                placeholder="(11) 90000-0000"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={8}
-                value={form.password}
-                onChange={(event) => update("password", event.target.value)}
-                placeholder="Mínimo de 8 caracteres"
-              />
-            </div>
+        <div className="space-y-2">
+          <Label htmlFor="fullName">Nome completo</Label>
+          <Input
+            id="fullName"
+            required
+            value={form.fullName}
+            onChange={(event) => update("fullName", event.target.value)}
+            placeholder="Seu nome"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="email">E-mail</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={form.email}
+            onChange={(event) => update("email", event.target.value)}
+            placeholder="voce@email.com"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone">Telefone (opcional)</Label>
+          <Input
+            id="phone"
+            type="tel"
+            value={form.phone}
+            onChange={(event) => update("phone", event.target.value)}
+            placeholder="(11) 90000-0000"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Senha</Label>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+            value={form.password}
+            onChange={(event) => update("password", event.target.value)}
+            placeholder="Mínimo de 8 caracteres"
+          />
+        </div>
 
-            <Button
-              type="button"
-              onClick={goToStep2}
-              className="w-full bg-gradient-brand text-primary-foreground"
-            >
-              Continuar
-            </Button>
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="w-full bg-gradient-brand text-primary-foreground"
+        >
+          {submitting ? "Criando conta..." : "Criar conta"}
+        </Button>
 
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-surface px-2 text-muted-foreground">Ou cadastre-se com</span>
-              </div>
-            </div>
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-surface px-2 text-muted-foreground">Ou cadastre-se com</span>
+          </div>
+        </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => signInWithGoogle()}
-              className="w-full gap-2 border-border/50 bg-surface/50 hover:bg-surface"
-            >
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => signInWithGoogle()}
+          className="w-full gap-2 border-border/50 bg-surface/50 hover:bg-surface"
+        >
           <svg className="size-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -293,76 +220,19 @@ function SignUpPage() {
             />
           </svg>
           Google
-            </Button>
+        </Button>
 
-            <p className="text-xs text-muted-foreground">
-              Ao continuar você concorda com os{" "}
-              <Link to="/termos" className="text-primary hover:underline">
-                Termos de uso
-              </Link>{" "}
-              e a{" "}
-              <Link to="/privacidade" className="text-primary hover:underline">
-                Política de privacidade
-              </Link>
-              .
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="receiptNumber">Número do cupom fiscal *</Label>
-              <Input
-                id="receiptNumber"
-                maxLength={60}
-                value={form.receiptNumber}
-                onChange={(event) => update("receiptNumber", event.target.value)}
-                placeholder="Ex: 000123456"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="storeName">Filial onde você comprou *</Label>
-              <select
-                id="storeName"
-                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-                value={form.storeId}
-                onChange={(event) => {
-                  update("storeId", event.target.value);
-                  update("storeName", storeName(stores, event.target.value));
-                }}
-              >
-                <option value="">Selecione a filial…</option>
-                {(stores ?? []).map((store) => (
-                  <option key={store.id} value={store.id}>
-                    {store.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
-              O valor do seu cupom fiscal será conferido pela filial escolhida antes da liberação das
-              raspadinhas. Cada cupom fiscal pode ser usado uma única vez, e não é válido em outra
-              filial.
-            </p>
-
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-gradient-brand text-primary-foreground"
-            >
-              {submitting ? "Criando conta..." : "Criar conta e enviar cupom"}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              disabled={submitting}
-              onClick={() => setStep(1)}
-            >
-              Voltar para dados pessoais
-            </Button>
-          </>
-        )}
+        <p className="text-xs text-muted-foreground">
+          Ao continuar você concorda com os{" "}
+          <Link to="/termos" className="text-primary hover:underline">
+            Termos de uso
+          </Link>{" "}
+          e a{" "}
+          <Link to="/privacidade" className="text-primary hover:underline">
+            Política de privacidade
+          </Link>
+          .
+        </p>
       </form>
     </AuthCard>
   );
