@@ -68,6 +68,9 @@ function SignUpPage() {
       return;
     }
     setStep(2);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -190,9 +193,9 @@ function SignUpPage() {
         {[1, 2].map((item) => (
           <div key={item} className="flex-1 space-y-1">
             <div
-              className={`h-1.5 rounded-full ${item <= step ? "bg-gradient-brand" : "bg-border"}`}
+              className={`h-1.5 rounded-full ${item === step ? "bg-gradient-brand" : "bg-border"}`}
             />
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${item <= step ? "text-primary" : "text-muted-foreground"}`}>
+            <p className={`text-[10px] font-bold uppercase tracking-wider ${item === step ? "text-primary" : "text-muted-foreground"}`}>
               {item === 1 ? "1. Dados pessoais" : "2. Cupom e filial"}
             </p>
           </div>
@@ -310,7 +313,6 @@ function SignUpPage() {
               <Label htmlFor="receiptNumber">Número do cupom fiscal *</Label>
               <Input
                 id="receiptNumber"
-                required
                 maxLength={60}
                 value={form.receiptNumber}
                 onChange={(event) => update("receiptNumber", event.target.value)}
@@ -321,7 +323,6 @@ function SignUpPage() {
               <Label htmlFor="storeName">Filial onde você comprou *</Label>
               <select
                 id="storeName"
-                required
                 className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
                 value={form.storeId}
                 onChange={(event) => {
