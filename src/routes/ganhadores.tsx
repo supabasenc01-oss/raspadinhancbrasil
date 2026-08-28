@@ -77,11 +77,12 @@ function WinnersPage() {
                   
                   <div className="space-y-1">
                     <div className="text-3xl font-display font-black text-primary drop-shadow-sm">
-                      {formatCurrency(winner.amount || 0)}
+                      {formatCurrency(winner.prize_value || 0)}
                     </div>
                     <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
-                      PRÊMIO REAL • INSTANTÂNEO
+                      {winner.prize_title || 'PRÊMIO REAL • INSTANTÂNEO'}
                     </div>
+
                   </div>
                 </div>
               );
