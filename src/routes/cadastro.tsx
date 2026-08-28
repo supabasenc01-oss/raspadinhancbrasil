@@ -193,9 +193,9 @@ function SignUpPage() {
         {[1, 2].map((item) => (
           <div key={item} className="flex-1 space-y-1">
             <div
-              className={`h-1.5 rounded-full ${item <= step ? "bg-gradient-brand" : "bg-border"}`}
+              className={`h-1.5 rounded-full ${item === step ? "bg-gradient-brand" : "bg-border"}`}
             />
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${item <= step ? "text-primary" : "text-muted-foreground"}`}>
+            <p className={`text-[10px] font-bold uppercase tracking-wider ${item === step ? "text-primary" : "text-muted-foreground"}`}>
               {item === 1 ? "1. Dados pessoais" : "2. Cupom e filial"}
             </p>
           </div>
