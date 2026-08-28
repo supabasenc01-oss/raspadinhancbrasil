@@ -68,6 +68,9 @@ function SignUpPage() {
       return;
     }
     setStep(2);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   async function handleSubmit(event: React.FormEvent) {
