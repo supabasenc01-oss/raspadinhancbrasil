@@ -51,9 +51,8 @@ function WinnersPage() {
         ) : winners && winners.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {winners.map((winner: any) => {
-              const profile = winner.profiles;
-              const name = profile?.display_name || 'Ganhador';
-              const abbreviatedName = name.split(' ').map((n: string, i: number) => i === 0 ? n : n[0] + '.').join(' ');
+              const abbreviatedName = winner.winner_name || 'Ganhador';
+
 
               return (
                 <div 
