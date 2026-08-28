@@ -79,6 +79,23 @@ function AdminReceiptsPage() {
     },
   });
 
+  const { data: profilesMap } = useQuery({
+    queryKey: ["admin", "receipts", "profiles", (receipts ?? []).length],
+    enabled: !!receipts && receipts.length > 0,
+    queryFn: async () => {
+      const ids = Array.from(new Set((receipts ?? []).map((r) => r.user_id)));
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", ids);
+      const map: Record<string, { full_name: string | null; email: string | null }> = {};
+      (data ?? []).forEach((row: any) => {
+        map[row.id] = { full_name: row.full_name, email: row.email };
+      });
+      return map;
+    },
+  });
+
   const { data: perCredit } = useQuery({
     queryKey: ["settings", "receipts"],
     queryFn: async () => {
@@ -90,6 +107,7 @@ function AdminReceiptsPage() {
       return ((data?.value ?? {}) as { valuePerCredit?: number }).valuePerCredit ?? 100;
     },
   });
+
 
   useEffect(() => {
     if (!selected) {
@@ -177,6 +195,7 @@ function AdminReceiptsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Cupom</TableHead>
+              <TableHead>Usuário</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Loja</TableHead>
               <TableHead>Enviado em</TableHead>
@@ -188,7 +207,7 @@ function AdminReceiptsPage() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell colSpan={6} className="h-16 animate-pulse bg-muted/20" />
+                  <TableCell colSpan={7} className="h-16 animate-pulse bg-muted/20" />
                 </TableRow>
               ))
             ) : visibleReceipts.length > 0 ? (
@@ -204,9 +223,20 @@ function AdminReceiptsPage() {
                       </span>
                     </div>
                   </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">
+                        {profilesMap?.[receipt.user_id]?.full_name || "Usuário"}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {profilesMap?.[receipt.user_id]?.email || "—"}
+                      </span>
+                    </div>
+                  </TableCell>
                   <TableCell className="text-sm font-black">
                     {formatCurrency(receipt.purchase_value)}
                   </TableCell>
+
                   <TableCell className="text-xs text-muted-foreground">
                     {receipt.store_id ? storeName(stores, receipt.store_id) : receipt.store_name || "—"}
                   </TableCell>
@@ -230,7 +260,7 @@ function AdminReceiptsPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                   Nenhum cupom fiscal enviado ainda.
                 </TableCell>
               </TableRow>

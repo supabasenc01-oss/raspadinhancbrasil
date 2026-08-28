@@ -33,13 +33,34 @@ function AdminWinnersPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("winners")
-        .select("*, profiles(full_name, email), scratch_cards(name, slug)")
+        .select("*")
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
-      return data;
+      const rows = data ?? [];
+      const userIds = Array.from(new Set(rows.map((row: any) => row.user_id)));
+      const cardIds = Array.from(new Set(rows.map((row: any) => row.scratch_card_id)));
+
+      const [{ data: profiles }, { data: cards }] = await Promise.all([
+        userIds.length
+          ? supabase.from("profiles").select("id, full_name, email").in("id", userIds)
+          : Promise.resolve({ data: [] as any[] }),
+        cardIds.length
+          ? supabase.from("scratch_cards").select("id, name, slug").in("id", cardIds)
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
+
+      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const cardMap = new Map((cards ?? []).map((c: any) => [c.id, c]));
+
+      return rows.map((row: any) => ({
+        ...row,
+        profiles: profileMap.get(row.user_id) ?? null,
+        scratch_cards: cardMap.get(row.scratch_card_id) ?? null,
+      }));
     }
   });
+
 
   return (
     <AdminShell 

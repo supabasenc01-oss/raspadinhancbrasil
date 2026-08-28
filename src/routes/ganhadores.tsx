@@ -12,22 +12,15 @@ export const Route = createFileRoute('/ganhadores')({
 
 async function fetchWinners() {
   const { data, error } = await supabase
-    .from('winners' as any)
-    .select(`
-      id,
-      amount,
-      created_at,
-      prize_id,
-      profiles (
-        display_name
-      )
-    `)
+    .from('winners')
+    .select('id, winner_name, prize_title, prize_value, created_at')
     .order('created_at', { ascending: false })
     .limit(50);
-  
+
   if (error) throw error;
   return data;
 }
+
 
 function WinnersPage() {
   const { data: winners, isLoading } = useQuery({
@@ -58,9 +51,8 @@ function WinnersPage() {
         ) : winners && winners.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {winners.map((winner: any) => {
-              const profile = winner.profiles;
-              const name = profile?.display_name || 'Ganhador';
-              const abbreviatedName = name.split(' ').map((n: string, i: number) => i === 0 ? n : n[0] + '.').join(' ');
+              const abbreviatedName = winner.winner_name || 'Ganhador';
+
 
               return (
                 <div 
@@ -85,11 +77,12 @@ function WinnersPage() {
                   
                   <div className="space-y-1">
                     <div className="text-3xl font-display font-black text-primary drop-shadow-sm">
-                      {formatCurrency(winner.amount || 0)}
+                      {formatCurrency(winner.prize_value || 0)}
                     </div>
                     <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
-                      PRÊMIO REAL • INSTANTÂNEO
+                      {winner.prize_title || 'PRÊMIO REAL • INSTANTÂNEO'}
                     </div>
+
                   </div>
                 </div>
               );
