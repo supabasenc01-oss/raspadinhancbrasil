@@ -12,22 +12,15 @@ export const Route = createFileRoute('/ganhadores')({
 
 async function fetchWinners() {
   const { data, error } = await supabase
-    .from('winners' as any)
-    .select(`
-      id,
-      amount,
-      created_at,
-      prize_id,
-      profiles (
-        display_name
-      )
-    `)
+    .from('winners')
+    .select('id, winner_name, prize_title, prize_value, created_at')
     .order('created_at', { ascending: false })
     .limit(50);
-  
+
   if (error) throw error;
   return data;
 }
+
 
 function WinnersPage() {
   const { data: winners, isLoading } = useQuery({
