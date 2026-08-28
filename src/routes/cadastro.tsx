@@ -313,7 +313,6 @@ function SignUpPage() {
               <Label htmlFor="receiptNumber">Número do cupom fiscal *</Label>
               <Input
                 id="receiptNumber"
-                required
                 maxLength={60}
                 value={form.receiptNumber}
                 onChange={(event) => update("receiptNumber", event.target.value)}
