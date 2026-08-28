@@ -260,7 +260,7 @@ function AdminReceiptsPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                   Nenhum cupom fiscal enviado ainda.
                 </TableCell>
               </TableRow>
