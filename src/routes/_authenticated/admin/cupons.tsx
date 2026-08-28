@@ -79,6 +79,23 @@ function AdminReceiptsPage() {
     },
   });
 
+  const { data: profilesMap } = useQuery({
+    queryKey: ["admin", "receipts", "profiles", (receipts ?? []).length],
+    enabled: !!receipts && receipts.length > 0,
+    queryFn: async () => {
+      const ids = Array.from(new Set((receipts ?? []).map((r) => r.user_id)));
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", ids);
+      const map: Record<string, { full_name: string | null; email: string | null }> = {};
+      (data ?? []).forEach((row: any) => {
+        map[row.id] = { full_name: row.full_name, email: row.email };
+      });
+      return map;
+    },
+  });
+
   const { data: perCredit } = useQuery({
     queryKey: ["settings", "receipts"],
     queryFn: async () => {
@@ -90,6 +107,7 @@ function AdminReceiptsPage() {
       return ((data?.value ?? {}) as { valuePerCredit?: number }).valuePerCredit ?? 100;
     },
   });
+
 
   useEffect(() => {
     if (!selected) {
