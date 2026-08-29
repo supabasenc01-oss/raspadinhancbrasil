@@ -32,10 +32,15 @@ export function ScratchDemo() {
     null;
   const demoScratchUrl = useFileUrl(demoScratchImage);
 
-  const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
+  // Exemplo de prêmio real cadastrado (nunca inventar prêmios inexistentes)
+  const { data: demoPrize } = useQuery(demoPrizeExampleQuery);
+  const demoPrizeLabel = demoPrize?.title
+    ? `EXEMPLO: ${demoPrize.title}`
+    : "EXEMPLO DE PRÊMIO";
 
   const demoCover = demoScratchUrl || logoUrl;
   const demoResult = null;
+
 
 
   const handleComplete = () => {
