@@ -160,8 +160,9 @@ export function ScratchDemo() {
                             {demoPrizeLabel}
                           </div>
                           <div className="text-success text-xs font-bold uppercase tracking-[0.2em] mt-1">
-                            Resgatado com sucesso
+                            Apenas demonstração
                           </div>
+
                         </div>
                       </div>
                     </motion.div>
