@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { useSettings } from '@/hooks/useSettings';
 import { useFileUrl } from '@/hooks/useFileUrl';
 import { useQuery } from '@tanstack/react-query';
-import { activeScratchCardsQuery } from '@/lib/queries';
+import { activeScratchCardsQuery, demoPrizeExampleQuery } from '@/lib/queries';
 
 export function ScratchDemo() {
   const [key, setKey] = useState(0);
@@ -32,10 +32,15 @@ export function ScratchDemo() {
     null;
   const demoScratchUrl = useFileUrl(demoScratchImage);
 
-  const demoPrizeLabel = "VOCÊ GANHOU: R$ 1.000 NO PIX";
+  // Exemplo de prêmio real cadastrado (nunca inventar prêmios inexistentes)
+  const { data: demoPrize } = useQuery(demoPrizeExampleQuery);
+  const demoPrizeLabel = demoPrize?.title
+    ? `EXEMPLO: ${demoPrize.title}`
+    : "EXEMPLO DE PRÊMIO";
 
   const demoCover = demoScratchUrl || logoUrl;
   const demoResult = null;
+
 
 
   const handleComplete = () => {
@@ -155,8 +160,9 @@ export function ScratchDemo() {
                             {demoPrizeLabel}
                           </div>
                           <div className="text-success text-xs font-bold uppercase tracking-[0.2em] mt-1">
-                            Resgatado com sucesso
+                            Apenas demonstração
                           </div>
+
                         </div>
                       </div>
                     </motion.div>

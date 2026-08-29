@@ -36,6 +36,26 @@ export const featuredScratchCardsQuery = queryOptions({
   },
 });
 
+// Um prêmio real cadastrado em alguma raspadinha ativa, usado apenas como
+// exemplo visual na demonstração da home (nunca um prêmio fictício).
+export const demoPrizeExampleQuery = queryOptions({
+  queryKey: ["demo-prize-example"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("scratch_card_prizes")
+      .select("id, title, value, scratch_cards!inner(status)")
+      .eq("is_active", true)
+      .gt("quantity_remaining", 0)
+      .eq("scratch_cards.status", "ACTIVE")
+      .order("value", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+});
+
+
 export function scratchCardBySlugQuery(slug: string) {
   return queryOptions({
     queryKey: ["scratch-card", slug],
