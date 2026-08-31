@@ -144,8 +144,8 @@ function ReceiptsPage() {
             ENVIE SEU CUPOM E <span className="text-primary">LIBERE RASPADINHAS</span>
           </h1>
           <p className="text-muted-foreground">
-            {settings?.instructions ??
-              `Envie a foto do seu cupom fiscal do supermercado. A cada ${formatCurrency(perCredit)} em compras você libera 1 raspadinha após a aprovação da nossa equipe.`}
+            {instructions ??
+              `Envie a foto do seu cupom fiscal do supermercado. Regra atual: ${receiptsRuleText} (${formatCurrency(valuePerCredit)} em compras) após a aprovação da nossa equipe.`}
           </p>
         </div>
 
