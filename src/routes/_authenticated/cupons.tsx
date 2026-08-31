@@ -131,11 +131,7 @@ function ReceiptsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const perCredit = settings?.valuePerCredit ?? 100;
-  const estimated = Math.min(
-    Math.floor((Number(value.replace(",", ".")) || 0) / perCredit),
-    settings?.maxCreditsPerReceipt ?? 5,
-  );
+  const estimated = estimateCredits(Number(value.replace(",", ".")) || 0);
 
   return (
     <PublicPage>
