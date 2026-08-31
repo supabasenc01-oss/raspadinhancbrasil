@@ -170,6 +170,36 @@ function AdminReceiptsPage() {
     }
   };
 
+  const saveEdits = async () => {
+    if (!selected) return;
+    const parsedValue = Number(confirmedValue.replace(",", "."));
+    if (status === "APPROVED" && (!parsedValue || parsedValue <= 0)) {
+      toast.error("Confirme o valor da compra antes de aprovar.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const { error } = await supabase.rpc("admin_update_receipt", {
+        _receipt_id: selected.id,
+        _status: status,
+        _purchase_value: parsedValue > 0 ? parsedValue : selected.purchase_value,
+        _credits: status === "APPROVED" ? Number(credits) || 0 : 0,
+        _notes: notes || null,
+        _store_id: selected.store_id,
+      });
+      if (error) throw error;
+      toast.success("Cupom atualizado com sucesso.");
+      setSelected(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "receipts"] });
+    } catch (error: any) {
+      toast.error(error.message ?? "Não foi possível atualizar o cupom");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+
+
   return (
     <AdminShell
       title="Cupons fiscais"
