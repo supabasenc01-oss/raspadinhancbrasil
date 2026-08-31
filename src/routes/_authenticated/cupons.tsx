@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { storesQuery, storeName } from "@/lib/stores";
+import { useReceiptsRules } from "@/hooks/useReceiptsRules";
 
 export const Route = createFileRoute("/_authenticated/cupons")({
   head: () => ({
@@ -52,21 +53,8 @@ function ReceiptsPage() {
 
   const { data: stores } = useQuery(storesQuery);
 
-  const { data: settings } = useQuery({
-    queryKey: ["settings", "receipts"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("system_settings")
-        .select("value")
-        .eq("key", "receipts")
-        .maybeSingle();
-      return (data?.value ?? {}) as {
-        valuePerCredit?: number;
-        maxCreditsPerReceipt?: number;
-        instructions?: string;
-      };
-    },
-  });
+  const { valuePerCredit, receiptsRuleText, instructions, estimateCredits } = useReceiptsRules();
+
 
   const { data: credits } = useQuery({
     queryKey: ["scratch-credits", "by-store", user?.id],
@@ -144,11 +132,7 @@ function ReceiptsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const perCredit = settings?.valuePerCredit ?? 100;
-  const estimated = Math.min(
-    Math.floor((Number(value.replace(",", ".")) || 0) / perCredit),
-    settings?.maxCreditsPerReceipt ?? 5,
-  );
+  const estimated = estimateCredits(Number(value.replace(",", ".")) || 0);
 
   return (
     <PublicPage>
@@ -161,8 +145,8 @@ function ReceiptsPage() {
             ENVIE SEU CUPOM E <span className="text-primary">LIBERE RASPADINHAS</span>
           </h1>
           <p className="text-muted-foreground">
-            {settings?.instructions ??
-              `Envie a foto do seu cupom fiscal do supermercado. A cada ${formatCurrency(perCredit)} em compras você libera 1 raspadinha após a aprovação da nossa equipe.`}
+            {instructions ??
+              `Envie a foto do seu cupom fiscal do supermercado. Regra atual: ${receiptsRuleText} (${formatCurrency(valuePerCredit)} em compras) após a aprovação da nossa equipe.`}
           </p>
         </div>
 

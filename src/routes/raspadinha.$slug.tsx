@@ -32,6 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useSettings } from "@/hooks/useSettings";
 import { storesQuery, storeName } from "@/lib/stores";
+import { useReceiptsRules } from "@/hooks/useReceiptsRules";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
   component: ScratchCardDetailPage,
@@ -44,6 +45,7 @@ function ScratchCardDetailPage() {
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
   const { showPublicPrizes } = useSettings();
   const { data: stores } = useQuery(storesQuery);
+  const { receiptsRuleText } = useReceiptsRules();
   const cardStoreId = (card as any)?.store_id as string | null | undefined;
   const cardStoreName = cardStoreId ? storeName(stores, cardStoreId) : null;
 
@@ -216,8 +218,8 @@ function ScratchCardDetailPage() {
                             <AlertCircle className="size-4" />
                             <AlertDescription className="text-[10px]">
                               {cardStoreName
-                                ? `A ${cardStoreName} precisa validar seu cupom fiscal antes de você raspar. Envie o cupom desta filial e aguarde a aprovação (a cada R$ 100 você libera 2 raspadinhas). Cada cupom vale uma única vez.`
-                                : "Você não tem raspadinhas liberadas. Envie seu cupom fiscal e aguarde a aprovação (a cada R$ 100 você libera 2 raspadinhas). Cada cupom vale uma única vez."}
+                                ? `A ${cardStoreName} precisa validar seu cupom fiscal antes de você raspar. Envie o cupom desta filial e aguarde a aprovação (${receiptsRuleText}). Cada cupom vale uma única vez.`
+                                : `Você não tem raspadinhas liberadas. Envie seu cupom fiscal e aguarde a aprovação (${receiptsRuleText}). Cada cupom vale uma única vez.`}
                             </AlertDescription>
                           </Alert>
                           <Button asChild className="w-full h-14 font-black" variant="secondary">
