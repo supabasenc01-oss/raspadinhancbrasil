@@ -317,70 +317,98 @@ function AdminReceiptsPage() {
                 <div className="h-40 animate-pulse rounded-xl bg-muted/30" />
               )}
 
-              {selected.status === "PENDING" ? (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmed-value">Valor confirmado da compra *</Label>
-                    <Input
-                      id="confirmed-value"
-                      inputMode="decimal"
-                      value={confirmedValue}
-                      onChange={(event) => setConfirmedValue(event.target.value)}
-                      placeholder="Ex: 250,00"
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      Confira o valor no cupom fiscal antes de liberar. Sugestão de raspadinhas:{" "}
-                      {suggestedCredits}.
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="credits">Raspadinhas a liberar</Label>
-                    <Input
-                      id="credits"
-                      type="number"
-                      min={0}
-                      value={credits}
-                      onChange={(event) => setCredits(event.target.value)}
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      As raspadinhas liberadas valem apenas para as raspadinhas desta filial. Regra
-                      atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="notes">Observações para o usuário</Label>
-                    <Textarea
-                      id="notes"
-                      value={notes}
-                      onChange={(event) => setNotes(event.target.value)}
-                      placeholder="Opcional — obrigatório em caso de reprovação"
-                    />
-                  </div>
-                  <div className="flex gap-3">
+              <div className="space-y-2">
+                <Label>Situação do cupom</Label>
+                <div className="flex flex-wrap gap-2">
+                  {(["PENDING", "APPROVED", "REJECTED"] as const).map((option) => (
                     <Button
-                      disabled={saving}
-                      onClick={() => review(true)}
-                      className="flex-1 bg-gradient-brand font-bold text-primary-foreground"
+                      key={option}
+                      type="button"
+                      size="sm"
+                      variant={status === option ? "default" : "outline"}
+                      onClick={() => setStatus(option)}
                     >
-                      {saving && <Loader2 className="mr-2 size-4 animate-spin" />} APROVAR
+                      {option === "PENDING"
+                        ? "Pendente"
+                        : option === "APPROVED"
+                          ? "Aprovado"
+                          : "Reprovado"}
                     </Button>
-                    <Button
-                      disabled={saving}
-                      variant="outline"
-                      onClick={() => review(false)}
-                      className="flex-1 border-red-500/50 text-red-500"
-                    >
-                      REPROVAR
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="rounded-xl border border-border bg-surface p-4 text-sm">
-                  Cupom já analisado ({selected.status}) — {selected.credits_granted} raspadinha(s)
-                  liberada(s).
-                  {selected.review_notes ? ` Observação: ${selected.review_notes}` : ""}
+                  ))}
                 </div>
+                <p className="text-[10px] text-muted-foreground">
+                  Situação atual: {selected.status} — {selected.credits_granted} raspadinha(s)
+                  liberada(s). É possível voltar o cupom para análise ou reprovar após aprovação; o
+                  saldo do usuário é ajustado automaticamente.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmed-value">Valor confirmado da compra *</Label>
+                <Input
+                  id="confirmed-value"
+                  inputMode="decimal"
+                  value={confirmedValue}
+                  onChange={(event) => setConfirmedValue(event.target.value)}
+                  placeholder="Ex: 250,00"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Confira o valor no cupom fiscal antes de liberar. Sugestão de raspadinhas:{" "}
+                  {suggestedCredits}.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="credits">Raspadinhas a liberar</Label>
+                <Input
+                  id="credits"
+                  type="number"
+                  min={0}
+                  value={credits}
+                  onChange={(event) => setCredits(event.target.value)}
+                  disabled={status !== "APPROVED"}
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  As raspadinhas liberadas valem apenas para as raspadinhas desta filial. Regra
+                  atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="notes">Observações para o usuário</Label>
+                <Textarea
+                  id="notes"
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="Opcional — obrigatório em caso de reprovação"
+                />
+              </div>
+              {selected.status === "PENDING" ? (
+                <div className="flex gap-3">
+                  <Button
+                    disabled={saving}
+                    onClick={() => review(true)}
+                    className="flex-1 bg-gradient-brand font-bold text-primary-foreground"
+                  >
+                    {saving && <Loader2 className="mr-2 size-4 animate-spin" />} APROVAR
+                  </Button>
+                  <Button
+                    disabled={saving}
+                    variant="outline"
+                    onClick={() => review(false)}
+                    className="flex-1 border-red-500/50 text-red-500"
+                  >
+                    REPROVAR
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  disabled={saving}
+                  onClick={saveEdits}
+                  className="w-full bg-gradient-brand font-bold text-primary-foreground"
+                >
+                  {saving && <Loader2 className="mr-2 size-4 animate-spin" />} SALVAR ALTERAÇÕES
+                </Button>
               )}
+
             </div>
           )}
         </DialogContent>
