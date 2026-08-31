@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { resolveFileUrl } from "@/lib/storage";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { storesQuery, storeName } from "@/lib/stores";
+import { useReceiptsRules } from "@/hooks/useReceiptsRules";
 
 export const Route = createFileRoute("/_authenticated/admin/cupons")({
   head: () => ({
@@ -98,18 +99,7 @@ function AdminReceiptsPage() {
     },
   });
 
-  const { data: perCredit } = useQuery({
-    queryKey: ["settings", "receipts"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("system_settings")
-        .select("value")
-        .eq("key", "receipts")
-        .maybeSingle();
-      return ((data?.value ?? {}) as { valuePerCredit?: number }).valuePerCredit ?? 100;
-    },
-  });
-
+  const { valuePerCredit, creditsPerStep, estimateCredits, receiptsRuleText } = useReceiptsRules();
 
   useEffect(() => {
     if (!selected) {
@@ -119,23 +109,20 @@ function AdminReceiptsPage() {
     setStatus(selected.status as "PENDING" | "APPROVED" | "REJECTED");
     setCredits(
       selected.status === "PENDING"
-        ? String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)) * 2))
+        ? String(estimateCredits(selected.purchase_value))
         : String(selected.credits_granted),
     );
     setConfirmedValue(selected.purchase_value > 0 ? String(selected.purchase_value) : "");
     setNotes(selected.review_notes ?? "");
     resolveFileUrl(selected.image_url).then(setImageUrl);
 
-  }, [selected, perCredit]);
+  }, [selected, valuePerCredit, creditsPerStep]);
 
   const visibleReceipts = (receipts ?? []).filter(
     (receipt) => storeFilter === "ALL" || receipt.store_id === storeFilter,
   );
 
-  const suggestedCredits = Math.max(
-    0,
-    Math.floor((Number(confirmedValue.replace(",", ".")) || 0) / (perCredit ?? 100)) * 2,
-  );
+  const suggestedCredits = estimateCredits(Number(confirmedValue.replace(",", ".")) || 0);
 
   const review = async (approve: boolean) => {
     if (!selected) return;
