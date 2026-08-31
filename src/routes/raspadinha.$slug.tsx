@@ -32,6 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useSettings } from "@/hooks/useSettings";
 import { storesQuery, storeName } from "@/lib/stores";
+import { useReceiptsRules } from "@/hooks/useReceiptsRules";
 
 export const Route = createFileRoute("/raspadinha/$slug")({
   component: ScratchCardDetailPage,
