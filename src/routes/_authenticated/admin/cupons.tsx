@@ -116,10 +116,16 @@ function AdminReceiptsPage() {
       setImageUrl(null);
       return;
     }
-    setCredits(String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)) * 2)));
+    setStatus(selected.status as "PENDING" | "APPROVED" | "REJECTED");
+    setCredits(
+      selected.status === "PENDING"
+        ? String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)) * 2))
+        : String(selected.credits_granted),
+    );
     setConfirmedValue(selected.purchase_value > 0 ? String(selected.purchase_value) : "");
-    setNotes("");
+    setNotes(selected.review_notes ?? "");
     resolveFileUrl(selected.image_url).then(setImageUrl);
+
   }, [selected, perCredit]);
 
   const visibleReceipts = (receipts ?? []).filter(
