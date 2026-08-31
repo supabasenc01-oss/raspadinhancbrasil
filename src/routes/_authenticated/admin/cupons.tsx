@@ -64,6 +64,8 @@ function AdminReceiptsPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [storeFilter, setStoreFilter] = useState("ALL");
+  const [status, setStatus] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
+
 
   const { data: stores } = useQuery(storesQuery);
 
@@ -114,10 +116,16 @@ function AdminReceiptsPage() {
       setImageUrl(null);
       return;
     }
-    setCredits(String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)) * 2)));
+    setStatus(selected.status as "PENDING" | "APPROVED" | "REJECTED");
+    setCredits(
+      selected.status === "PENDING"
+        ? String(Math.max(1, Math.floor(selected.purchase_value / (perCredit ?? 100)) * 2))
+        : String(selected.credits_granted),
+    );
     setConfirmedValue(selected.purchase_value > 0 ? String(selected.purchase_value) : "");
-    setNotes("");
+    setNotes(selected.review_notes ?? "");
     resolveFileUrl(selected.image_url).then(setImageUrl);
+
   }, [selected, perCredit]);
 
   const visibleReceipts = (receipts ?? []).filter(
@@ -161,6 +169,38 @@ function AdminReceiptsPage() {
       setSaving(false);
     }
   };
+
+  const saveEdits = async () => {
+    if (!selected) return;
+    const parsedValue = Number(confirmedValue.replace(",", "."));
+    if (status === "APPROVED" && (!parsedValue || parsedValue <= 0)) {
+      toast.error("Confirme o valor da compra antes de aprovar.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const { error } = await supabase.rpc("admin_update_receipt", {
+        _receipt_id: selected.id,
+        _status: status,
+        _purchase_value: parsedValue > 0 ? parsedValue : selected.purchase_value,
+        _credits: status === "APPROVED" ? Number(credits) || 0 : 0,
+        ...(notes ? { _notes: notes } : {}),
+        ...(selected.store_id ? { _store_id: selected.store_id } : {}),
+
+
+      });
+      if (error) throw error;
+      toast.success("Cupom atualizado com sucesso.");
+      setSelected(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "receipts"] });
+    } catch (error: any) {
+      toast.error(error.message ?? "Não foi possível atualizar o cupom");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+
 
   return (
     <AdminShell
@@ -317,70 +357,98 @@ function AdminReceiptsPage() {
                 <div className="h-40 animate-pulse rounded-xl bg-muted/30" />
               )}
 
-              {selected.status === "PENDING" ? (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmed-value">Valor confirmado da compra *</Label>
-                    <Input
-                      id="confirmed-value"
-                      inputMode="decimal"
-                      value={confirmedValue}
-                      onChange={(event) => setConfirmedValue(event.target.value)}
-                      placeholder="Ex: 250,00"
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      Confira o valor no cupom fiscal antes de liberar. Sugestão de raspadinhas:{" "}
-                      {suggestedCredits}.
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="credits">Raspadinhas a liberar</Label>
-                    <Input
-                      id="credits"
-                      type="number"
-                      min={0}
-                      value={credits}
-                      onChange={(event) => setCredits(event.target.value)}
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      As raspadinhas liberadas valem apenas para as raspadinhas desta filial. Regra
-                      atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="notes">Observações para o usuário</Label>
-                    <Textarea
-                      id="notes"
-                      value={notes}
-                      onChange={(event) => setNotes(event.target.value)}
-                      placeholder="Opcional — obrigatório em caso de reprovação"
-                    />
-                  </div>
-                  <div className="flex gap-3">
+              <div className="space-y-2">
+                <Label>Situação do cupom</Label>
+                <div className="flex flex-wrap gap-2">
+                  {(["PENDING", "APPROVED", "REJECTED"] as const).map((option) => (
                     <Button
-                      disabled={saving}
-                      onClick={() => review(true)}
-                      className="flex-1 bg-gradient-brand font-bold text-primary-foreground"
+                      key={option}
+                      type="button"
+                      size="sm"
+                      variant={status === option ? "default" : "outline"}
+                      onClick={() => setStatus(option)}
                     >
-                      {saving && <Loader2 className="mr-2 size-4 animate-spin" />} APROVAR
+                      {option === "PENDING"
+                        ? "Pendente"
+                        : option === "APPROVED"
+                          ? "Aprovado"
+                          : "Reprovado"}
                     </Button>
-                    <Button
-                      disabled={saving}
-                      variant="outline"
-                      onClick={() => review(false)}
-                      className="flex-1 border-red-500/50 text-red-500"
-                    >
-                      REPROVAR
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="rounded-xl border border-border bg-surface p-4 text-sm">
-                  Cupom já analisado ({selected.status}) — {selected.credits_granted} raspadinha(s)
-                  liberada(s).
-                  {selected.review_notes ? ` Observação: ${selected.review_notes}` : ""}
+                  ))}
                 </div>
+                <p className="text-[10px] text-muted-foreground">
+                  Situação atual: {selected.status} — {selected.credits_granted} raspadinha(s)
+                  liberada(s). É possível voltar o cupom para análise ou reprovar após aprovação; o
+                  saldo do usuário é ajustado automaticamente.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmed-value">Valor confirmado da compra *</Label>
+                <Input
+                  id="confirmed-value"
+                  inputMode="decimal"
+                  value={confirmedValue}
+                  onChange={(event) => setConfirmedValue(event.target.value)}
+                  placeholder="Ex: 250,00"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Confira o valor no cupom fiscal antes de liberar. Sugestão de raspadinhas:{" "}
+                  {suggestedCredits}.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="credits">Raspadinhas a liberar</Label>
+                <Input
+                  id="credits"
+                  type="number"
+                  min={0}
+                  value={credits}
+                  onChange={(event) => setCredits(event.target.value)}
+                  disabled={status !== "APPROVED"}
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  As raspadinhas liberadas valem apenas para as raspadinhas desta filial. Regra
+                  atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="notes">Observações para o usuário</Label>
+                <Textarea
+                  id="notes"
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="Opcional — obrigatório em caso de reprovação"
+                />
+              </div>
+              {selected.status === "PENDING" ? (
+                <div className="flex gap-3">
+                  <Button
+                    disabled={saving}
+                    onClick={() => review(true)}
+                    className="flex-1 bg-gradient-brand font-bold text-primary-foreground"
+                  >
+                    {saving && <Loader2 className="mr-2 size-4 animate-spin" />} APROVAR
+                  </Button>
+                  <Button
+                    disabled={saving}
+                    variant="outline"
+                    onClick={() => review(false)}
+                    className="flex-1 border-red-500/50 text-red-500"
+                  >
+                    REPROVAR
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  disabled={saving}
+                  onClick={saveEdits}
+                  className="w-full bg-gradient-brand font-bold text-primary-foreground"
+                >
+                  {saving && <Loader2 className="mr-2 size-4 animate-spin" />} SALVAR ALTERAÇÕES
+                </Button>
               )}
+
             </div>
           )}
         </DialogContent>
