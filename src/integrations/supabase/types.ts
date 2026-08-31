@@ -810,6 +810,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_update_receipt: {
+        Args: {
+          _credits?: number
+          _notes?: string
+          _purchase_value?: number
+          _receipt_id: string
+          _status: string
+          _store_id?: string
+        }
+        Returns: Json
+      }
       draw_scratch_card: {
         Args: { _card_id: string; _user_id: string }
         Returns: Json
