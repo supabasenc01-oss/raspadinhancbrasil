@@ -396,7 +396,7 @@ function AdminReceiptsPage() {
                 />
                 <p className="text-[10px] text-muted-foreground">
                   As raspadinhas liberadas valem apenas para as raspadinhas desta filial. Regra
-                  atual: 2 raspadinhas a cada {formatCurrency(perCredit ?? 100)} confirmados.
+                  atual: {receiptsRuleText}.
                 </p>
               </div>
               <div className="space-y-2">
