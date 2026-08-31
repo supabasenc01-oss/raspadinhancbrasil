@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { storesQuery, storeName } from "@/lib/stores";
+import { useReceiptsRules } from "@/hooks/useReceiptsRules";
 
 export const Route = createFileRoute("/_authenticated/cupons")({
   head: () => ({
