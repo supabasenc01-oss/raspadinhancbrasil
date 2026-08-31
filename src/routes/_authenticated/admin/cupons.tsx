@@ -184,8 +184,9 @@ function AdminReceiptsPage() {
         _status: status,
         _purchase_value: parsedValue > 0 ? parsedValue : selected.purchase_value,
         _credits: status === "APPROVED" ? Number(credits) || 0 : 0,
-        _notes: notes || null,
-        _store_id: selected.store_id,
+        _notes: notes || undefined,
+        _store_id: selected.store_id ?? undefined,
+
       });
       if (error) throw error;
       toast.success("Cupom atualizado com sucesso.");
