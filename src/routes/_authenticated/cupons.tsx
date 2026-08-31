@@ -52,21 +52,8 @@ function ReceiptsPage() {
 
   const { data: stores } = useQuery(storesQuery);
 
-  const { data: settings } = useQuery({
-    queryKey: ["settings", "receipts"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("system_settings")
-        .select("value")
-        .eq("key", "receipts")
-        .maybeSingle();
-      return (data?.value ?? {}) as {
-        valuePerCredit?: number;
-        maxCreditsPerReceipt?: number;
-        instructions?: string;
-      };
-    },
-  });
+  const { valuePerCredit, receiptsRuleText, instructions, estimateCredits } = useReceiptsRules();
+
 
   const { data: credits } = useQuery({
     queryKey: ["scratch-credits", "by-store", user?.id],
