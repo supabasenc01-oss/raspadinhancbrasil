@@ -184,8 +184,9 @@ function AdminReceiptsPage() {
         _status: status,
         _purchase_value: parsedValue > 0 ? parsedValue : selected.purchase_value,
         _credits: status === "APPROVED" ? Number(credits) || 0 : 0,
-        _notes: notes || undefined,
-        _store_id: selected.store_id ?? undefined,
+        ...(notes ? { _notes: notes } : {}),
+        ...(selected.store_id ? { _store_id: selected.store_id } : {}),
+
 
       });
       if (error) throw error;
