@@ -45,6 +45,7 @@ function ScratchCardDetailPage() {
   const { data: card, isLoading, error } = useQuery(scratchCardBySlugQuery(slug));
   const { showPublicPrizes } = useSettings();
   const { data: stores } = useQuery(storesQuery);
+  const { receiptsRuleText } = useReceiptsRules();
   const cardStoreId = (card as any)?.store_id as string | null | undefined;
   const cardStoreName = cardStoreId ? storeName(stores, cardStoreId) : null;
 
