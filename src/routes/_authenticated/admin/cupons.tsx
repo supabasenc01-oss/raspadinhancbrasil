@@ -64,6 +64,8 @@ function AdminReceiptsPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [storeFilter, setStoreFilter] = useState("ALL");
+  const [status, setStatus] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
+
 
   const { data: stores } = useQuery(storesQuery);
 
