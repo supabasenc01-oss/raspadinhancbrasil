@@ -25,7 +25,6 @@ import { Route as RaspadinhasRouteImport } from './routes/raspadinhas'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SuporteRouteImport } from './routes/suporte'
 import { Route as TermosRouteImport } from './routes/termos'
-import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedCuponsRouteImport } from './routes/_authenticated/cupons'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedIndicacaoRouteImport } from './routes/_authenticated/indicacao'
@@ -44,6 +43,7 @@ import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminPremiosRouteImport } from './routes/_authenticated/admin/premios'
 import { Route as AuthenticatedAdminRelatoriosRouteImport } from './routes/_authenticated/admin/relatorios'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
+import { Route as AuthenticatedCarteiraIndexRouteImport } from './routes/_authenticated/carteira/index'
 import { Route as AuthenticatedCarteiraAdicionarRouteImport } from './routes/_authenticated/carteira/adicionar'
 import { Route as AuthenticatedCarteiraSaqueRouteImport } from './routes/_authenticated/carteira/saque'
 import { Route as AuthenticatedAdminRaspadinhasIndexRouteImport } from './routes/_authenticated/admin/raspadinhas/index'
@@ -128,11 +128,6 @@ const TermosRoute = TermosRouteImport.update({
   id: '/termos',
   path: '/termos',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
-  id: '/carteira',
-  path: '/carteira',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCuponsRoute = AuthenticatedCuponsRouteImport.update({
   id: '/cupons',
@@ -234,17 +229,23 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCarteiraIndexRoute =
+  AuthenticatedCarteiraIndexRouteImport.update({
+    id: '/carteira/',
+    path: '/carteira/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCarteiraAdicionarRoute =
   AuthenticatedCarteiraAdicionarRouteImport.update({
-    id: '/adicionar',
-    path: '/adicionar',
-    getParentRoute: () => AuthenticatedCarteiraRoute,
+    id: '/carteira/adicionar',
+    path: '/carteira/adicionar',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedCarteiraSaqueRoute =
   AuthenticatedCarteiraSaqueRouteImport.update({
-    id: '/saque',
-    path: '/saque',
-    getParentRoute: () => AuthenticatedCarteiraRoute,
+    id: '/carteira/saque',
+    path: '/carteira/saque',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminRaspadinhasIndexRoute =
   AuthenticatedAdminRaspadinhasIndexRouteImport.update({
@@ -281,7 +282,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
-  '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/cupons': typeof AuthenticatedCuponsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/indicacao': typeof AuthenticatedIndicacaoRoute
@@ -302,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/carteira/': typeof AuthenticatedCarteiraIndexRoute
   '/admin/raspadinhas/$id': typeof AuthenticatedAdminRaspadinhasIdRoute
   '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
@@ -322,7 +323,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
-  '/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/cupons': typeof AuthenticatedCuponsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/indicacao': typeof AuthenticatedIndicacaoRoute
@@ -343,6 +343,7 @@ export interface FileRoutesByTo {
   '/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/carteira': typeof AuthenticatedCarteiraIndexRoute
   '/admin/raspadinhas/$id': typeof AuthenticatedAdminRaspadinhasIdRoute
   '/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/admin/raspadinhas': typeof AuthenticatedAdminRaspadinhasIndexRoute
@@ -365,7 +366,6 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/suporte': typeof SuporteRoute
   '/termos': typeof TermosRoute
-  '/_authenticated/carteira': typeof AuthenticatedCarteiraRouteWithChildren
   '/_authenticated/cupons': typeof AuthenticatedCuponsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/indicacao': typeof AuthenticatedIndicacaoRoute
@@ -386,6 +386,7 @@ export interface FileRoutesById {
   '/_authenticated/carteira/adicionar': typeof AuthenticatedCarteiraAdicionarRoute
   '/_authenticated/carteira/saque': typeof AuthenticatedCarteiraSaqueRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/carteira/': typeof AuthenticatedCarteiraIndexRoute
   '/_authenticated/admin/raspadinhas/$id': typeof AuthenticatedAdminRaspadinhasIdRoute
   '/_authenticated/admin/raspadinhas/novo': typeof AuthenticatedAdminRaspadinhasNovoRoute
   '/_authenticated/admin/raspadinhas/': typeof AuthenticatedAdminRaspadinhasIndexRoute
@@ -408,7 +409,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/suporte'
     | '/termos'
-    | '/carteira'
     | '/cupons'
     | '/dashboard'
     | '/indicacao'
@@ -429,6 +429,7 @@ export interface FileRouteTypes {
     | '/carteira/adicionar'
     | '/carteira/saque'
     | '/admin/'
+    | '/carteira/'
     | '/admin/raspadinhas/$id'
     | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas/'
@@ -449,7 +450,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/suporte'
     | '/termos'
-    | '/carteira'
     | '/cupons'
     | '/dashboard'
     | '/indicacao'
@@ -470,6 +470,7 @@ export interface FileRouteTypes {
     | '/carteira/adicionar'
     | '/carteira/saque'
     | '/admin'
+    | '/carteira'
     | '/admin/raspadinhas/$id'
     | '/admin/raspadinhas/novo'
     | '/admin/raspadinhas'
@@ -491,7 +492,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/suporte'
     | '/termos'
-    | '/_authenticated/carteira'
     | '/_authenticated/cupons'
     | '/_authenticated/dashboard'
     | '/_authenticated/indicacao'
@@ -512,6 +512,7 @@ export interface FileRouteTypes {
     | '/_authenticated/carteira/adicionar'
     | '/_authenticated/carteira/saque'
     | '/_authenticated/admin/'
+    | '/_authenticated/carteira/'
     | '/_authenticated/admin/raspadinhas/$id'
     | '/_authenticated/admin/raspadinhas/novo'
     | '/_authenticated/admin/raspadinhas/'
@@ -651,13 +652,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/carteira': {
-      id: '/_authenticated/carteira'
-      path: '/carteira'
-      fullPath: '/carteira'
-      preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/cupons': {
       id: '/_authenticated/cupons'
       path: '/cupons'
@@ -784,19 +778,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/carteira/': {
+      id: '/_authenticated/carteira/'
+      path: '/carteira'
+      fullPath: '/carteira/'
+      preLoaderRoute: typeof AuthenticatedCarteiraIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/carteira/adicionar': {
       id: '/_authenticated/carteira/adicionar'
-      path: '/adicionar'
+      path: '/carteira/adicionar'
       fullPath: '/carteira/adicionar'
       preLoaderRoute: typeof AuthenticatedCarteiraAdicionarRouteImport
-      parentRoute: typeof AuthenticatedCarteiraRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/carteira/saque': {
       id: '/_authenticated/carteira/saque'
-      path: '/saque'
+      path: '/carteira/saque'
       fullPath: '/carteira/saque'
       preLoaderRoute: typeof AuthenticatedCarteiraSaqueRouteImport
-      parentRoute: typeof AuthenticatedCarteiraRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/raspadinhas/': {
       id: '/_authenticated/admin/raspadinhas/'
@@ -822,23 +823,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedCarteiraRouteChildren {
-  AuthenticatedCarteiraAdicionarRoute: typeof AuthenticatedCarteiraAdicionarRoute
-  AuthenticatedCarteiraSaqueRoute: typeof AuthenticatedCarteiraSaqueRoute
-}
-
-const AuthenticatedCarteiraRouteChildren: AuthenticatedCarteiraRouteChildren = {
-  AuthenticatedCarteiraAdicionarRoute: AuthenticatedCarteiraAdicionarRoute,
-  AuthenticatedCarteiraSaqueRoute: AuthenticatedCarteiraSaqueRoute,
-}
-
-const AuthenticatedCarteiraRouteWithChildren =
-  AuthenticatedCarteiraRoute._addFileChildren(
-    AuthenticatedCarteiraRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRouteWithChildren
   AuthenticatedCuponsRoute: typeof AuthenticatedCuponsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndicacaoRoute: typeof AuthenticatedIndicacaoRoute
@@ -855,14 +840,16 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPremiosRoute: typeof AuthenticatedAdminPremiosRoute
   AuthenticatedAdminRelatoriosRoute: typeof AuthenticatedAdminRelatoriosRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedCarteiraAdicionarRoute: typeof AuthenticatedCarteiraAdicionarRoute
+  AuthenticatedCarteiraSaqueRoute: typeof AuthenticatedCarteiraSaqueRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedCarteiraIndexRoute: typeof AuthenticatedCarteiraIndexRoute
   AuthenticatedAdminRaspadinhasIdRoute: typeof AuthenticatedAdminRaspadinhasIdRoute
   AuthenticatedAdminRaspadinhasNovoRoute: typeof AuthenticatedAdminRaspadinhasNovoRoute
   AuthenticatedAdminRaspadinhasIndexRoute: typeof AuthenticatedAdminRaspadinhasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedCarteiraRoute: AuthenticatedCarteiraRouteWithChildren,
   AuthenticatedCuponsRoute: AuthenticatedCuponsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndicacaoRoute: AuthenticatedIndicacaoRoute,
@@ -879,7 +866,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminPremiosRoute: AuthenticatedAdminPremiosRoute,
   AuthenticatedAdminRelatoriosRoute: AuthenticatedAdminRelatoriosRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedCarteiraAdicionarRoute: AuthenticatedCarteiraAdicionarRoute,
+  AuthenticatedCarteiraSaqueRoute: AuthenticatedCarteiraSaqueRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedCarteiraIndexRoute: AuthenticatedCarteiraIndexRoute,
   AuthenticatedAdminRaspadinhasIdRoute: AuthenticatedAdminRaspadinhasIdRoute,
   AuthenticatedAdminRaspadinhasNovoRoute:
     AuthenticatedAdminRaspadinhasNovoRoute,
