@@ -21,7 +21,7 @@ import { formatCurrency } from '@/lib/format';
 import { supabase } from '@/integrations/supabase/client';
 import { callEdgeFunction } from '@/lib/edge-functions';
 
-export const Route = createFileRoute('/_authenticated/carteira')({
+export const Route = createFileRoute('/_authenticated/carteira/')({
   component: WalletPage,
 });
 

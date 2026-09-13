@@ -73,11 +73,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="text-slate-400">
           erro de carregamento da página
         </p>
-        {process.env['NODE_ENV'] === "development" && (
-          <div className="mt-4 overflow-auto rounded-lg bg-black/40 p-4 text-left text-xs font-mono text-red-400 max-h-[200px]">
-            {error instanceof Error ? error.message : String(error)}
+        <details className="mt-4 text-left">
+          <summary className="cursor-pointer text-xs text-slate-500">Detalhes técnicos</summary>
+          <div className="mt-2 overflow-auto rounded-lg bg-black/40 p-4 text-xs font-mono text-red-400 max-h-[200px] whitespace-pre-wrap">
+            {error instanceof Error ? `${error.message}\n\n${error.stack ?? ""}` : String(error)}
           </div>
-        )}
+        </details>
         <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:justify-center">
           <button
             onClick={() => {
